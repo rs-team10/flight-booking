@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: flight-booking
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: Filip
+Implementation-Vendor-Id: com.tim10
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/flight-booking
+Created-By: Maven Integration for Eclipse
+
