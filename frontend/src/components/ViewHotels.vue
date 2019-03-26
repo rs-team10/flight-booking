@@ -3,7 +3,13 @@
     <h1>U in hotel</h1> 
     <div class="list-type2">
         <ol>
-            <li v-for="hotel in hotels" :key="hotel.id" v-on:click="kliknuto"><a href="#" >{{hotel.name}}</a></li>
+            <li v-for="hotel in hotels" :key="hotel.id" v-on:click="hotelSelected(hotel)">
+                <a href="#">
+                    <b>Name: </b>{{hotel.name}} <br>
+                    <b>Addres: </b>{{hotel.address}} <br>
+                    <b>Description: </b>{{hotel.description}}
+                </a>
+            </li>
         </ol>
     </div>    
   </div>
@@ -17,19 +23,11 @@ export default {
   name: 'hotels',
   data(){
       return{
-          hotels: []
+          hotels: [],
+          selectedHotel: ''
       }
   },
   methods:{
-      addHotel: function(){
-          this.$axios
-            .post('http://localhost:8081/api/hotels', {
-                name: 'HotelDummy' + Math.random()
-            }).then(function(error){
-                console.log(error);
-            });
-          this.fetchHotels();
-      },
       editHotel: function(){
           alert("Hotel izmenjen!");
       },
@@ -38,8 +36,8 @@ export default {
           .get('http://localhost:8081/api/hotels')
           .then(response => this.hotels = response.data)
       },
-      kliknuto: function(){
-          alert("kliknuto");
+      hotelSelected: function(hotel){
+          this.$emit('hotelSelected', hotel);
       }
   },
   mounted(){

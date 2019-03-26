@@ -1,12 +1,12 @@
 <template>
   <div class="hotels">
-    <!--<a href="#" class="dodaj" role="button">Add hotel</a>-->
     <div id="hotel-buttons">
         <button v-on:click="component = 'hotels'">View hotels</button>
         <button v-on:click="component = 'add-hotel'">Add hotel</button>
-        <button v-on:click="editHotel">Edit hotel</button>
     </div>
-    <component v-bind:is="component"></component>
+    <component v-bind:is="component" 
+        v-on:hotelSelected="changeComp($event)" 
+        v-bind:selectedHotel="selectedHotel"></component>
 
     
   </div>
@@ -16,31 +16,24 @@
 // @ is an alias to /src
 import ViewHotels from "@/components/ViewHotels.vue"
 import AddHotel from "@/components/AddHotel.vue"
+import EditHotel from "@/components/EditHotel.vue"
 
 export default {
     components: {
         'hotels' : ViewHotels,
-        'add-hotel' : AddHotel
+        'add-hotel' : AddHotel,
+        'edit-hotel' : EditHotel
     },
     data(){
         return{
-            component : 'hotels'
+            component : 'hotels',
+            selectedHotel : {}
         }
     },
     methods:{
-        addHotel: function(){
-            this.$axios
-                .post('http://localhost:8081/api/hotels', {
-                    name: 'HotelDummy' + Math.random()
-                }).then(function(response){
-                    console.log(response);
-                }).catch(function(error) {
-                    console.error ( error )
-                });
-            //this.fetchHotels();
-        },
-        editHotel: function(){
-            alert("Hotel izmenjen!");
+        changeComp: function(hotel){
+            this.selectedHotel = hotel;
+            this.component = 'edit-hotel';
         },
         fetchHotels: function(){
             this.$axios
