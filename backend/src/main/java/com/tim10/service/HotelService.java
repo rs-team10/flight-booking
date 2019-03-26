@@ -19,6 +19,11 @@ public class HotelService {
 		return hotels;
 	}
 	
+	public Hotel findOne(Long id) {
+		Hotel hotel = hotelRepository.findOne(id);
+		return hotel;
+	}
+	
 	public Hotel create(Hotel hotel) throws Exception {
 		if(hotel.getId() != null) {
 			throw new Exception("New hotel id must be null");
@@ -30,6 +35,14 @@ public class HotelService {
 		}
 		Hotel savedHotel = hotelRepository.create(hotel);
 		return savedHotel;
+	}
+	
+	public Hotel update(Hotel hotel) throws Exception {
+		Hotel hotelToUpdate = findOne(hotel.getId());
+		if(hotelToUpdate == null) {
+			throw new Exception("Wanted hotel does not exist");
+		}
+		return hotelRepository.update(hotel);
 	}
 
 }

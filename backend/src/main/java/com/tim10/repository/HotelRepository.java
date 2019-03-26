@@ -19,6 +19,10 @@ public class HotelRepository {
 		return this.hotels.values();
 	}
 	
+	public Hotel findOne(Long id) {
+		return this.hotels.get(id);
+	}
+	
 	public Hotel create(Hotel hotel) {
 		Long id = hotel.getId();
 		if(id == null) {
@@ -26,6 +30,14 @@ public class HotelRepository {
 			hotel.setId(id);
 		}
 		this.hotels.put(id, hotel);
+		return hotel;
+	}
+	
+	public Hotel update(Hotel hotel) {
+		Long id = hotel.getId();
+		if(id != null) {
+			this.hotels.put(id, hotel);
+		}
 		return hotel;
 	}
 
