@@ -1,15 +1,20 @@
 package com.tim10.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class RegisteredUser extends User {
 
 	private String phone;
 
 	private String address;
-
+	
+	@JsonIgnore
 	private String avatar;
-
+	
+	@JsonIgnore
 	private String verificationCode;
-
+	
+	@JsonIgnore
 	private Boolean isConfirmed;
 	
 	public RegisteredUser() {

@@ -51,10 +51,15 @@ public class RegisteredUserServiceImpl implements RegisteredUserService {
 		RegisteredUser registeredUserToUpdate = findById(registeredUser.getId());
 		if(registeredUserToUpdate == null)
 			throw new Exception("Entity not found");
+		
+		registeredUserToUpdate.setUsername(registeredUser.getUsername());
+		registeredUserToUpdate.setPassword(registeredUser.getPassword());
 		registeredUserToUpdate.setFirstName(registeredUser.getFirstName());
 		registeredUserToUpdate.setLastName(registeredUser.getLastName());
+		registeredUserToUpdate.setEmail(registeredUser.getEmail());
 		registeredUserToUpdate.setPhone(registeredUser.getPhone());
-		// TODO: Dodati ostalo
+		registeredUserToUpdate.setAddress(registeredUser.getAddress());
+
 		RegisteredUser updatedRegisteredUser = registeredUserRepository.create(registeredUserToUpdate);
 		return updatedRegisteredUser;
 		

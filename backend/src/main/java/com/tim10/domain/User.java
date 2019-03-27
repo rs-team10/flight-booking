@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class User {
 	
 	private Long id;
@@ -13,7 +15,8 @@ public abstract class User {
 	private String lastName;
 
 	private String email;
-	   
+	
+	@JsonIgnore
 	private Role role;
 	
 	public User() {
