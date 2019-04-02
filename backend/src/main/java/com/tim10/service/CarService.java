@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tim10.domain.Car;
+import com.tim10.domain.Vehicle;
 import com.tim10.repository.CarRepository;
 
 
@@ -16,26 +16,26 @@ public class CarService {
 	private CarRepository carRepository;
 	
 	
-	public Collection<Car> findAll(){
+	public Collection<Vehicle> findAll(){
 		return carRepository.findAll();
 	}
-	public Collection<Car> find(Car car){
+	public Collection<Vehicle> find(Vehicle car){
 		
 		return carRepository.find(car);
 	}
-	public Car findById(Long id) {
+	public Vehicle findById(Long id) {
 		return carRepository.findById(id);
 	}
-	public Car create(Car car) throws Exception {
+	public Vehicle create(Vehicle car) throws Exception {
 		if(car.getId() != null)
 			throw new Exception("Id has to be null when creating new entity");
-		Car savedUser = carRepository.create(car);
+		Vehicle savedUser = carRepository.create(car);
 		return savedUser;
 	}
-	public Car update(Car car) {
+	public Vehicle update(Vehicle car) {
 		return carRepository.update(car);
 	}
-	public Car delete(Long id) {
+	public Vehicle delete(Long id) {
 		return carRepository.delete( id);
 	}
 	

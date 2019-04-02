@@ -1,11 +1,11 @@
 package com.tim10.repository;
 
-import com.tim10.domain.RentACarService;
+import com.tim10.domain.RentACar;
 
 public interface IRentACarServiceRepository {
 
 	
-	RentACarService update(RentACarService rentACarService);
+	RentACar update(RentACar rentACarService);
 	
 	
 }

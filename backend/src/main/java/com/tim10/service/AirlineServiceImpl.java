@@ -48,7 +48,7 @@ public class AirlineServiceImpl implements AirlineService {
 		
 		airlineToUpdate.setName(airline.getName());
 		airlineToUpdate.setDescription(airline.getDescription());
-		airlineToUpdate.setAddress(airline.getAddress());
+		airlineToUpdate.setLocation(airline.getLocation());
 		
 		Airline updatedAirline = airlineRepository.create(airlineToUpdate);
 		return updatedAirline;
