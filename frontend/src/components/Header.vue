@@ -16,6 +16,10 @@
                 <v-icon left>flight</v-icon>
                 <span>Edit Airline</span>
             </v-btn>
+            <v-btn router to="/hotels">
+                <v-icon left>hotel</v-icon>
+                <span>Hotels</span>
+            </v-btn>
         </v-toolbar>
     </nav>
 </template>
