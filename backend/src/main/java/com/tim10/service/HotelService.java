@@ -42,6 +42,13 @@ public class HotelService {
 		if(hotelToUpdate == null) {
 			throw new Exception("Wanted hotel does not exist");
 		}
+		for(Hotel existingHotel: findAll()) {
+			if(existingHotel.getName().toLowerCase().equals(hotel.getName().toLowerCase())) {
+				if(existingHotel.getId() != hotel.getId()) {
+					throw new Exception("Hotel with that name already exists!");
+				}
+			}
+		}
 		return hotelRepository.update(hotel);
 	}
 

@@ -1,14 +1,13 @@
 <template>
   <div class="hotels">
     <div id="hotel-buttons">
-        <button v-on:click="component = 'hotels'">View hotels</button>
-        <button v-on:click="component = 'add-hotel'">Add hotel</button>
+        <v-btn v-on:click="component = 'hotels'" outline color="indigo">View hotels</v-btn>
+        <v-btn v-on:click="component = 'add-hotel'" outline color="indigo">Add hotel</v-btn>
     </div>
     <component v-bind:is="component" 
         v-on:hotelSelected="changeComp($event)" 
         v-bind:selectedHotel="selectedHotel"></component>
 
-    
   </div>
 </template>
 
@@ -43,20 +42,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-div#hotel-buttons button{
-    display: inline-block;
-    margin-right: 20px;
-}
-ul{
-    list-style-type: none;
-    padding: 0;
-    border: 1px solid #ddd;
-}
-ul li {
-  padding: 8px 16px;
-  border-bottom: 1px solid #ddd;
-}
-</style>
