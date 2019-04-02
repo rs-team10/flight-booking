@@ -1,82 +1,65 @@
-/***********************************************************************
- * Module:  Room.java
- * Author:  Filip
- * Purpose: Defines the Class Room
- ***********************************************************************/
+package com.tim10.domain.model;
 
-import java.util.*;
+import java.util.Set;
 
 public class Room {
-   private Long id;
-   private Integer floor;
-   private Integer squareFootage;
-   private Boolean hasBalcony;
-   
-   private RoomType roomType;
-   private java.util.Collection<RoomReservation> roomReservations;
-   
-   
-   /** @pdGenerated default getter */
-   public java.util.Collection<RoomReservation> getRoomReservations() {
-      if (roomReservations == null)
-         roomReservations = new java.util.HashSet<RoomReservation>();
-      return roomReservations;
-   }
-   
-   /** @pdGenerated default iterator getter */
-   public java.util.Iterator getIteratorRoomReservations() {
-      if (roomReservations == null)
-         roomReservations = new java.util.HashSet<RoomReservation>();
-      return roomReservations.iterator();
-   }
-   
-   /** @pdGenerated default setter
-     * @param newRoomReservations */
-   public void setRoomReservations(java.util.Collection<RoomReservation> newRoomReservations) {
-      removeAllRoomReservations();
-      for (java.util.Iterator iter = newRoomReservations.iterator(); iter.hasNext();)
-         addRoomReservations((RoomReservation)iter.next());
-   }
-   
-   /** @pdGenerated default add
-     * @param newRoomReservation */
-   public void addRoomReservations(RoomReservation newRoomReservation) {
-      if (newRoomReservation == null)
-         return;
-      if (this.roomReservations == null)
-         this.roomReservations = new java.util.HashSet<RoomReservation>();
-      if (!this.roomReservations.contains(newRoomReservation))
-      {
-         this.roomReservations.add(newRoomReservation);
-         newRoomReservation.setRoom(this);      
-      }
-   }
-   
-   /** @pdGenerated default remove
-     * @param oldRoomReservation */
-   public void removeRoomReservations(RoomReservation oldRoomReservation) {
-      if (oldRoomReservation == null)
-         return;
-      if (this.roomReservations != null)
-         if (this.roomReservations.contains(oldRoomReservation))
-         {
-            this.roomReservations.remove(oldRoomReservation);
-            oldRoomReservation.setRoom((Room)null);
-         }
-   }
-   
-   /** @pdGenerated default removeAll */
-   public void removeAllRoomReservations() {
-      if (roomReservations != null)
-      {
-         RoomReservation oldRoomReservation;
-         for (java.util.Iterator iter = getIteratorRoomReservations(); iter.hasNext();)
-         {
-            oldRoomReservation = (RoomReservation)iter.next();
-            iter.remove();
-            oldRoomReservation.setRoom((Room)null);
-         }
-      }
-   }
+	private Long id;
+	private Integer floor;
+	private Integer squareFootage;
+	private Boolean hasBalcony;
+	private RoomType roomType;
+	private Set<RoomReservation> roomReservations;
+
+	public Room() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Integer getFloor() {
+		return floor;
+	}
+
+	public Integer getSquareFootage() {
+		return squareFootage;
+	}
+
+	public Boolean getHasBalcony() {
+		return hasBalcony;
+	}
+
+	public RoomType getRoomType() {
+		return roomType;
+	}
+
+	public Set<RoomReservation> getRoomReservations() {
+		return roomReservations;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setFloor(Integer floor) {
+		this.floor = floor;
+	}
+
+	public void setSquareFootage(Integer squareFootage) {
+		this.squareFootage = squareFootage;
+	}
+
+	public void setHasBalcony(Boolean hasBalcony) {
+		this.hasBalcony = hasBalcony;
+	}
+
+	public void setRoomType(RoomType roomType) {
+		this.roomType = roomType;
+	}
+
+	public void setRoomReservations(Set<RoomReservation> roomReservations) {
+		this.roomReservations = roomReservations;
+	}
 
 }

@@ -1,73 +1,111 @@
-/***********************************************************************
- * Module:  RoomType.java
- * Author:  Filip
- * Purpose: Defines the Class RoomType
- ***********************************************************************/
+package com.tim10.domain.model;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.Set;
 
 public class RoomType {
-   private Long id;
-   private String type;
-   private BigDecimal pricePerNight;
-   private int capacity;
-   private Integer singleBedCount;
-   private Integer doubleBedCount;
-   private Boolean hasTV;
-   private String description;
-   private String image;
-   private Double averageFeedback;
-   
-   private java.util.Collection<SpecialRoomPrice> specialRoomPrices;
-   
-   
-   /** @pdGenerated default getter */
-   public java.util.Collection<SpecialRoomPrice> getSpecialRoomPrices() {
-      if (specialRoomPrices == null)
-         specialRoomPrices = new java.util.HashSet<SpecialRoomPrice>();
-      return specialRoomPrices;
-   }
-   
-   /** @pdGenerated default iterator getter */
-   public java.util.Iterator getIteratorSpecialRoomPrices() {
-      if (specialRoomPrices == null)
-         specialRoomPrices = new java.util.HashSet<SpecialRoomPrice>();
-      return specialRoomPrices.iterator();
-   }
-   
-   /** @pdGenerated default setter
-     * @param newSpecialRoomPrices */
-   public void setSpecialRoomPrices(java.util.Collection<SpecialRoomPrice> newSpecialRoomPrices) {
-      removeAllSpecialRoomPrices();
-      for (java.util.Iterator iter = newSpecialRoomPrices.iterator(); iter.hasNext();)
-         addSpecialRoomPrices((SpecialRoomPrice)iter.next());
-   }
-   
-   /** @pdGenerated default add
-     * @param newSpecialRoomPrice */
-   public void addSpecialRoomPrices(SpecialRoomPrice newSpecialRoomPrice) {
-      if (newSpecialRoomPrice == null)
-         return;
-      if (this.specialRoomPrices == null)
-         this.specialRoomPrices = new java.util.HashSet<SpecialRoomPrice>();
-      if (!this.specialRoomPrices.contains(newSpecialRoomPrice))
-         this.specialRoomPrices.add(newSpecialRoomPrice);
-   }
-   
-   /** @pdGenerated default remove
-     * @param oldSpecialRoomPrice */
-   public void removeSpecialRoomPrices(SpecialRoomPrice oldSpecialRoomPrice) {
-      if (oldSpecialRoomPrice == null)
-         return;
-      if (this.specialRoomPrices != null)
-         if (this.specialRoomPrices.contains(oldSpecialRoomPrice))
-            this.specialRoomPrices.remove(oldSpecialRoomPrice);
-   }
-   
-   /** @pdGenerated default removeAll */
-   public void removeAllSpecialRoomPrices() {
-      if (specialRoomPrices != null)
-         specialRoomPrices.clear();
-   }
+	private Long id;
+	private String type;
+	private BigDecimal pricePerNight;
+	private int capacity;
+	private Integer singleBedCount;
+	private Integer doubleBedCount;
+	private Boolean hasTV;
+	private String description;
+	private String image;
+	private Double averageFeedback;
+	private Set<SpecialRoomPrice> specialRoomPrices;
+
+	public RoomType() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public BigDecimal getPricePerNight() {
+		return pricePerNight;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public Integer getSingleBedCount() {
+		return singleBedCount;
+	}
+
+	public Integer getDoubleBedCount() {
+		return doubleBedCount;
+	}
+
+	public Boolean getHasTV() {
+		return hasTV;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public Double getAverageFeedback() {
+		return averageFeedback;
+	}
+
+	public Set<SpecialRoomPrice> getSpecialRoomPrices() {
+		return specialRoomPrices;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setPricePerNight(BigDecimal pricePerNight) {
+		this.pricePerNight = pricePerNight;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	public void setSingleBedCount(Integer singleBedCount) {
+		this.singleBedCount = singleBedCount;
+	}
+
+	public void setDoubleBedCount(Integer doubleBedCount) {
+		this.doubleBedCount = doubleBedCount;
+	}
+
+	public void setHasTV(Boolean hasTV) {
+		this.hasTV = hasTV;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public void setAverageFeedback(Double averageFeedback) {
+		this.averageFeedback = averageFeedback;
+	}
+
+	public void setSpecialRoomPrices(Set<SpecialRoomPrice> specialRoomPrices) {
+		this.specialRoomPrices = specialRoomPrices;
+	}
 
 }

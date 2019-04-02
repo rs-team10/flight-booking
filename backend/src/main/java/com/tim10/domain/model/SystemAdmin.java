@@ -1,12 +1,9 @@
-/***********************************************************************
- * Module:  SystemAdmin.java
- * Author:  Filip
- * Purpose: Defines the Class SystemAdmin
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public class SystemAdmin extends User {
-   private Long id;
+
+	public SystemAdmin() {
+
+	}
 
 }

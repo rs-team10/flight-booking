@@ -1,10 +1,4 @@
-/***********************************************************************
- * Module:  Role.java
- * Author:  Filip
- * Purpose: Defines the Class Role
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public enum Role {
    SYSTEM_ADMIN,

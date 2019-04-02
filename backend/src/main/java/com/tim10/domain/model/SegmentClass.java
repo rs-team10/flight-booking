@@ -1,10 +1,4 @@
-/***********************************************************************
- * Module:  SegmentClass.java
- * Author:  Filip
- * Purpose: Defines the Class SegmentClass
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public enum SegmentClass {
    FIRST_CLASS,

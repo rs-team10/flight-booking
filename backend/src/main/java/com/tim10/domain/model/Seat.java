@@ -1,42 +1,54 @@
-/***********************************************************************
- * Module:  Seat.java
- * Author:  Filip
- * Purpose: Defines the Class Seat
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public class Seat {
-   private Long id;
-   private Integer row;
-   private Integer column;
-   private SegmentClass class;
-   
-   private Flight flight;
-   
-   
-   /** @pdGenerated default parent getter */
-   public Flight getFlight() {
-      return flight;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newFlight */
-   public void setFlight(Flight newFlight) {
-      if (this.flight == null || !this.flight.equals(newFlight))
-      {
-         if (this.flight != null)
-         {
-            Flight oldFlight = this.flight;
-            this.flight = null;
-            oldFlight.removeSeats(this);
-         }
-         if (newFlight != null)
-         {
-            this.flight = newFlight;
-            this.flight.addSeats(this);
-         }
-      }
-   }
+	private Long id;
+	private Integer row;
+	private Integer column;
+	private SegmentClass segmentClass;
+	private Flight flight;
+
+	public Seat() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Integer getRow() {
+		return row;
+	}
+
+	public Integer getColumn() {
+		return column;
+	}
+
+	public SegmentClass getSegmentClass() {
+		return segmentClass;
+	}
+
+	public Flight getFlight() {
+		return flight;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setRow(Integer row) {
+		this.row = row;
+	}
+
+	public void setColumn(Integer column) {
+		this.column = column;
+	}
+
+	public void setSegmentClass(SegmentClass segmentClass) {
+		this.segmentClass = segmentClass;
+	}
+
+	public void setFlight(Flight flight) {
+		this.flight = flight;
+	}
 
 }

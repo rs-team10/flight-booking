@@ -1,93 +1,85 @@
-/***********************************************************************
- * Module:  RoomReservation.java
- * Author:  Filip
- * Purpose: Defines the Class RoomReservation
- ***********************************************************************/
+package com.tim10.domain.model;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
 
 public class RoomReservation {
-   private Long id;
-   private java.util.Date dateFrom;
-   private java.util.Date dateTo;
-   private BigDecimal totalPrice;
-   
-   private java.util.Collection<PriceListItem> additionalServices;
-   private Reservation reservation;
-   private Review review;
-   private Room room;
-   
-   
-   /** @pdGenerated default getter */
-   public java.util.Collection<PriceListItem> getAdditionalServices() {
-      if (additionalServices == null)
-         additionalServices = new java.util.HashSet<PriceListItem>();
-      return additionalServices;
-   }
-   
-   /** @pdGenerated default iterator getter */
-   public java.util.Iterator getIteratorAdditionalServices() {
-      if (additionalServices == null)
-         additionalServices = new java.util.HashSet<PriceListItem>();
-      return additionalServices.iterator();
-   }
-   
-   /** @pdGenerated default setter
-     * @param newAdditionalServices */
-   public void setAdditionalServices(java.util.Collection<PriceListItem> newAdditionalServices) {
-      removeAllAdditionalServices();
-      for (java.util.Iterator iter = newAdditionalServices.iterator(); iter.hasNext();)
-         addAdditionalServices((PriceListItem)iter.next());
-   }
-   
-   /** @pdGenerated default add
-     * @param newPriceListItem */
-   public void addAdditionalServices(PriceListItem newPriceListItem) {
-      if (newPriceListItem == null)
-         return;
-      if (this.additionalServices == null)
-         this.additionalServices = new java.util.HashSet<PriceListItem>();
-      if (!this.additionalServices.contains(newPriceListItem))
-         this.additionalServices.add(newPriceListItem);
-   }
-   
-   /** @pdGenerated default remove
-     * @param oldPriceListItem */
-   public void removeAdditionalServices(PriceListItem oldPriceListItem) {
-      if (oldPriceListItem == null)
-         return;
-      if (this.additionalServices != null)
-         if (this.additionalServices.contains(oldPriceListItem))
-            this.additionalServices.remove(oldPriceListItem);
-   }
-   
-   /** @pdGenerated default removeAll */
-   public void removeAllAdditionalServices() {
-      if (additionalServices != null)
-         additionalServices.clear();
-   }
-   /** @pdGenerated default parent getter */
-   public Room getRoom() {
-      return room;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newRoom */
-   public void setRoom(Room newRoom) {
-      if (this.room == null || !this.room.equals(newRoom))
-      {
-         if (this.room != null)
-         {
-            Room oldRoom = this.room;
-            this.room = null;
-            oldRoom.removeRoomReservations(this);
-         }
-         if (newRoom != null)
-         {
-            this.room = newRoom;
-            this.room.addRoomReservations(this);
-         }
-      }
-   }
+	private Long id;
+	private Date dateFrom;
+	private Date dateTo;
+	private BigDecimal totalPrice;
+	private Set<PriceListItem> additionalServices;
+	private Reservation reservation;
+	private Review review;
+	private Room room;
+
+	public RoomReservation() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Date getDateFrom() {
+		return dateFrom;
+	}
+
+	public Date getDateTo() {
+		return dateTo;
+	}
+
+	public BigDecimal getTotalPrice() {
+		return totalPrice;
+	}
+
+	public Set<PriceListItem> getAdditionalServices() {
+		return additionalServices;
+	}
+
+	public Reservation getReservation() {
+		return reservation;
+	}
+
+	public Review getReview() {
+		return review;
+	}
+
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setDateFrom(Date dateFrom) {
+		this.dateFrom = dateFrom;
+	}
+
+	public void setDateTo(Date dateTo) {
+		this.dateTo = dateTo;
+	}
+
+	public void setTotalPrice(BigDecimal totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public void setAdditionalServices(Set<PriceListItem> additionalServices) {
+		this.additionalServices = additionalServices;
+	}
+
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
+
+	public void setReview(Review review) {
+		this.review = review;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
+	}
 
 }
