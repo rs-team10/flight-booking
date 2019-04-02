@@ -1,41 +1,47 @@
-/***********************************************************************
- * Module:  BranchOffice.java
- * Author:  Filip
- * Purpose: Defines the Class BranchOffice
- ***********************************************************************/
+package com.tim10.domain.model;
 
 import java.util.*;
 
 public class BranchOffice {
-   private Long id;
-   private Location location;
-   
-   private Vehicle[] vehicle;
-   private RentACar mainOffice;
-   
-   
-   /** @pdGenerated default parent getter */
-   public RentACar getMainOffice() {
-      return mainOffice;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newRentACar */
-   public void setMainOffice(RentACar newRentACar) {
-      if (this.mainOffice == null || !this.mainOffice.equals(newRentACar))
-      {
-         if (this.mainOffice != null)
-         {
-            RentACar oldRentACar = this.mainOffice;
-            this.mainOffice = null;
-            oldRentACar.removeBranchOffices(this);
-         }
-         if (newRentACar != null)
-         {
-            this.mainOffice = newRentACar;
-            this.mainOffice.addBranchOffices(this);
-         }
-      }
-   }
+	private Long id;
+	private Location location;
+
+	private Set<Vehicle> vehicle;
+	private RentACar mainOffice;
+
+	public BranchOffice() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public Set<Vehicle> getVehicle() {
+		return vehicle;
+	}
+
+	public RentACar getMainOffice() {
+		return mainOffice;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public void setVehicle(Set<Vehicle> vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public void setMainOffice(RentACar mainOffice) {
+		this.mainOffice = mainOffice;
+	}
 
 }

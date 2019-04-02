@@ -1,41 +1,46 @@
-/***********************************************************************
- * Module:  Friendship.java
- * Author:  Filip
- * Purpose: Defines the Class Friendship
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public class Friendship {
-   private Long id;
-   private RequestStatus status;
-   
-   private RegisteredUser sender;
-   private RegisteredUser receiver;
-   
-   
-   /** @pdGenerated default parent getter */
-   public RegisteredUser getSender() {
-      return sender;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newRegisteredUser */
-   public void setSender(RegisteredUser newRegisteredUser) {
-      if (this.sender == null || !this.sender.equals(newRegisteredUser))
-      {
-         if (this.sender != null)
-         {
-            RegisteredUser oldRegisteredUser = this.sender;
-            this.sender = null;
-            oldRegisteredUser.removeFriendships(this);
-         }
-         if (newRegisteredUser != null)
-         {
-            this.sender = newRegisteredUser;
-            this.sender.addFriendships(this);
-         }
-      }
-   }
+	
+	private Long id;
+	private RequestStatus status;
+
+	private RegisteredUser sender;
+	private RegisteredUser receiver;
+
+	public Friendship() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public RequestStatus getStatus() {
+		return status;
+	}
+
+	public RegisteredUser getSender() {
+		return sender;
+	}
+
+	public RegisteredUser getReceiver() {
+		return receiver;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setStatus(RequestStatus status) {
+		this.status = status;
+	}
+
+	public void setSender(RegisteredUser sender) {
+		this.sender = sender;
+	}
+
+	public void setReceiver(RegisteredUser receiver) {
+		this.receiver = receiver;
+	}
 
 }
