@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import EditUser from './components/EditUser.vue'
 import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
+import vCarSearch from './views/vCarSearch.vue'
+import EditRcs from './components/EditRcs.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -28,5 +30,15 @@ export default new Router({
       name: 'hotels',
       component: Hotels
     },
+    {
+      path: '/vCarSearch',
+      name: 'vCarSearch',
+      component: vCarSearch
+    },
+    {
+      path: '/editRcs',
+      name: 'editRcs',
+      component: EditRcs
+    }
   ]
 })
