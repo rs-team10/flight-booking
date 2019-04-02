@@ -1,33 +1,25 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <app-header></app-header>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+
+    <Header />
+
+    <v-content>
+      <router-view></router-view>
+    </v-content>
+
+  </v-app>
 </template>
 
 <script>
-
-// Imports
-import Header from './components/Header.vue';
+import Header from '@/components/Header'
 
 export default {
-    components: {
-        'app-header': Header
-    },
-    data () {
-        return {
-        }
-    },
-    methods: {
+  name: 'App',
+  components: { Header },        
+  data () {
+    return {
+      //
     }
+  }
 }
 </script>
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Nunito', 'Helvetica';
-}
-</style>

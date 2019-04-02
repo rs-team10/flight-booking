@@ -1,9 +1,22 @@
 <template>
     <nav>
-        <ul>
-            <li><router-link to="/editUser" exact>Edit User</router-link></li>
-            <li><router-link to="/editAirline" exact>Edit Airline</router-link></li>
-        </ul>
+        <v-toolbar flat app>
+            <v-toolbar-title class="text-uppercase grey--text">
+                <router-link to="/">
+                    <span class="font-weight-light">Flight</span>
+                    <span>Booking</span>
+                </router-link>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn router to="/editUser">
+                <v-icon left>account_circle</v-icon>
+                <span>Edit User</span>
+            </v-btn>
+            <v-btn router to="/editAirline">
+                <v-icon left>flight</v-icon>
+                <span>Edit Airline</span>
+            </v-btn>
+        </v-toolbar>
     </nav>
 </template>
 
@@ -12,28 +25,8 @@ export default {}
 </script>
 
 <style scoped>
-ul{
-    list-style-type: none;
-    text-align: center;
-    margin: 0;
-}
-li{
-    display: inline-block;
-    margin: 0 10px;
-}
-a{
-    color: #fff;
-    text-decoration: none;
-    padding: 6px 8px;
-    border-radius: 10px;
-}
-nav{
-    background: #444;
-    padding: 14px 0;
-    margin-bottom: 40px;
-}
-.router-link-active{
-    background: #eee;
-    color: #444;
+.v-toolbar__title a{
+  color: black;
+  text-decoration: none;
 }
 </style>
