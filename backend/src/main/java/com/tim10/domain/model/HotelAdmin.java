@@ -1,39 +1,27 @@
-/***********************************************************************
- * Module:  HotelAdmin.java
- * Author:  Filip
- * Purpose: Defines the Class HotelAdmin
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public class HotelAdmin extends User {
-   private Boolean hasCustomPassword;
-   
-   public Hotel company;
-   
-   
-   /** @pdGenerated default parent getter */
-   public Hotel getCompany() {
-      return company;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newHotel */
-   public void setCompany(Hotel newHotel) {
-      if (this.company == null || !this.company.equals(newHotel))
-      {
-         if (this.company != null)
-         {
-            Hotel oldHotel = this.company;
-            this.company = null;
-            oldHotel.removeAdministrators(this);
-         }
-         if (newHotel != null)
-         {
-            this.company = newHotel;
-            this.company.addAdministrators(this);
-         }
-      }
-   }
 
+	private Boolean hasCustomPassword;
+	public Hotel company;
+
+	public HotelAdmin() {
+		super();
+	}
+
+	public Boolean getHasCustomPassword() {
+		return hasCustomPassword;
+	}
+
+	public Hotel getCompany() {
+		return company;
+	}
+
+	public void setHasCustomPassword(Boolean hasCustomPassword) {
+		this.hasCustomPassword = hasCustomPassword;
+	}
+
+	public void setCompany(Hotel company) {
+		this.company = company;
+	}
 }
