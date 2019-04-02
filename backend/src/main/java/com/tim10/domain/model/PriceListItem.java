@@ -1,23 +1,56 @@
-/***********************************************************************
- * Module:  PriceListItem.java
- * Author:  Filip
- * Purpose: Defines the Class PriceListItem
- ***********************************************************************/
+package com.tim10.domain.model;
 
-import java.util.*;
+import java.math.BigDecimal;
 
-/** Ideje:
- * 
- * 1. Daily car rental
- * 2. Proffesional driver - Chauffeur services
- * 3. Child safety seat
- * 4. GPS Navigation system
- * 5. Foreign country fee */
 public class PriceListItem {
-   private Long id;
-   private String name;
-   private String description;
-   private BigDecimal price;
-   private BigDecimal discount;
 
+	private Long id;
+	private String name;
+	private String description;
+	private BigDecimal price;
+	private BigDecimal discount;
+
+	public PriceListItem() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public BigDecimal getDiscount() {
+		return discount;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
+	}
 }

@@ -1,39 +1,27 @@
-/***********************************************************************
- * Module:  RentACarAdmin.java
- * Author:  Filip
- * Purpose: Defines the Class RentACarAdmin
- ***********************************************************************/
-
-import java.util.*;
+package com.tim10.domain.model;
 
 public class RentACarAdmin extends User {
-   private Boolean hasCustomPassword;
-   
-   private RentACar company;
-   
-   
-   /** @pdGenerated default parent getter */
-   public RentACar getCompany() {
-      return company;
-   }
-   
-   /** @pdGenerated default parent setter
-     * @param newRentACar */
-   public void setCompany(RentACar newRentACar) {
-      if (this.company == null || !this.company.equals(newRentACar))
-      {
-         if (this.company != null)
-         {
-            RentACar oldRentACar = this.company;
-            this.company = null;
-            oldRentACar.removeAdministrators(this);
-         }
-         if (newRentACar != null)
-         {
-            this.company = newRentACar;
-            this.company.addAdministrators(this);
-         }
-      }
-   }
 
+	private Boolean hasCustomPassword;
+	private RentACar company;
+
+	public RentACarAdmin() {
+		super();
+	}
+
+	public Boolean getHasCustomPassword() {
+		return hasCustomPassword;
+	}
+
+	public RentACar getCompany() {
+		return company;
+	}
+
+	public void setHasCustomPassword(Boolean hasCustomPassword) {
+		this.hasCustomPassword = hasCustomPassword;
+	}
+
+	public void setCompany(RentACar company) {
+		this.company = company;
+	}
 }
