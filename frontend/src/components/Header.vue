@@ -24,8 +24,6 @@
     </nav>
 </template>
 
-
-
 <script>
 export default {}
 </script>
@@ -36,4 +34,3 @@ export default {}
   text-decoration: none;
 }
 </style>
-
