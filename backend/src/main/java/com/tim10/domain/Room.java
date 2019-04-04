@@ -2,12 +2,30 @@ package com.tim10.domain;
 
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+@Entity
 public class Room {
+	
+	@Id
 	private Long id;
+	
+	@Column
 	private Integer floor;
+	
+	@Column
 	private Integer squareFootage;
+	
+	@Column
 	private Boolean hasBalcony;
+	
+	@Transient
 	private RoomType roomType;
+	
+	@Transient
 	private Set<RoomReservation> roomReservations;
 
 	public Room() {

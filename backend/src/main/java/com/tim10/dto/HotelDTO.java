@@ -1,34 +1,31 @@
-package com.tim10.domain;
+package com.tim10.dto;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
+import com.tim10.domain.Hotel;
+import com.tim10.domain.Location;
 
-@MappedSuperclass
-public abstract class Company {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+public class HotelDTO {
+
 	private Long id;
-	
-	@Column(name = "name", nullable = false)
 	private String name;
-	
-	@Column(name = "description")
 	private String description;
-	
-	//moze biti null ako nema nijedan feedback, nece se prikazivati korisniku
-	@Column(name = "averageFeedback")	
 	private Double averageFeedback;
-	
-	@OneToOne(fetch = FetchType.LAZY)
 	private Location location;
 
-	public Company() {
+	public HotelDTO() {
+	}
+	
+	public HotelDTO(Hotel hotel) {
+		this(hotel.getId(), hotel.getName(), hotel.getDescription(),
+				hotel.getAverageFeedback(), hotel.getLocation());
+	}
+	
+	public HotelDTO(Long id, String name, String description, Double averageFeedback, Location location) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.averageFeedback = averageFeedback;
+		this.location = location;
 	}
 
 	public Long getId() {

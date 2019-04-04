@@ -3,17 +3,45 @@ package com.tim10.domain;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+@Entity
 public class RoomType {
+	
+	@Id
 	private Long id;
+	
+	@Column(nullable=false)
 	private String type;
+	
+	@Column(nullable=false)
 	private BigDecimal pricePerNight;
+	
+	@Column(nullable=false)
 	private int capacity;
+	
+	@Column(nullable=false)
 	private Integer singleBedCount;
+	
+	@Column(nullable=false)
 	private Integer doubleBedCount;
+	
+	@Column
 	private Boolean hasTV;
+	
+	@Column()
 	private String description;
+	
+	@Column(nullable=false)
 	private String image;
+	
+	@Column		//moze biti null ako nema nikakav feedback, ne prikazujes korisniku
 	private Double averageFeedback;
+	
+	@Transient
 	private Set<SpecialRoomPrice> specialRoomPrices;
 
 	public RoomType() {

@@ -3,10 +3,23 @@ package com.tim10.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class SpecialRoomPrice {
+	
+	@Id
 	private Long id;
+	
+	@Column(nullable=false)
 	private BigDecimal price;
+	
+	@Column(nullable=false)
 	private Date validFrom;
+	
+	@Column(nullable=false)
 	private Date validTo;
 
 	public SpecialRoomPrice() {

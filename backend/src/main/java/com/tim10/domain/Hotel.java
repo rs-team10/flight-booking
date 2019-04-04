@@ -1,24 +1,28 @@
 package com.tim10.domain;
 
-import java.util.*;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Entity
 public class Hotel extends Company {
 	
-	@JsonIgnore
+	@Transient
 	private Set<Room> rooms;
 	
-	@JsonIgnore
+	@Transient
 	private Set<RoomType> roomTypes;
 	
-	@JsonIgnore
+	@Transient
 	private PriceList additionalServicesPriceList;
 	
-	@JsonIgnore
+	@Transient
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@JsonIgnore
+	@Transient
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
