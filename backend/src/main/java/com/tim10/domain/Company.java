@@ -3,47 +3,52 @@ package com.tim10.domain;
 public abstract class Company {
 	
 	private Long id;
-	
 	private String name;
-	
 	private String description;
-	   
-	private String address;
-	
+	private Double averageFeedback;
+	private Location location;
+
 	public Company() {
-		
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
+	public Double getAverageFeedback() {
+		return averageFeedback;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public String getAddress() {
-		return address;
+	public void setAverageFeedback(Double averageFeedback) {
+		this.averageFeedback = averageFeedback;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
-	
+
 }

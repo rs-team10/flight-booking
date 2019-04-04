@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.domain.RentACarService;
+import com.tim10.domain.RentACar;
 import com.tim10.service.RentACarServiceService;
 
 
@@ -22,11 +22,11 @@ public class RentACarServiceController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RentACarService> updateCar(@RequestBody RentACarService rentACarService) throws Exception {
-		RentACarService updatedRcs = rcsService.update(rentACarService);
+	public ResponseEntity<RentACar> updateCar(@RequestBody RentACar rentACarService) throws Exception {
+		RentACar updatedRcs = rcsService.update(rentACarService);
 		if (updatedRcs == null)
-			return new ResponseEntity<RentACarService>(HttpStatus.INTERNAL_SERVER_ERROR);
-		return new ResponseEntity<RentACarService>(updatedRcs, HttpStatus.OK);
+			return new ResponseEntity<RentACar>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<RentACar>(updatedRcs, HttpStatus.OK);
 	}
 	
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.domain.Car;
+import com.tim10.domain.Vehicle;
 import com.tim10.service.CarService;
 
 
@@ -32,9 +32,9 @@ public class CarController {
 			value = "/api/cars",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Collection<Car>> getCars() {
-		Collection<Car> cars = carService.findAll();
-		return new ResponseEntity<Collection<Car>>(cars, HttpStatus.OK);
+	public ResponseEntity<Collection<Vehicle>> getCars() {
+		Collection<Vehicle> cars = carService.findAll();
+		return new ResponseEntity<Collection<Vehicle>>(cars, HttpStatus.OK);
 	}
 	
 	@RequestMapping(
@@ -42,9 +42,9 @@ public class CarController {
 			method = RequestMethod.GET,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Collection<Car>> getCars(Car car) {
-		Collection<Car> cars = carService.find(car);
-		return new ResponseEntity<Collection<Car>>(cars, HttpStatus.OK);
+	public ResponseEntity<Collection<Vehicle>> getCars(Vehicle car) {
+		Collection<Vehicle> cars = carService.find(car);
+		return new ResponseEntity<Collection<Vehicle>>(cars, HttpStatus.OK);
 	}
 	
 	
@@ -54,12 +54,12 @@ public class CarController {
 			value = "/api/cars/{id}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Car> getCar(@PathVariable("id") Long id) {
-		Car car = carService.findById(id);
+	public ResponseEntity<Vehicle> getCar(@PathVariable("id") Long id) {
+		Vehicle car = carService.findById(id);
 		if (car == null) {
-			return new ResponseEntity<Car>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Vehicle>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Car>(car, HttpStatus.OK);
+		return new ResponseEntity<Vehicle>(car, HttpStatus.OK);
 	}
 	
 	@RequestMapping(
@@ -67,18 +67,18 @@ public class CarController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Car> createCar(@RequestBody Car car) throws Exception {
-		Car savedCar = carService.create(car);
-		return new ResponseEntity<Car>(savedCar, HttpStatus.CREATED);
+	public ResponseEntity<Vehicle> createCar(@RequestBody Vehicle car) throws Exception {
+		Vehicle savedCar = carService.create(car);
+		return new ResponseEntity<Vehicle>(savedCar, HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(
 			value = "/api/deleteCar",
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Car> deleteCAr(@PathVariable("id")  Long id) throws Exception {
-		Car deletedCar = carService.delete(id);
-		return new ResponseEntity<Car>(deletedCar, HttpStatus.OK);
+	public ResponseEntity<Vehicle> deleteCAr(@PathVariable("id")  Long id) throws Exception {
+		Vehicle deletedCar = carService.delete(id);
+		return new ResponseEntity<Vehicle>(deletedCar, HttpStatus.OK);
 	}
 	
 	
@@ -88,11 +88,11 @@ public class CarController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Car> updateCar(@RequestBody Car car) throws Exception {
-		Car updatedCar = carService.update(car);
+	public ResponseEntity<Vehicle> updateCar(@RequestBody Vehicle car) throws Exception {
+		Vehicle updatedCar = carService.update(car);
 		if (updatedCar == null)
-			return new ResponseEntity<Car>(HttpStatus.INTERNAL_SERVER_ERROR);
-		return new ResponseEntity<Car>(updatedCar, HttpStatus.OK);
+			return new ResponseEntity<Vehicle>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<Vehicle>(updatedCar, HttpStatus.OK);
 	}
 	
 	
