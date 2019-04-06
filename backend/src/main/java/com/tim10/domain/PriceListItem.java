@@ -2,12 +2,31 @@ package com.tim10.domain;
 
 import java.math.BigDecimal;
 
-public class PriceListItem {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="PriceListItems")
+public class PriceListItem {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="name", nullable=false)
 	private String name;
+	
+	@Column(name="description")
 	private String description;
+	
+	@Column(name="price", nullable=false)
 	private BigDecimal price;
+	
+	@Column(name="dicsount")
 	private BigDecimal discount;
 
 	public PriceListItem() {

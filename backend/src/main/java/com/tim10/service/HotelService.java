@@ -22,6 +22,10 @@ public class HotelService {
 		return hotelRepository.save(hotel);
 	}
 	
+	public Hotel findOneByName(String name) {
+		return hotelRepository.findOneByName(name);
+	}
+	
 	
 
 }

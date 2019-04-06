@@ -18,12 +18,13 @@ import com.tim10.service.HotelService;
 
 @CrossOrigin
 @RestController
+@RequestMapping(value="/api/hotels")
 public class HotelController {
 
 	@Autowired
 	private HotelService hotelService;
 	
-	@RequestMapping(value = "/api/hotels", method = RequestMethod.GET /*produces = MediaType.APPLICATION_JSON_VALUE*/)
+	@RequestMapping(value = "/all", method = RequestMethod.GET /*produces = MediaType.APPLICATION_JSON_VALUE*/)
 	public ResponseEntity<List<HotelDTO>> getHotels() {
 		
 		List<Hotel> hotels = hotelService.findAll();
@@ -37,18 +38,25 @@ public class HotelController {
 		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/api/hotels", method=RequestMethod.POST, consumes="application/json")
+	@RequestMapping(value = "/registerHotel", method=RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<HotelDTO> saveHotel(@RequestBody HotelDTO hotelDTO){
 		
-		Hotel hotel = new Hotel();
-		hotel.setName(hotelDTO.getName());
-		hotel.setDescription(hotelDTO.getDescription());
-		hotel.setAverageFeedback(hotelDTO.getAverageFeedback());
-		//hotel.setLocation(hotelDTO.getLocation());
+		//proverimo da li postoji hotel sa tim imenom
+		if(hotelService.findOneByName(hotelDTO.getName()) == null) {
+			Hotel hotel = new Hotel();
+			hotel.setName(hotelDTO.getName());
+			hotel.setDescription(hotelDTO.getDescription());
+			//hotel.setLocation(hotelDTO.getLocation());
+			
+			//sta radi sa setovima???
+			hotel = hotelService.save(hotel);
+			return new ResponseEntity<>(new HotelDTO(hotel), HttpStatus.CREATED);
+		}
 		
-		//sta radi sa setovima???
-		hotel = hotelService.save(hotel);
-		return new ResponseEntity<>(new HotelDTO(hotel), HttpStatus.CREATED);
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		
+		
 	}
 
 //	@RequestMapping(value = "/api/hotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

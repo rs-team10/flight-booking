@@ -8,11 +8,9 @@ import com.tim10.domain.Hotel;
 
 public interface HotelRepository extends JpaRepository<Hotel, Long>{
 
-	
 	List<Hotel> findAll();
 	
-	
-	
-	
+	Hotel findOneByName(String name);
 
+	
 }

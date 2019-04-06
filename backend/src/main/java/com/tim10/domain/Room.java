@@ -2,32 +2,54 @@ package com.tim10.domain;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="Rooms")
 public class Room {
 	
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column
+	@Column(name="floor")
 	private Integer floor;
 	
-	@Column
+	@Column(name="squareFootage")
 	private Integer squareFootage;
 	
-	@Column
+	@Column(name="hasBalcony")
 	private Boolean hasBalcony;
 	
-	@Transient
+	//KAKAV CASCADETYPE OVDE??? DA LI IKAKAV???
+	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	private RoomType roomType;
-	
-	@Transient
+		
+	//mappedBy room znaci da ce se foreign key nalaziti u tabeli u kojoj 
+	//je deklarisan atribut koji se zove room (znaci bice u tabeli room reservations
+	//@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
+	@OneToMany(fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
-
+	
+	
+	//=====================================================
+	//ako se ne stavi bidirekciona veza, pravi medjutabelu
+	//ovako u sobu stavi hotel_id od hotela u kojem se nalazi
+	
+//	@ManyToOne
+//	private Hotel hotel;
+//	
+	//========================================================
+	
 	public Room() {
 		super();
 	}

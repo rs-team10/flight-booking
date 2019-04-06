@@ -2,34 +2,38 @@ package com.tim10.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.Table;
 
 @Entity
+@Table(name="Locations")
 public class Location {
 	
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(name="street", nullable = false)
 	private String street;
 	
-	@Column(nullable = false)
+	@Column(name="city", nullable = false)
 	private String city;
 	
-	@Column(nullable = false)
+	@Column(name="postalCode", nullable = false)
 	private String postalCode;
 	
-	@Column
+	@Column(name="country")
 	private String country;
 	
-	@Column(nullable = false)
+	@Column(name="latitude", nullable = false)
 	private Double latitude;
 	
-	@Column(nullable = false)
+	@Column(name="longitude", nullable = false)
 	private Double longitude;
 	
-	@Column(nullable = false)
+	@Column(name="image", nullable = false)
 	private String image;
 
 	public Location() {

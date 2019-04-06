@@ -1,28 +1,32 @@
 package com.tim10.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="Hotels")
 public class Hotel extends Company {
 	
-	@Transient
-	private Set<Room> rooms;
+	@OneToMany(/*mappedBy="hotel",*/ cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private Set<Room> rooms = new HashSet<Room>();
 	
-	@Transient
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<RoomType> roomTypes;
 	
-	@Transient
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private PriceList additionalServicesPriceList;
 	
-	@Transient
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@Transient
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {

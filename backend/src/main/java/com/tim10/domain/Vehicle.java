@@ -3,20 +3,62 @@ package com.tim10.domain;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Vehicles")
 public class Vehicle {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="manufacturer")
 	private String manufacturer;
+	
+	@Column(name="model")
 	private String model;
+	
+	@Column(name="year")
 	private Integer year;
+	
+	@Column(name="fuel")
 	private String fuel;
+	
+	@Column(name="engine")
 	private String engine;
+	
+	@Column(name="transmission")
 	private String transmission;
+	
+	@Column(name="seatsCount")
 	private Integer seatsCount;
+	
+	@Column(name="airCondition")
 	private Boolean airCondition;
+	
+	@Column(name="dailyRentalPrice")
 	private BigDecimal dailyRentalPrice;
+	
+	@Column(name="averageFeedback")
 	private Double averageFeedback;
+	
+	@Column(name="image")
 	private String image;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<VehicleReservation> reservations;
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private BranchOffice branchOffice;
 
 	public Vehicle() {

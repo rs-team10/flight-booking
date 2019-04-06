@@ -1,13 +1,36 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Destinations")
 public class Destination {
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="name")
 	private String name;
+	
+	@Column(name="airportName")
 	private String airportName;
+	
+	@Column(name="airportCode")
 	private String airportCode;
+	
+	@Column(name="image")
 	private String image;
-
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private Location location;
 
 	public Destination() {

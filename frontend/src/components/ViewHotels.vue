@@ -41,7 +41,7 @@ export default {
   methods:{
       fetchHotels: function(){
           this.$axios
-          .get('http://localhost:8081/api/hotels')
+          .get('http://localhost:8081/api/hotels/all')
           .then(response => this.hotels = response.data)
       },
       hotelSelected: function(hotel){

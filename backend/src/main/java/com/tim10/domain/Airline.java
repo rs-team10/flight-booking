@@ -1,24 +1,31 @@
 package com.tim10.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Airlines")
 public class Airline extends Company {
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Destination> businessLocations;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Flight> flights;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<AirlineAdmin> administrators;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickFlightReservation> quickFlightReservations;
 	
-	@JsonIgnore
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private PriceList luggagePriceList;
 
 	public Airline() {

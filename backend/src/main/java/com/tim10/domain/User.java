@@ -1,17 +1,41 @@
 package com.tim10.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
-
+@Entity
+//svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class User {
-	private Long id;
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;	
+	
+	@Column(name="username", nullable=false)
 	private String username;
+	
+	@Column(name="password")
 	private String password;
+	
+	@Column(name="firstName")
 	private String firstName;
+	
+	@Column(name="lastName")
 	private String lastName;
+	
+	@Column(name="email")
 	private String email;
 	
-	@JsonIgnore
+	@Enumerated(EnumType.STRING)
+	@Column(name="role")
 	private Role role;
 
 	public User() {

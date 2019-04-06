@@ -1,11 +1,18 @@
 package com.tim10.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class AirlineAdmin extends User {
 	
+	@Column(name="hasCustomPassword", nullable=false)
 	private Boolean hasCustomPassword;
 
+	@ManyToOne(fetch=FetchType.EAGER)
 	private Airline company;
-	
 	
 	public AirlineAdmin() {
 		super();

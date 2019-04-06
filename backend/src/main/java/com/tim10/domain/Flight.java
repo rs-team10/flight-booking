@@ -4,21 +4,62 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Flights")
 public class Flight {
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="flightNumber", nullable=false)
 	private String flightNumber;
+	
+	@Column(name="ticketPrice")
 	private BigDecimal ticketPrice;
+	
+	@Column(name="date")
 	private LocalDateTime date;
+	
+	@Column(name="duration")
 	private Integer duration;
+	
+	@Column(name="distance")
 	private Integer distance;
+	
+	@Column(name="transitCount")
 	private Integer transitCount;
+	
+	@Column(name="averageFeedback")
 	private Double averageFeedback;
-
+	
+	//=======================================
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Destination destination;
+	
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Destination departure;
+	//=======================================
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Destination> transitDestinations;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Seat> seats;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Airline airline;
 
 	public Flight() {
@@ -56,13 +97,13 @@ public class Flight {
 		return averageFeedback;
 	}
 
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public Destination getDeparture() {
-		return departure;
-	}
+//	public Destination getDestination() {
+//		return destination;
+//	}
+//
+//	public Destination getDeparture() {
+//		return departure;
+//	}
 
 	public Set<Destination> getTransitDestinations() {
 		return transitDestinations;
@@ -108,13 +149,13 @@ public class Flight {
 		this.averageFeedback = averageFeedback;
 	}
 
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
-	public void setDeparture(Destination departure) {
-		this.departure = departure;
-	}
+//	public void setDestination(Destination destination) {
+//		this.destination = destination;
+//	}
+//
+//	public void setDeparture(Destination departure) {
+//		this.departure = departure;
+//	}
 
 	public void setTransitDestinations(Set<Destination> transitDestinations) {
 		this.transitDestinations = transitDestinations;

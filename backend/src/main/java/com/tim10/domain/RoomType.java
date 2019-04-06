@@ -3,45 +3,49 @@ package com.tim10.domain;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="RoomTypes")
 public class RoomType {
 	
 	@Id
 	private Long id;
 	
-	@Column(nullable=false)
+	@Column(name="type", nullable=false)
 	private String type;
 	
-	@Column(nullable=false)
+	@Column(name="pricePerNight", nullable=false)
 	private BigDecimal pricePerNight;
 	
-	@Column(nullable=false)
+	@Column(name="capacity", nullable=false)
 	private int capacity;
 	
-	@Column(nullable=false)
+	@Column(name="singleBedCount", nullable=false)
 	private Integer singleBedCount;
 	
-	@Column(nullable=false)
+	@Column(name="doubleBedCount", nullable=false)
 	private Integer doubleBedCount;
 	
-	@Column
+	@Column(name="hasTV")
 	private Boolean hasTV;
 	
-	@Column()
+	@Column(name="description")
 	private String description;
 	
-	@Column(nullable=false)
+	@Column(name="image", nullable=false)
 	private String image;
 	
-	@Column		//moze biti null ako nema nikakav feedback, ne prikazujes korisniku
+	@Column(name="averageFeedback")							
+	//moze biti null ako nema nikakav feedback, ne prikazujes korisniku
 	private Double averageFeedback;
 	
-	@Transient
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	private Set<SpecialRoomPrice> specialRoomPrices;
 
 	public RoomType() {

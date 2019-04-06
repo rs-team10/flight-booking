@@ -6,20 +6,22 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="SpecialRoomPrices")
 public class SpecialRoomPrice {
 	
 	@Id
 	private Long id;
 	
-	@Column(nullable=false)
+	@Column(name="price", nullable=false)
 	private BigDecimal price;
 	
-	@Column(nullable=false)
+	@Column(name="validFrom", nullable=false)
 	private Date validFrom;
 	
-	@Column(nullable=false)
+	@Column(name="validTo", nullable=false)
 	private Date validTo;
 
 	public SpecialRoomPrice() {

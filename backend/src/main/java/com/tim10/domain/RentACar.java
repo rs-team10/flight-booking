@@ -2,11 +2,27 @@ package com.tim10.domain;
 
 import java.util.Set;
 
-public class RentACar extends Company {
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="RentACar")
+public class RentACar extends Company {
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<BranchOffice> branchOffices;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<RentACarAdmin> administrators;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickVehicleReservation> quickVehicleReservations;
+	
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public PriceList additionalServicesPriceList;
 
 	public RentACar() {

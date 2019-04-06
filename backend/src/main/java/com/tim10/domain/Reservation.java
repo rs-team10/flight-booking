@@ -1,18 +1,65 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name="Reservations")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Reservation {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="isHost")
 	private Boolean isHost;
+	
+	@Column(name="invitationCode")
 	private String invitationCode;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name="status")				//kako enumeracije????
 	private RequestStatus status;
+	
+	@Column(name="distance")
 	private Integer distance;
+	
+	@Column(name="discount")
 	private Double discount;
+	
+	@Column(name="usedDiscount")
 	private Boolean usedDiscount;
+	
+	@Column(name="hasPassed")
 	private Boolean hasPassed;
-	private FlightReservation flightReservation;
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private RegisteredUser registeredUser;
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private GroupReservation groupReservation;
+	
+	@Transient
+	private FlightReservation flightReservation;
+	
+	@Transient
 	private VehicleReservation vehicleReservation;
+	
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private RoomReservation roomReservation;
 
 	public Reservation() {
