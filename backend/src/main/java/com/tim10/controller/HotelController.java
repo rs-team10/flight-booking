@@ -1,6 +1,5 @@
 package com.tim10.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
-import com.tim10.domain.Location;
-import com.tim10.dto.HotelDTO;
 import com.tim10.service.HotelService;
 
 @CrossOrigin
@@ -26,36 +23,36 @@ public class HotelController {
 	private HotelService hotelService;
 	
 	@RequestMapping(value = "/all", method = RequestMethod.GET /*produces = MediaType.APPLICATION_JSON_VALUE*/)
-	public ResponseEntity<List<HotelDTO>> getHotels() {
+	public ResponseEntity<List<Hotel>> getHotels() {
 		
 		List<Hotel> hotels = hotelService.findAll();
 		
 		//convert hotels to DTOs
-		List<HotelDTO> hotelsDTO = new ArrayList<>();
-		for(Hotel h : hotels) {
-			hotelsDTO.add(new HotelDTO(h));
-		}
+//		List<HotelDTO> hotelsDTO = new ArrayList<>();
+//		for(Hotel h : hotels) {
+//			hotelsDTO.add(new HotelDTO(h));
+//		}
 	
-		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
+		return new ResponseEntity<List<Hotel>>(hotels, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/registerHotel", method=RequestMethod.POST, consumes="application/json")
-	public ResponseEntity<?> registerHotel(@RequestBody HotelDTO hotelDTO){
+	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
 		
 		//proverimo da li postoji hotel sa tim imenom
-		if(hotelService.findOneByName(hotelDTO.getName()) == null) {
-			Hotel hotel = new Hotel();
-			hotel.setName(hotelDTO.getName());
-			hotel.setDescription(hotelDTO.getDescription());
-			
-			//Privremena lokacija (samo ulicu cuva)
-			Location location = new Location();
-			location.setStreet(hotelDTO.getLocation().getStreet());
-			hotel.setLocation(location);
+		if(hotelService.findOneByName(hotel.getName()) == null) {
+//			Hotel hotel = new Hotel();
+//			hotel.setName(hotelDTO.getName());
+//			hotel.setDescription(hotelDTO.getDescription());
+//			
+//			//Privremena lokacija (samo ulicu cuva)
+//			Location location = new Location();
+//			location.setStreet(hotelDTO.getLocation().getStreet());
+//			hotel.setLocation(location);
 			
 			//sta radi sa setovima???
-			hotel = hotelService.save(hotel);
-			return new ResponseEntity<>(new HotelDTO(hotel), HttpStatus.CREATED);
+			Hotel returnHotel = hotelService.save(hotel);
+			return new ResponseEntity<>(returnHotel, HttpStatus.CREATED);
 		}
 		
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);

@@ -6,6 +6,7 @@ import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
 import vCarSearch from './views/vCarSearch.vue'
 import EditRcs from './components/EditRcs.vue'
+import AddAirline from './components/AddAirline.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -39,6 +40,14 @@ export default new Router({
       path: '/editRcs',
       name: 'editRcs',
       component: EditRcs
-    }
+    },
+    //=====================================
+    //PRIVREMENE RUTE, NECE BITI KASNIJE
+    {
+      path: '/addAirline',
+      name: 'addAirline',
+      component: AddAirline
+    },
+    //=====================================
   ]
 })

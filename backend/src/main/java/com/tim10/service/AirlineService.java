@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.tim10.domain.Airline;
 
 public interface AirlineService {
-
+	
 	Collection<Airline> findAll();
 	
 	Airline create(Airline airline) throws Exception;

@@ -20,6 +20,7 @@
                 <v-icon left>hotel</v-icon>
                 <span>Hotels</span>
             </v-btn>
+            
         </v-toolbar>
     </nav>
 </template>

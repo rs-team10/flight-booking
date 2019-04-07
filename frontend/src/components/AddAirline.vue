@@ -1,14 +1,14 @@
 <!-- System admin -->
 <template>
-    <div id="add-hotel">
-        <h1>Register new hotel</h1>
+    <div id="add-airline">
+        <h1>Register new airline</h1>
         <div>
             <v-alert
                 :value="success"
                 type="success"
                 transition="scale-transition"
             >
-            Hotel: <b>{{ hotel.name }}</b> registered successfully.
+            Airline: <b>{{ airline.name }}</b> registered successfully.
             </v-alert>
 
             <v-alert
@@ -23,14 +23,14 @@
             <v-flex xs12 sm6 offset-sm3>
                 <form>
                     <v-text-field
-                        v-model.lazy="hotel.name"
+                        v-model.lazy="airline.name"
                         :error-messages="nameErrors"
                         label="Name"
                         required>
                     </v-text-field>
 
                     <v-text-field
-                        v-model.lazy="hotel.location.street"
+                        v-model.lazy="airline.location.street"
                         :error-messages="addressErrors"
                         label="Address"
                         required>
@@ -41,14 +41,13 @@
                     -->
                     <v-select
                         :items="placeholders"
-                        label="Hotel Administrator">
+                        label="Airline Administrator">
                     </v-select>
                     
                     <v-btn @click="submit">submit</v-btn>
                 </form>
             </v-flex>
         </div>
-
     </div>
 </template>
 
@@ -60,7 +59,7 @@ export default {
     mixins: [validationMixin],
 
     validations: {
-        hotel: {
+        airline: {
             name: { required },
             location: {
                 street: { required }
@@ -70,7 +69,7 @@ export default {
       
     data(){
         return {
-            hotel: {
+            airline: {
                 name: '',
                 location: {
                     street: ''
@@ -83,17 +82,16 @@ export default {
         }
     },
     computed: {
-        
         nameErrors () {
             const errors = []
-            if (!this.$v.hotel.name.$dirty) return errors
-            !this.$v.hotel.name.required && errors.push('Name is required.')
+            if (!this.$v.airline.name.$dirty) return errors
+            !this.$v.airline.name.required && errors.push('Name is required.')
             return errors
         },
         addressErrors() {
             const errors = []
-            if (!this.$v.hotel.location.street.$dirty) return errors
-            !this.$v.hotel.location.street.required && errors.push('Address is required.')
+            if (!this.$v.airline.location.street.$dirty) return errors
+            !this.$v.airline.location.street.required && errors.push('Address is required.')
             return errors
         }
     },
@@ -103,13 +101,12 @@ export default {
             this.$v.$touch();
 
             if(!this.$v.$invalid){
-                this.addHotel();
-                
+                this.addAirline();
             }
         },
-        addHotel: function(){
+        addAirline: function(){
             this.$axios
-            .post('http://localhost:8081/api/hotels/registerHotel', this.hotel)
+            .post('http://localhost:8081/api/airlines/registerAirline', this.airline)
             .then(response => {
                 console.log(response);
                 this.success = true;

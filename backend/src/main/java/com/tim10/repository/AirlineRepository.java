@@ -1,18 +1,21 @@
 package com.tim10.repository;
 
-import java.util.Collection;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tim10.domain.Airline;
 
-public interface AirlineRepository {
+public interface AirlineRepository extends JpaRepository<Airline, Long>{
 	
-	Collection<Airline> findAll();
+	Airline findOneByName(String name);
 	
-	Airline create(Airline airline);
 	
-	Airline findByName(String name);
-	
-	Airline findById(Long id);
-	
-	Airline update(Airline airline);
+//	List<Airline> findAll();
+//	
+//	Airline create(Airline airline);
+//	
+//	//Airline findByName(String name);
+//	
+//	Optional<Airline> findById(Long id);
+//	
+//	Airline update(Airline airline);
 }
