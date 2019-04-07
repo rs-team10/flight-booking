@@ -3,36 +3,38 @@
         <h1>Edit {{selectedHotel.name}}</h1>
 
         <div id="edit-form">
-            <form>
+            <v-flex xs12 sm6 offset-sm3>
+                <form>
+                    <v-text-field
+                        v-model.lazy="selectedHotel.name"
+                        :error-messages="nameErrors"
+                        label="Name"
+                        required
+                        @input="$v.selectedHotel.name.$touch()"
+                        @blur="$v.selectedHotel.name.$touch()">
+                    </v-text-field>
+
                 <v-text-field
-                    v-model.lazy="selectedHotel.name"
-                    :error-messages="nameErrors"
-                    label="Name"
-                    required
-                    @input="$v.selectedHotel.name.$touch()"
-                    @blur="$v.selectedHotel.name.$touch()">
-                </v-text-field>
+                        v-model.lazy="selectedHotel.address"
+                        :error-messages="addressErrors"
+                        label="Address"
+                        required
+                        @input="$v.selectedHotel.address.$touch()"
+                        @blur="$v.selectedHotel.address.$touch()">
+                    </v-text-field>
 
-            <v-text-field
-                    v-model.lazy="selectedHotel.address"
-                    :error-messages="addressErrors"
-                    label="Address"
-                    required
-                    @input="$v.selectedHotel.address.$touch()"
-                    @blur="$v.selectedHotel.address.$touch()">
-                </v-text-field>
+                    <v-textarea
+                        v-model.lazy.trim="selectedHotel.description"
+                        :error-messages="descriptionErrors"
+                        label="Description"
+                        required
+                        @input="$v.selectedHotel.description.$touch()"
+                        @blur="$v.selectedHotel.description.$touch()">
+                    </v-textarea>
 
-                <v-textarea
-                    v-model.lazy.trim="selectedHotel.description"
-                    :error-messages="descriptionErrors"
-                    label="Description"
-                    required
-                    @input="$v.selectedHotel.description.$touch()"
-                    @blur="$v.selectedHotel.description.$touch()">
-                </v-textarea>
-
-                <v-btn @click="submit">submit</v-btn>
-            </form>
+                    <v-btn @click="submit">submit</v-btn>
+                </form>
+            </v-flex>
         </div>
     </div>
 </template>
@@ -88,9 +90,9 @@ export default {
             this.$axios
             .put('http://localhost:8081/api/hotels/' + this.selectedHotel.id, 
                 this.selectedHotel)
-            .then(function(response){
+            .then(response => {
                 alert("Hotel is edited");
-            }).catch(function(error) {
+            }).catch(error => {
                 alert(error.response.data.message);
             });
         }

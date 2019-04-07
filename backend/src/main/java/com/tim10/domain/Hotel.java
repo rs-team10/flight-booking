@@ -15,7 +15,7 @@ import javax.persistence.Table;
 public class Hotel extends Company {
 	
 	@OneToMany(/*mappedBy="hotel",*/ cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	private Set<Room> rooms = new HashSet<Room>();
+	private Set<Room> rooms;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<RoomType> roomTypes;
@@ -30,8 +30,15 @@ public class Hotel extends Company {
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
+		rooms = new HashSet<Room>();
+		roomTypes = new HashSet<RoomType>();
+		quickRoomReservations = new HashSet<QuickRoomReservation>();
+		administrators = new HashSet<HotelAdmin>();
 	}
-
+	
+	
+	
+	
 	public Set<Room> getRooms() {
 		return rooms;
 	}

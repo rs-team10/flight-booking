@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
+import com.tim10.domain.Location;
 import com.tim10.dto.HotelDTO;
 import com.tim10.service.HotelService;
 
@@ -39,21 +40,25 @@ public class HotelController {
 	}
 	
 	@RequestMapping(value = "/registerHotel", method=RequestMethod.POST, consumes="application/json")
-	public ResponseEntity<HotelDTO> saveHotel(@RequestBody HotelDTO hotelDTO){
+	public ResponseEntity<?> registerHotel(@RequestBody HotelDTO hotelDTO){
 		
 		//proverimo da li postoji hotel sa tim imenom
 		if(hotelService.findOneByName(hotelDTO.getName()) == null) {
 			Hotel hotel = new Hotel();
 			hotel.setName(hotelDTO.getName());
 			hotel.setDescription(hotelDTO.getDescription());
-			//hotel.setLocation(hotelDTO.getLocation());
+			
+			//Privremena lokacija (samo ulicu cuva)
+			Location location = new Location();
+			location.setStreet(hotelDTO.getLocation().getStreet());
+			hotel.setLocation(location);
 			
 			//sta radi sa setovima???
 			hotel = hotelService.save(hotel);
 			return new ResponseEntity<>(new HotelDTO(hotel), HttpStatus.CREATED);
 		}
 		
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 		
 		
 		

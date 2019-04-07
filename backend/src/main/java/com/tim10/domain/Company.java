@@ -1,10 +1,12 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
@@ -25,7 +27,8 @@ public abstract class Company {
 	@Column(name = "averageFeedback")	
 	private Double averageFeedback;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "location_id")
 	private Location location;
 
 	public Company() {

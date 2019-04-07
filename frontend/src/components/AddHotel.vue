@@ -2,49 +2,67 @@
 <template>
     <div id="add-hotel">
         <h1>Register new hotel</h1>
+        <div>
+            <v-alert
+                :value="success"
+                type="success"
+                transition="scale-transition"
+            >
+            Hotel: {{ hotel.name }} registered successfully.
+            </v-alert>
 
+            <v-alert
+                :value="error"
+                type="error"
+                >
+                <!-- PROCITAJ DATA IZ ODGOVORA DA VIDIS KOJA JE GRESKA
+                I PRIKAZI JE -->
+                Error
+            </v-alert>
+
+        </div>
         <div id="add-form">
-            <form>
-                <v-text-field
-                    v-model.lazy="hotel.name"
-                    :error-messages="nameErrors"
-                    label="Name"
-                    required>
-                    <!--
-                    @input="$v.hotel.name.$touch()"
-                    @blur="$v.hotel.name.$touch()"
-                    -->
-                </v-text-field>
+            <v-flex xs12 sm6 offset-sm3>
+                <form>
+                    <v-text-field
+                        v-model.lazy="hotel.name"
+                        :error-messages="nameErrors"
+                        label="Name"
+                        required>
+                        <!--
+                        @input="$v.hotel.name.$touch()"
+                        @blur="$v.hotel.name.$touch()"
+                        -->
+                    </v-text-field>
 
-                <v-text-field
-                    v-model.lazy="hotel.address"
-                    :error-messages="addressErrors"
-                    label="Address"
-                    required>
-                    <!--
-                    @input="$v.hotel.address.$touch()"
-                    @blur="$v.hotel.address.$touch()">
-                    -->
-                </v-text-field>
+                    <v-text-field
+                        v-model.lazy="hotel.location.street"
+                        :error-messages="addressErrors"
+                        label="Address"
+                        required>
+                        <!--
+                        @input="$v.hotel.address.$touch()"
+                        @blur="$v.hotel.address.$touch()">
+                        -->
+                    </v-text-field>
 
-                <!-- <v-textarea
-                    v-model.lazy.trim="hotel.description"
-                    :error-messages="descriptionErrors"
-                    label="Description"
-                    required
-                    @input="$v.hotel.description.$touch()"
-                    @blur="$v.hotel.description.$touch()">
-                </v-textarea> -->
+                    <!-- <v-textarea
+                        v-model.lazy.trim="hotel.description"
+                        :error-messages="descriptionErrors"
+                        label="Description"
+                        required
+                        @input="$v.hotel.description.$touch()"
+                        @blur="$v.hotel.description.$touch()">
+                    </v-textarea> -->
 
-                <v-flex xs12 sm6 d-flex>
                     <v-select
-                    :items="placeholders"
-                    label="Hotel Administrator"
-                    ></v-select>
-                </v-flex>
-        
-                <v-btn @click="submit">submit</v-btn>
-            </form>
+                        :items="placeholders"
+                        label="Hotel Administrator">
+                    </v-select>
+                    
+                    <v-btn @click="submit">submit</v-btn>
+                </form>
+            </v-flex>
         </div>
 
     </div>
@@ -60,7 +78,9 @@ export default {
     validations: {
         hotel: {
             name: { required },
-            address: { required }
+            location: {
+                street: { required }
+            }
         }
     },
       
@@ -68,13 +88,18 @@ export default {
         return {
             hotel: {
                 name: '',
-                address: '',
+                location: {
+                    street: ''
+                },
                 description: ''
             },
-            placeholders: ["placeholder1", "placeholder2", "placeholder3"]
+            placeholders: ["placeholder1", "placeholder2", "placeholder3"],
+            success: false,
+            error: false
         }
     },
     computed: {
+        
         nameErrors () {
             const errors = []
             if (!this.$v.hotel.name.$dirty) return errors
@@ -83,8 +108,8 @@ export default {
         },
         addressErrors() {
             const errors = []
-            if (!this.$v.hotel.address.$dirty) return errors
-            !this.$v.hotel.address.required && errors.push('Address is required.')
+            if (!this.$v.hotel.location.street.$dirty) return errors
+            !this.$v.hotel.location.street.required && errors.push('Address is required.')
             return errors
         }
         // descriptionErrors() {
@@ -101,16 +126,18 @@ export default {
 
             if(!this.$v.$invalid){
                 this.addHotel();
+                
             }
         },
         addHotel: function(){
             this.$axios
             .post('http://localhost:8081/api/hotels/registerHotel', this.hotel)
-            .then(function(response){
+            .then(response => {
                 console.log(response);
-                alert("Hotel is added");
-            }).catch(function(error) {
-                alert(error.response.data.message);
+                this.success = true;
+            }).catch(error => {
+                console.log(error.response.data);
+                this.error = true;
             });
         }
     }

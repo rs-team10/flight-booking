@@ -18,22 +18,22 @@ public class Location {
 	@Column(name="street", nullable = false)
 	private String street;
 	
-	@Column(name="city", nullable = false)
+	@Column(name="city")
 	private String city;
 	
-	@Column(name="postalCode", nullable = false)
+	@Column(name="postalCode")
 	private String postalCode;
 	
 	@Column(name="country")
 	private String country;
 	
-	@Column(name="latitude", nullable = false)
+	@Column(name="latitude")
 	private Double latitude;
 	
-	@Column(name="longitude", nullable = false)
+	@Column(name="longitude")
 	private Double longitude;
 	
-	@Column(name="image", nullable = false)
+	@Column(name="image")
 	private String image;
 
 	public Location() {
