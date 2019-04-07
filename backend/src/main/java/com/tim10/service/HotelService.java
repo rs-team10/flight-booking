@@ -1,6 +1,7 @@
 package com.tim10.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class HotelService {
 		return hotelRepository.findOneByName(name);
 	}
 	
+	public Optional<Hotel> findOne(Long id) {
+		return hotelRepository.findById(id);
+	}
 	
 
 }

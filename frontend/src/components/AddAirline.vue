@@ -6,15 +6,13 @@
             <v-alert
                 :value="success"
                 type="success"
-                transition="scale-transition"
-            >
+                transition="scale-transition">
             Airline: <b>{{ airline.name }}</b> registered successfully.
             </v-alert>
 
             <v-alert
                 :value="error"
-                type="error"
-                >
+                type="error">
                 {{this.error}}
             </v-alert>
 

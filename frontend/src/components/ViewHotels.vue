@@ -11,7 +11,7 @@
 
                 <v-list-tile-content v-on:click="hotelSelected(hotel)">
                 <v-list-tile-title>{{ hotel.name }}</v-list-tile-title>
-                <v-list-tile-sub-title class="text--primary">{{ hotel.address }}</v-list-tile-sub-title>
+                <v-list-tile-sub-title class="text--primary">{{ hotel.location.street }}</v-list-tile-sub-title>
                 <v-list-tile-sub-title>{{ hotel.description }}</v-list-tile-sub-title>
                 </v-list-tile-content>
 

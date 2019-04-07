@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,9 +57,15 @@ public class HotelController {
 		}
 		
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
+	}
+	
+	@RequestMapping(value = "/updateHotel", method=RequestMethod.PUT,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
 		
-		
-		
+		if(hotelService.findOne(hotel.getId()) != null){
+			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 //	@RequestMapping(value = "/api/hotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
