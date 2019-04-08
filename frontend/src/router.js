@@ -7,6 +7,7 @@ import Hotels from './views/Hotels.vue'
 import vCarSearch from './views/vCarSearch.vue'
 import EditRcs from './components/EditRcs.vue'
 import AddAirline from './components/AddAirline.vue'
+import AddRentACar from './components/AddRentACar.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -48,6 +49,11 @@ export default new Router({
       name: 'addAirline',
       component: AddAirline
     },
+    {
+      path: '/addRentACar',
+      name: 'addRentACar',
+      component: AddRentACar
+    }
     //=====================================
   ]
 })

@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Locations")
-public class Location {
+public class Location implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -11,8 +13,8 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
 @MappedSuperclass
-public abstract class Company {
-	
+public abstract class Company implements Serializable {
+	 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

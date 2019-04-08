@@ -62,32 +62,15 @@ public class HotelController {
 	@RequestMapping(value = "/updateHotel", method=RequestMethod.PUT,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
 		
+		//da osiguramo da se ne izmeni ime na vec postojece ime
+		Hotel existingHotel = hotelService.findOneByName(hotel.getName());
+		if(existingHotel != null && existingHotel.getId() != hotel.getId())
+			return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
+		
 		if(hotelService.findOne(hotel.getId()) != null){
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
+		
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
-//	@RequestMapping(value = "/api/hotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<Collection<Hotel>> getHotels() {
-//		Collection<Hotel> hotels = hotelService.findAll();
-//		return new ResponseEntity<Collection<Hotel>>(hotels, HttpStatus.OK);
-//	}
-//
-//	@RequestMapping(value = "/api/hotels", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) throws Exception {
-//		Hotel savedHotel = hotelService.create(hotel);
-//		return new ResponseEntity<Hotel>(savedHotel, HttpStatus.CREATED);
-//	}
-//
-//	@RequestMapping(value = "/api/hotels/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel) throws Exception {
-//		Hotel updatedHotel = hotelService.update(hotel);
-//		if(updatedHotel == null) {
-//			return new ResponseEntity<Hotel>(
-//					HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//		return new ResponseEntity<Hotel>(updatedHotel, HttpStatus.OK);
-//	}
-
 }

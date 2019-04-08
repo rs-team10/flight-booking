@@ -15,7 +15,7 @@ public class AirlineServiceImpl{
 	private AirlineRepository airlineRepository;
 	
 	//==================================================
-	//Dodala za dodavanje noeve aviokompanije (sys admin)
+	//Dodala za dodavanje nove aviokompanije (sys admin)
 	
 	public List<Airline> findAll(){
 		return airlineRepository.findAll();
