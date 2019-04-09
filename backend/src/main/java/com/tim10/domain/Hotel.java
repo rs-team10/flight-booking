@@ -17,10 +17,10 @@ public class Hotel extends Company {
 	@OneToMany(/*mappedBy="hotel",*/ cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Room> rooms;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<RoomType> roomTypes;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private PriceList additionalServicesPriceList;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -32,6 +32,7 @@ public class Hotel extends Company {
 	public Hotel() {
 		rooms = new HashSet<Room>();
 		roomTypes = new HashSet<RoomType>();
+		additionalServicesPriceList = new PriceList();
 		quickRoomReservations = new HashSet<QuickRoomReservation>();
 		administrators = new HashSet<HotelAdmin>();
 	}

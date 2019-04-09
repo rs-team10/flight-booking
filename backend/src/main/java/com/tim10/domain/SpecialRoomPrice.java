@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,18 +11,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="SpecialRoomPrices")
-public class SpecialRoomPrice {
+public class SpecialRoomPrice implements Serializable {
 	
 	@Id
 	private Long id;
 	
-	@Column(name="price", nullable=false)
+	@Column(name="price")
 	private BigDecimal price;
 	
-	@Column(name="validFrom", nullable=false)
+	@Column(name="validFrom")
 	private Date validFrom;
 	
-	@Column(name="validTo", nullable=false)
+	@Column(name="validTo")
 	private Date validTo;
 
 	public SpecialRoomPrice() {

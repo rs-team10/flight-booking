@@ -1,35 +1,40 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="RoomTypes")
-public class RoomType {
+public class RoomType implements Serializable {
 	
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="type", nullable=false)
+	@Column(name="type")
 	private String type;
 	
-	@Column(name="pricePerNight", nullable=false)
+	@Column(name="pricePerNight")
 	private BigDecimal pricePerNight;
 	
-	@Column(name="capacity", nullable=false)
+	@Column(name="capacity")
 	private int capacity;
 	
-	@Column(name="singleBedCount", nullable=false)
+	@Column(name="singleBedCount")
 	private Integer singleBedCount;
 	
-	@Column(name="doubleBedCount", nullable=false)
+	@Column(name="doubleBedCount")
 	private Integer doubleBedCount;
 	
 	@Column(name="hasTV")
@@ -38,14 +43,14 @@ public class RoomType {
 	@Column(name="description")
 	private String description;
 	
-	@Column(name="image", nullable=false)
+	@Column(name="image")
 	private String image;
 	
 	@Column(name="averageFeedback")							
 	//moze biti null ako nema nikakav feedback, ne prikazujes korisniku
 	private Double averageFeedback;
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<SpecialRoomPrice> specialRoomPrices;
 
 	public RoomType() {

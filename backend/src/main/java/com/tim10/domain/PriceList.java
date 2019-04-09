@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,17 +15,17 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="PriceLists")
-public class PriceList {
+public class PriceList implements Serializable{
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<PriceListItem> priceListItems;
 
 	public PriceList() {
-		super();
+		priceListItems = new HashSet<PriceListItem>();
 	}
 
 	public Long getId() {

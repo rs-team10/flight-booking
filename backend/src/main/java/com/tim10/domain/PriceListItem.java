@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -11,22 +12,22 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="PriceListItems")
-public class PriceListItem {
+public class PriceListItem implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="name", nullable=false)
+	@Column(name="name")
 	private String name;
 	
 	@Column(name="description")
 	private String description;
 	
-	@Column(name="price", nullable=false)
+	@Column(name="price")
 	private BigDecimal price;
 	
-	@Column(name="dicsount")
+	@Column(name="discount")
 	private BigDecimal discount;
 
 	public PriceListItem() {

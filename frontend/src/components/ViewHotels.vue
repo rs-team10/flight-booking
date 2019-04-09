@@ -16,7 +16,6 @@
                 </v-list-tile-content>
 
             </v-list-tile>
-
             
           </template>
         </v-list>
