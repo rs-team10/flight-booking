@@ -4,10 +4,12 @@ import Home from './views/Home.vue'
 import EditUser from './components/EditUser.vue'
 import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
-import vCarSearch from './views/vCarSearch.vue'
-import EditRcs from './components/EditRcs.vue'
 import AddAirline from './components/AddAirline.vue'
 import AddRentACar from './components/AddRentACar.vue'
+import RentACars from './views/RentACars.vue'
+import AddVehicle from './components/AddVehicle.vue'
+import EditVehicle from './components/EditVehicle.vue'
+import ViewVehicles from './components/ViewVehicles.vue'
 
 Vue.use(Router)
 
@@ -34,22 +36,34 @@ export default new Router({
       component: Hotels
     },
     {
-      path: '/vCarSearch',
-      name: 'vCarSearch',
-      component: vCarSearch
+      path: '/rentACars',
+      name: 'rentACars',
+      component: RentACars
     },
-    {
-      path: '/editRcs',
-      name: 'editRcs',
-      component: EditRcs
-    },
+
     //=====================================
     //PRIVREMENE RUTE, NECE BITI KASNIJE
+    {
+      path: '/addVehicle',
+      name: 'addVehicle',
+      component: AddVehicle
+    },
+    {
+      path: '/editVehicle',
+      name: 'editVehicle',
+      component: EditVehicle
+    },
+    {
+      path: '/viewVehicles',
+      name: 'viewVehicles',
+      component: ViewVehicles
+    },
     {
       path: '/addAirline',
       name: 'addAirline',
       component: AddAirline
     },
+    //ubacicu kao komponentu u viewer tako da moze da se izbaci odavde
     {
       path: '/addRentACar',
       name: 'addRentACar',
