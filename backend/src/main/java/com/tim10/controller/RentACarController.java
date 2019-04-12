@@ -8,14 +8,19 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RentACar;
 import com.tim10.service.RentACarService;
 
+
+@CrossOrigin
+@RestController
 public class RentACarController {
 	
 	@Autowired
@@ -48,16 +53,19 @@ public class RentACarController {
 		
 	}
 	
+	
+	//===============================================
+	//Dodato za registraciju RentACar servisa (sys admin)
 	@RequestMapping(
 			value = "/api/rentACars",
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RentACar> saveRentACar(
+	public ResponseEntity<?> saveRentACar(
 			@RequestBody RentACar rentACar) throws Exception {
-		
-		if(rentACarService.findOneByName(rentACar.getName())!=null) {
-			return new ResponseEntity<RentACar>(rentACar, HttpStatus.CONFLICT);
+			
+		if(rentACarService.findOneByName(rentACar.getName()).isPresent()) {
+			return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
 		}
 		
 		RentACar savedRentACar = rentACarService.save(rentACar);

@@ -109,7 +109,7 @@ export default {
         },
         addRentACar: function(){
             this.$axios
-            .post('http://localhost:8081/api/rentacar/registerRentACar', this.rentacar)
+            .post('http://localhost:8081/api/rentACars', this.rentacar)
             .then(response => {
                 console.log(response);
                 this.success = true;
