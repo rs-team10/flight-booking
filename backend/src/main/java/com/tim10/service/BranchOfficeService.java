@@ -5,12 +5,15 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
 
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.RentACar;
 import com.tim10.repository.BranchOfficeRepository;
 import com.tim10.repository.RentACarRepository;
 
+
+@Service
 public class BranchOfficeService {
 	
 	@Autowired
