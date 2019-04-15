@@ -1,20 +1,20 @@
 package com.tim10.repository;
 
-import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tim10.domain.User;
 
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Long>{
 	
-	Collection<User> findAll();
-	
-	User create(User user);
-	
-	User findByUsername(String username);
+	//iz JPA
+	List<User> findAll();
+	<S extends User> S save(S user);
 	
 	User findByEmail(String email);
 	
-	User findById(Long id);
 	
-	User update(User user);
+
+	
 }

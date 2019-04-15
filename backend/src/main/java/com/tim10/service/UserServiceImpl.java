@@ -1,16 +1,13 @@
 package com.tim10.service;
 
-import java.util.Collection;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tim10.domain.User;
-import com.tim10.repository.InMemoryUserRepository;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl { // implements UserService
+
 	
+	/*
 	@Autowired
 	private InMemoryUserRepository userRepository;
 
@@ -58,4 +55,5 @@ public class UserServiceImpl implements UserService {
 		return updatedUser;
 		
 	}
+	*/
 }
