@@ -107,7 +107,7 @@ export default {
             this.$v.$touch()
 
             if(!this.$v.$invalid) {
-                this.$axios.put('http://localhost:8081/api/airlines/' + this.airline.id, this.airline).then((data) => {
+                this.$axios.put('http://localhost:8081/api/airlines/', this.airline).then((data) => {
                     this.submitted = true;
                 });
             }
