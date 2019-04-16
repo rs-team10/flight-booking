@@ -11,6 +11,7 @@ import AddVehicle from './components/AddVehicle.vue'
 import EditVehicle from './components/EditVehicle.vue'
 import ViewVehicles from './components/ViewVehicles.vue'
 import Signup from './components/login&signup/signup.vue'
+import SignupAdmin from './components/login&signup/signupAdmin.vue'
 
 Vue.use(Router)
 
@@ -43,6 +44,11 @@ export default new Router({
     },
     //=====================================
     //TEST
+    {
+      path: '/signupAdmin',
+      name: 'signupAdmin',
+      component: SignupAdmin
+    },
     {
       path: '/signup',
       name: 'signup',

@@ -15,9 +15,10 @@ import javax.persistence.Table;
 @Table(name="User")
 //svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class User {
+public class User {
 	
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	
 	
