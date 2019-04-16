@@ -10,6 +10,7 @@ import RentACars from './views/RentACars.vue'
 import AddVehicle from './components/AddVehicle.vue'
 import EditVehicle from './components/EditVehicle.vue'
 import ViewVehicles from './components/ViewVehicles.vue'
+import Signup from './components/login&signup/signup.vue'
 
 Vue.use(Router)
 
@@ -40,9 +41,17 @@ export default new Router({
       name: 'rentACars',
       component: RentACars
     },
-
+    //=====================================
+    //TEST
+    {
+      path: '/signup',
+      name: 'signup',
+      component: Signup
+    },
+    //=====================================
     //=====================================
     //PRIVREMENE RUTE, NECE BITI KASNIJE
+   
     {
       path: '/addVehicle',
       name: 'addVehicle',

@@ -1,20 +1,40 @@
 package com.tim10.service;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.tim10.domain.RegisteredUser;
+import com.tim10.repository.RegisteredUserRepository;
 
-public interface RegisteredUserService {
+@Service
+public class RegisteredUserService{
+
+	@Autowired
+	private RegisteredUserRepository userRepository;
 	
-	Collection<RegisteredUser> findAll();
 	
-	RegisteredUser create(RegisteredUser registeredUser) throws Exception;
+	public List<RegisteredUser> findAll(){
+		return userRepository.findAll();
+	}
 	
-	RegisteredUser findByUsername(String username);
+	public Optional<RegisteredUser> findById(Long id) {
+		return userRepository.findById(id);
+	}
 	
-	RegisteredUser findByEmail(String email);
+	public RegisteredUser save(RegisteredUser user) {
+		return userRepository.save(user);
+	}
 	
-	RegisteredUser findById(Long id);
+	public Optional<RegisteredUser> findOneByUsername (String username) {
+		return userRepository.findOneByUsername(username);
+	}
 	
-	RegisteredUser update(RegisteredUser registeredUser) throws Exception;
+	public Optional<RegisteredUser> findOneByEmail (String email) {
+		return userRepository.findOneByEmail(email);
+	}
+	
+
 }
