@@ -23,7 +23,7 @@ public class HotelController {
 	@Autowired
 	private HotelService hotelService;
 	
-	@RequestMapping(value = "/all", method = RequestMethod.GET /*produces = MediaType.APPLICATION_JSON_VALUE*/)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Hotel>> getHotels() {
 		
 		List<Hotel> hotels = hotelService.findAll();
@@ -37,7 +37,7 @@ public class HotelController {
 		return new ResponseEntity<List<Hotel>>(hotels, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/registerHotel", method=RequestMethod.POST, consumes="application/json")
+	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
 		
 		//proverimo da li postoji hotel sa tim imenom
@@ -59,7 +59,7 @@ public class HotelController {
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
-	@RequestMapping(value = "/updateHotel", method=RequestMethod.PUT,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
 		
 		//da osiguramo da se ne izmeni ime na vec postojece ime

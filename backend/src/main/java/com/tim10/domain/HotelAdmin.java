@@ -16,6 +16,8 @@ public class HotelAdmin extends User {
 
 	public HotelAdmin() {
 		super();
+		hasCustomPassword = false;
+		this.setRole(Role.HOTEL_ADMIN);
 	}
 	
 	public Boolean getHasCustomPassword() {
