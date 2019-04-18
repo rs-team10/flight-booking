@@ -36,5 +36,8 @@ public class UserService{
 		return userRepository.findOneByEmail(email);
 	}
 	
+	
+	
+	
 
 }

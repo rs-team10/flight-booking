@@ -2,13 +2,12 @@ package com.tim10.controller;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.domain.ConfirmationToken;
 import com.tim10.domain.RegisteredUser;
+import com.tim10.domain.Role;
 import com.tim10.domain.User;
-import com.tim10.service.ConfirmationTokenService;
+import com.tim10.service.EmailService;
+import com.tim10.service.RegisteredUserService;
 import com.tim10.service.UserService;
 
 @CrossOrigin
@@ -31,11 +31,11 @@ public class UserController {
 	private UserService userService;
 	
 
-    @Autowired
-    private ConfirmationTokenService confirmationTokenService;
+	@Autowired
+	private RegisteredUserService regUserService;
 
     @Autowired
-	private JavaMailSender mailSender;
+	private EmailService mailSender;
     
     
 	
@@ -104,63 +104,52 @@ public class UserController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> saveUser(
-			@RequestBody User user) throws Exception {
+			@RequestBody RegisteredUser user) throws Exception {
+		
+		if(userService.findOneByUsername(user.getUsername()).isPresent()) {
+			return new ResponseEntity<>("User with that username already exist!", HttpStatus.CONFLICT);
+		}
 			
 		if(userService.findOneByEmail(user.getEmail()).isPresent()) {
 			return new ResponseEntity<>("User with that email already exist!", HttpStatus.CONFLICT);
 		}
-		if(userService.findOneByUsername(user.getUsername()).isPresent()) {
-			return new ResponseEntity<>("User with that username already exist!", HttpStatus.CONFLICT);
-		}
 		
-		User savedUser =  userService.save(user);
-		//System.out.println(savedUser.getEmail());
 		
-		ConfirmationToken confirmationToken = new ConfirmationToken();
-		confirmationToken.setUser(savedUser);
-		confirmationTokenService.save(confirmationToken);
+	
+		user.setVerificationCode(UUID.randomUUID().toString());		
+		RegisteredUser savedUser =  regUserService.save(user);
 		
-        //ovo prebaci u sendEmail nema potrebe da stoji ovde
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
-        mailMessage.setSubject("Complete Registration!");
-        mailMessage.setFrom("flightbooking.tim10@gmail.com");
-        mailMessage.setText("To confirm your account, please click here : "
-        +"http://localhost:8081/confirm-account/"+confirmationToken.getConfirmationToken());
-        
-        
-        mailSender.send(mailMessage);
+		RegisteredUser savedRegUser = savedUser;
+		mailSender.sendEmail(savedRegUser);
 
         
 		
-		return new ResponseEntity<User>(savedUser, HttpStatus.CREATED);
+		return new ResponseEntity<RegisteredUser>(savedRegUser, HttpStatus.CREATED);
 	
 	}
 	
 	
 	   @RequestMapping(
-			   value="/confirm-account/{confirmationToken}", 
-			   method= RequestMethod.PUT,
+			   value="/confirm-account/{verificationCode}", 
+			   method= RequestMethod.GET,
 			   produces = MediaType.APPLICATION_JSON_VALUE)
 	    public ResponseEntity<?> confirmUserAccount(
-	    		@PathVariable("confirmationToken") String confirmationToken)
+	    		@PathVariable("verificationCode") String verificationCode)
 	    {
-	        Optional<ConfirmationToken> tokenMyb = confirmationTokenService.findByConfirmationToken(confirmationToken);
-
-	        if(tokenMyb.isPresent())
-	        {
-	        	ConfirmationToken token = tokenMyb.get();
-	        	Optional<User>  userMyb = userService.findOneByEmail(token.getUser().getEmail());
-	        	RegisteredUser user = (RegisteredUser) userMyb.get();
-	        	user.setIsConfirmed(true);
-	            userService.save(user);
-	            return new ResponseEntity<>("User "+user.getUsername()+" is successfully registered!", HttpStatus.OK);
-	        }
-	        else
-	        {
-	        	return new ResponseEntity<>("Message is invalid or brocken", HttpStatus.NOT_FOUND);
-	        }
-
+		   
+		   try {
+			   RegisteredUser regUser = regUserService.findVerificationCode(verificationCode);
+			   System.out.println(regUser.getUsername());
+			   regUser.setIsConfirmed(true);
+			   regUser.setRole(Role.REGISTERED_USER);
+			   regUserService.save(regUser);
+			   return new ResponseEntity<>("User "+regUser.getUsername()+" is successfully registered!", HttpStatus.OK);
+		   }catch(Exception e){
+			   
+			   return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		   }
+		   
+	
 	    }
 	
 
