@@ -3,9 +3,7 @@ package com.tim10.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.RegisteredUser;
@@ -39,3 +37,4 @@ public class RegisteredUserService {
 		else
 			throw new ResourceNotFoundException("Registered user with this verification code not found!"); 
 	}
+}

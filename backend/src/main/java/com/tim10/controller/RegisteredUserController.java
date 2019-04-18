@@ -33,21 +33,21 @@ public class RegisteredUserController {
 		return new ResponseEntity<RegisteredUser>(registeredUser, HttpStatus.OK);
 	}
 	
-	@RequestMapping(
-			value = "/registeredUsers",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createRegisteredUser(
-			@RequestBody RegisteredUser registeredUser) throws Exception {
-		
-		if(registeredUserService.findOneByEmail(registeredUser.getEmail()) == null) {
-			RegisteredUser returnUser = registeredUserService.save(registeredUser);
-			return new ResponseEntity<>(returnUser, HttpStatus.CREATED);
-		}
-		
-		return new ResponseEntity<>("Registered user with that email already exists!", HttpStatus.FORBIDDEN);
-	}
+//	@RequestMapping(
+//			value = "/registeredUsers",
+//			method = RequestMethod.POST,
+//			consumes = MediaType.APPLICATION_JSON_VALUE,
+//			produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<?> createRegisteredUser(
+//			@RequestBody RegisteredUser registeredUser) throws Exception {
+//		
+//		if(registeredUserService.findOneByEmail(registeredUser.getEmail()) == null) {
+//			RegisteredUser returnUser = registeredUserService.save(registeredUser);
+//			return new ResponseEntity<>(returnUser, HttpStatus.CREATED);
+//		}
+//		
+//		return new ResponseEntity<>("Registered user with that email already exists!", HttpStatus.FORBIDDEN);
+//	}
 	
 	@RequestMapping(
 			value = "/registeredUsers/",
