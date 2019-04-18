@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class AirlineAdmin extends User {
 	
-	@Column(name="hasCustomPassword", nullable=false)
+	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 
 	@ManyToOne(fetch=FetchType.EAGER)

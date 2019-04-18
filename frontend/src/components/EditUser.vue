@@ -171,7 +171,7 @@ export default {
             const errors = []
             if (!this.$v.user.email.$dirty) return errors
             !this.$v.user.email.email && errors.push('E-mail invalid.')
-            !this.$v.user.email.required && errors.push('Username is required.')
+            !this.$v.user.email.required && errors.push('Email is required.')
             return errors
         },
         phoneErrors () {
@@ -193,7 +193,7 @@ export default {
 
             if(!this.$v.$invalid) {
                 delete this.user.passwordConfirmation;
-                this.$axios.put('http://localhost:8081/api/registeredUsers/' + this.user.id, this.user).then((data) => {
+                this.$axios.put('http://localhost:8081/api/registeredUsers/', this.user).then((data) => {
                     this.submitted = true;
                 });
             }

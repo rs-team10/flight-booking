@@ -1,18 +1,34 @@
 package com.tim10.service;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Airline;
+import com.tim10.repository.AirlineRepository;
 
-public interface AirlineService {
+@Service
+public class AirlineService {
 	
-	Collection<Airline> findAll();
+	@Autowired
+	private AirlineRepository airlineRepository;
 	
-	Airline create(Airline airline) throws Exception;
+	public List<Airline> findAll() {
+		return airlineRepository.findAll();
+	}
 	
-	Airline findByName(String name);
+	public Airline save(Airline airline) {
+		return airlineRepository.save(airline);
+	}
 	
-	Airline findById(Long id);
+	public Airline findOneByName(String name) {
+		return airlineRepository.findOneByName(name);
+	}
 	
-	Airline update(Airline airline) throws Exception;
+	public Optional<Airline> findOne(Long id) {
+		return airlineRepository.findById(id);
+	}
+
 }

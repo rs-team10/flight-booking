@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class HotelAdmin extends User {
 	
-	@Column(name="hasCustomPassword", nullable=false)
+	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
@@ -16,6 +16,8 @@ public class HotelAdmin extends User {
 
 	public HotelAdmin() {
 		super();
+		hasCustomPassword = false;
+		this.setRole(Role.HOTEL_ADMIN);
 	}
 	
 	public Boolean getHasCustomPassword() {

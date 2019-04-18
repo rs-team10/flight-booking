@@ -11,18 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 @Entity
-@Table(name = "Users")
+@Table(name="User")
 //svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class User implements UserDetails  {
+public abstract class User implements UserDetails  {
 	
 	@Id
 	@Column(name = "id")

@@ -2,6 +2,11 @@ package com.tim10.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,32 +58,4 @@ public class UserService {
 		
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	Collection<User> findAll();
-	
-	User create(User user) throws Exception;
-	
-	User findByUsername(String username);
-	
-	User findByEmail(String email);
-	
-	User findById(Long id);
-	
-	User update(User user) throws Exception;
-	*/
 }

@@ -92,7 +92,7 @@ public class RentACarController {
 		
 		RentACar rentACarReal = rentACarEx.get();
 
-		rentACarReal.setLocation(rentACar.getLocation());
+		//rentACarReal.setLocation(rentACar.getLocation());
 		//ako se menjaju jos neki parametri...
 		
 		rentACarReal = rentACarService.save(rentACarReal);

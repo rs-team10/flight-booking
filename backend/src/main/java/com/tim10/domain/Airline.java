@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -25,11 +26,15 @@ public class Airline extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickFlightReservation> quickFlightReservations;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private PriceList luggagePriceList;
 
 	public Airline() {
-		super();
+		businessLocations = new HashSet<Destination>();
+		flights = new HashSet<Flight>();
+		administrators = new HashSet<AirlineAdmin>();
+		quickFlightReservations = new HashSet<QuickFlightReservation>();
+		luggagePriceList = new PriceList();
 	}
 
 	public Set<Destination> getBusinessLocations() {
