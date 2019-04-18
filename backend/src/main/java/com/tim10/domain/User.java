@@ -9,13 +9,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="User")
 //svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class User {
 	
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	
 	
