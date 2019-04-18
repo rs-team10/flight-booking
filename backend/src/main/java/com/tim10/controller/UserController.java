@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.Authority;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.Role;
 import com.tim10.domain.User;
@@ -114,13 +115,17 @@ public class UserController {
 			return new ResponseEntity<>("User with that email already exist!", HttpStatus.CONFLICT);
 		}
 		
+		//ovo obrisi 
+		Authority aut = new Authority();
+		aut.setRole(Role.ROLE_REGISTERED_USER);
 		
-	
+		user.getAuthorities().add(aut);
 		user.setVerificationCode(UUID.randomUUID().toString());		
+		
 		RegisteredUser savedUser =  regUserService.save(user);
 		
 		RegisteredUser savedRegUser = savedUser;
-		mailSender.sendEmail(savedRegUser);
+		//mailSender.sendEmail(savedRegUser);
 
         
 		
@@ -138,10 +143,14 @@ public class UserController {
 	    {
 		   
 		   try {
+			   
+			   Authority aut = new Authority();
+			   aut.setRole(Role.ROLE_REGISTERED_USER);
+			 
 			   RegisteredUser regUser = regUserService.findVerificationCode(verificationCode);
 			   System.out.println(regUser.getUsername());
 			   regUser.setIsConfirmed(true);
-			   regUser.setRole(Role.REGISTERED_USER);
+			   regUser.getAuthorities().add(aut);
 			   regUserService.save(regUser);
 			   return new ResponseEntity<>("User "+regUser.getUsername()+" is successfully registered!", HttpStatus.OK);
 		   }catch(Exception e){

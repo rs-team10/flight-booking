@@ -1,61 +1,61 @@
 package com.tim10.service;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import com.tim10.domain.Authority;
-import com.tim10.domain.Role;
 import com.tim10.domain.User;
-import com.tim10.repository.AuthorityRepository;
 import com.tim10.repository.UserRepository;
 
 @Service("userService")
-public class UserService {
+public class UserService implements UserDetailsService {
 	
 	
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private AuthorityRepository authorityRepository;
-	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	
+
 	
 	public User findUserByEmail(String email) {
 	
-
-		
-		return userRepository.findByEmail(email);
+		return userRepository.findOneByEmail(email).get();
 	}
 	
-	
-	public void saveUser(User user) {
-
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		// ovde cemo u nekom dto da saljemo koju je ulogu user izabrao
-		// i naravno da napunimo bazu autoritetima...----------
-		Authority obrisi = new Authority();
-		obrisi.setRole(Role.SYSTEM_ADMIN);
-		authorityRepository.save(obrisi);
-		///----------------------------------------------------
-
-		Authority authority = authorityRepository.findByRole("SYSTEM_ADMIN");
-		user.setAuthorities(new HashSet<Authority>(Arrays.asList(authority)));
-		
+	public void save(User user) {
 		userRepository.save(user);
 		
+	}
+	
+	public List<User> findAll(){
+		return userRepository.findAll();
+	}
+	
+	public Optional<User> findById(Long id) {
+		return userRepository.findById(id);
+	}
+	
+	public Optional<User> findOneByUsername (String username) {
+		return userRepository.findOneByUsername(username);
+	}
+	
+	public Optional<User> findOneByEmail (String email) {
+		return userRepository.findOneByEmail(email);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
+		Optional<User> user = userRepository.findOneByUsername(username);
+		
+		if(!user.isPresent())
+			throw new UsernameNotFoundException("User with "+ username+" doesn't exists!");
+		
+		
+		
+		return user.get();
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import com.tim10.security.TokenUtils;
 import com.tim10.security.auth.RestAuthenticationEntryPoint;
 import com.tim10.security.auth.TokenAuthenticationFilter;
-import com.tim10.service.CustomUserDetailsService;
+import com.tim10.service.UserService;
 
 
 @Configuration
@@ -25,16 +26,13 @@ import com.tim10.service.CustomUserDetailsService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	// Implementacija PasswordEncoder-a koriscenjem BCrypt hashing funkcije.
-	// BCrypt po defalt-u radi 10 rundi hesiranja prosledjene vrednosti.
- 	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
+	
 
 	@Autowired
-	private CustomUserDetailsService jwtUserDetailsService;
+	TokenUtils tokenUtils;
+	
+	@Autowired
+	private UserService jwtUserService;
 
 	// Neautorizovani pristup zastcenim resursima
 	@Autowired
@@ -45,10 +43,18 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+	
+	// Implementacija PasswordEncoder-a koriscenjem BCrypt hashing funkcije.
+		// BCrypt po defalt-u radi 10 rundi hesiranja prosledjene vrednosti.
+ 	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	// Definisemo nacin autentifikacije
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+/*
 		String password = passwordEncoder().encode("user");
         auth
             .inMemoryAuthentication()
@@ -56,15 +62,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .withUser("user1").password(password).authorities("ROLE_USER", "ROLE_ADMIN");
 
-   
+*/
 	    
-		//auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(jwtUserService).passwordEncoder(passwordEncoder());
 	}
 	
 
-	@Autowired
-	TokenUtils tokenUtils;
-	
+
 	/*
 	 * .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			
@@ -89,12 +93,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
 		
-		http
+		http 
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)	//ovo je iz demo-a (komunikacija izmedju klijenta i servera je stateless)
+			.and()
+			.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+			.and()
 			.authorizeRequests()
 			
 			.antMatchers("/").permitAll()
 			.antMatchers("/auth/**").permitAll()
-
+			.antMatchers("/api/registeredUsers").permitAll()
 			.antMatchers("/api/hotels").hasAnyRole("USER", "ADMIN")
 			.antMatchers("/api/users").hasAnyRole("USER", "ADMIN")
 			.antMatchers("/api/rentACars").hasAnyRole("ADMIN")
@@ -102,6 +110,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			
 			.anyRequest().authenticated()
 			.and()
+			.addFilterBefore(new TokenAuthenticationFilter(tokenUtils, jwtUserService), BasicAuthenticationFilter.class);
 			/*
 			.and()
 			.formLogin().loginPage("auth/login").permitAll()
@@ -109,7 +118,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.logout().permitAll();
 			*/
 			
-			.addFilterBefore(new TokenAuthenticationFilter(tokenUtils, jwtUserDetailsService), BasicAuthenticationFilter.class);;
 			
 		
 			

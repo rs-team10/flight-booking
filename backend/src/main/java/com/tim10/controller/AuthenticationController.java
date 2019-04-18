@@ -1,6 +1,8 @@
 package com.tim10.controller;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,16 +23,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.common.DeviceProvider;
-import com.tim10.domain.AirlineAdmin;
-import com.tim10.domain.HotelAdmin;
-import com.tim10.domain.RegisteredUser;
-import com.tim10.domain.RentACarAdmin;
+import com.tim10.domain.Authority;
 import com.tim10.domain.Role;
 import com.tim10.domain.User;
 import com.tim10.domain.UserTokenState;
 import com.tim10.security.TokenUtils;
 import com.tim10.security.auth.JwtAuthenticationRequest;
-import com.tim10.service.CustomUserDetailsService;
+import com.tim10.service.UserService;
 
 //Kontroler zaduzen za autentifikaciju korisnika
 @CrossOrigin
@@ -44,22 +43,11 @@ public class AuthenticationController {
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private UserService userService;
 
 	@Autowired
 	private DeviceProvider deviceProvider;
 	
-	
-	
-	@RequestMapping(
-			value = "/auth/login",
-			method = RequestMethod.GET
-			)
-	public ResponseEntity<String> loginRedirect() {
-		
-		return new ResponseEntity<String>("localhost:8080/login", HttpStatus.FOUND);
-	}
-
 	
 	
 	
@@ -77,30 +65,23 @@ public class AuthenticationController {
 			authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 		} catch (BadCredentialsException e) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+	
+			return new ResponseEntity<>("NO TOKEN! NO PROBLEM",HttpStatus.OK);
 		}
-		// Ubaci username + password u kontext
+		// Ubaci username + password u kontext STA SE OVDE DESAVA!?
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		// Kreiraj token
-		User user = (User) authentication.getPrincipal();	// OVDE NASTAJE PROBLEM, zato sto sve ovo izvlaci tog usera iz baze :/... trebaju mi podaci u bazi da istestiram
+		User user = (User) authentication.getPrincipal();
 		String jwt = tokenUtils.generateToken(user.getUsername());
 		int expiresIn = tokenUtils.getExpiredIn();
 		
-		Role role = null;
-
-		if (user instanceof RegisteredUser) {
-			role = Role.REGISTERED_USER;
-		} else if (user instanceof HotelAdmin) {
-			role = Role.HOTEL_ADMIN;
-		} else if (user instanceof RentACarAdmin) {
-			role = Role.RENT_A_CAR_ADMIN;
-		} else if (user instanceof AirlineAdmin) {
-			role = Role.AIRLINE_ADMIN;
-		} else {
-			role = Role.SYSTEM_ADMIN;
-		}
-//mozda ce trebati da se dodaje ROLE_ u prefiks
+		
+		Set<Authority> aut = user.getAuthorities();
+		Iterator<Authority> i = aut.iterator();
+		Role role = i.next().getRole();
+		
+		//mozda ce trebati da se dodaje ROLE_ u prefiks
 		// Vrati token kao odgovor na uspesno autentifikaciju
 		return new ResponseEntity<UserTokenState>(new UserTokenState(jwt, expiresIn, role), HttpStatus.OK);
 	}
