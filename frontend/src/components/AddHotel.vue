@@ -2,7 +2,7 @@
 <template>
     <div id="add-hotel">
         
-        <div>
+        <div id="alerts">
             <v-alert
                 :value="success"
                 type="success"
@@ -20,10 +20,11 @@
             </v-alert>
 
         </div>
+        
         <div id="add-form" >
             <v-flex xs12 sm6 offset-sm3>
                 <h1 class="text-xs-center indigo--text">Register new hotel</h1>
-                <form>
+                <v-form>
                     <v-text-field
                         v-model.lazy="hotel.name"
                         :error-messages="nameErrors"
@@ -53,27 +54,48 @@
                         <template v-slot:activator="{ on }">
                             <v-btn block color="indigo darken-2" dark v-on="on">Add administrator</v-btn>
                         </template>
+                        
+                        <v-form ref="adminForm">
                         <v-card>
                             <v-card-title>
-                                <span class="headline">Admin Profile</span>
+                                <span class="headline">New Hotel administrator</span>
                             </v-card-title>
                             <v-card-text>
+                                
                                 <v-container grid-list-md>
                                     <v-layout wrap>
                                     <v-flex xs12 sm6 md6>
-                                        <v-text-field label="First name" v-model="tempAdmin.firstName"></v-text-field>
+                                        <v-text-field 
+                                            label="First name" 
+                                            v-model="tempAdmin.firstName">
+                                        </v-text-field>
                                     </v-flex>
                                     <v-flex xs12 sm6 md6>
-                                        <v-text-field label="Last name" v-model="tempAdmin.lastName"></v-text-field>
+                                        <v-text-field 
+                                            label="Last name" 
+                                            v-model="tempAdmin.lastName">
+                                        </v-text-field>
                                     </v-flex>
                                     <v-flex xs12 sm6 md6>
-                                        <v-text-field label="Username*" v-model="tempAdmin.username" required></v-text-field>
+                                        <v-text-field 
+                                            label="Username*" 
+                                            v-model="tempAdmin.username"
+                                            :error-messages="usernameErrors">
+                                        </v-text-field>
                                     </v-flex>
                                     <v-flex xs12 sm6 md6>
-                                        <v-text-field label="Password*" v-model="tempAdmin.password" required></v-text-field>
+                                        <v-text-field 
+                                            label="Password*" 
+                                            v-model="tempAdmin.password"
+                                            :error-messages="passwordErrors">
+                                        </v-text-field>
                                     </v-flex>
                                     <v-flex xs12>
-                                        <v-text-field label="Email*" v-model="tempAdmin.email" required></v-text-field>
+                                        <v-text-field 
+                                            label="Email*" 
+                                            v-model="tempAdmin.email"
+                                            :error-messages="emailErrors">
+                                        </v-text-field>
                                     </v-flex>
                                     </v-layout>
                                 </v-container>
@@ -83,8 +105,9 @@
                                 <v-spacer></v-spacer>
                                 <v-btn color="indigo darken-1" flat @click="close">Close</v-btn>
                                 <v-btn color="indigo darken-1" flat @click="save">Save</v-btn>
-                                </v-card-actions>
+                            </v-card-actions>
                         </v-card>
+                        </v-form>
                         </v-dialog>
                     </v-layout>
 
@@ -116,13 +139,10 @@
                         </v-card>
                         </v-flex>
                     </v-layout>
-
-                    
-
                     <div >
                         <v-btn block @click="submit">submit</v-btn>
                     </div>
-                </form>
+                </v-form>
             </v-flex>
         </div>
 
@@ -131,7 +151,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required } from 'vuelidate/lib/validators'
+import { required, email, minLength } from 'vuelidate/lib/validators'
 
 export default {
     mixins: [validationMixin],
@@ -142,6 +162,11 @@ export default {
             location: {
                 street: { required }
             }
+        },
+        tempAdmin: {
+            username: { required, minLength: minLength(5) },
+            password: { required, minLength: minLength(6) },
+            email: { required, email }
         }
     },
       
@@ -159,10 +184,10 @@ export default {
             error: false,
             adminError: false,
             adminDialog: false,
-            tempAdmin: {}        }
+            tempAdmin: {},    
+        }
     },
     computed: {
-        
         nameErrors () {
             const errors = []
             if (!this.$v.hotel.name.$dirty) return errors
@@ -174,15 +199,39 @@ export default {
             if (!this.$v.hotel.location.street.$dirty) return errors
             !this.$v.hotel.location.street.required && errors.push('Address is required.')
             return errors
+        },
+        usernameErrors(){
+            const errors = []
+            if(!this.$v.tempAdmin.username.$dirty) return errors
+            !this.$v.tempAdmin.username.minLength && errors.push('Username must be at least 5 characters long')
+            !this.$v.tempAdmin.username.required && errors.push('Username is required.')
+            return errors
+        },
+        passwordErrors () {
+            const errors = []
+            if (!this.$v.tempAdmin.password.$dirty) return errors
+            !this.$v.tempAdmin.password.minLength && errors.push('Password must be at least 6 characters long')
+            !this.$v.tempAdmin.password.required && errors.push('Password is required.')
+            return errors
+        },
+        emailErrors () {
+            const errors = []
+            if (!this.$v.tempAdmin.email.$dirty) return errors
+            !this.$v.tempAdmin.email.email && errors.push('E-mail invalid.')
+            !this.$v.tempAdmin.email.required && errors.push('Email is required.')
+            return errors
         }
     },
 
     methods:{
         submit () {
-            this.$v.$touch();
-
-            if(!this.$v.$invalid){
-                this.addHotel();
+            this.$v.hotel.$touch();
+            if(!this.$v.hotel.$invalid){
+                if(!this.adminEmpty()){
+                    this.addHotel();
+                }else{
+                    this.error = "At least one administrator must be added!";
+                }
                 
             }
         },
@@ -204,12 +253,16 @@ export default {
             this.tempAdmin = Object.assign({}, {});
         }, 
         save(){
-            if(!this.adminExists(this.tempAdmin.username)){
-                this.hotel.administrators.push(this.tempAdmin);
-                this.close();
-            }else{
-                this.adminError = "Administrator with that username already added";
-            }
+            this.$v.tempAdmin.$touch();
+            if(!this.$v.tempAdmin.$invalid){
+                if(!this.adminExists(this.tempAdmin.username)){
+                    this.hotel.administrators.push(this.tempAdmin);
+                    this.close();
+                }
+                else{
+                    this.adminError = "Administrator with that username already added";
+                }
+            }      
         },
         adminExists(usr){
             for(var i=0; i < this.hotel.administrators.length; i++){
@@ -217,7 +270,13 @@ export default {
                     return true
             }
             return false
-      }
+        },
+        adminEmpty(){
+            if(this.hotel.administrators.length == 0)
+                return true;
+            else
+                return false;
+        }
       
     }
 }

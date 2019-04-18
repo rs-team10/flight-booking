@@ -171,7 +171,7 @@ export default {
             const errors = []
             if (!this.$v.user.email.$dirty) return errors
             !this.$v.user.email.email && errors.push('E-mail invalid.')
-            !this.$v.user.email.required && errors.push('Username is required.')
+            !this.$v.user.email.required && errors.push('Email is required.')
             return errors
         },
         phoneErrors () {

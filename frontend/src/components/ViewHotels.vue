@@ -2,7 +2,7 @@
   <div>
   <h1>Available hotels</h1> 
   <v-layout row>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex xs12 sm6 md6 offset-sm3>
       <v-card>
         <v-list two-line>
           <template v-for="hotel in hotels">
@@ -25,10 +25,7 @@
   </div>
 </template>
 
-
 <script>
-
-
 export default {
   name: 'hotels',
   data(){
