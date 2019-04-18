@@ -1,19 +1,51 @@
 package com.tim10.domain;
 
-public class Location {
+import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Locations")
+public class Location implements Serializable {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	
+	@Column(name="street", nullable = false)
 	private String street;
+	
+	@Column(name="city")
 	private String city;
+	
+	@Column(name="postalCode")
 	private String postalCode;
+	
+	@Column(name="country")
 	private String country;
+	
+	@Column(name="latitude")
 	private Double latitude;
+	
+	@Column(name="longitude")
 	private Double longitude;
+	
+	@Column(name="image")
 	private String image;
 
 	public Location() {
 		super();
 	}
-
+	
+	public Long getId() {
+		return id;
+	}
+	
 	public String getStreet() {
 		return street;
 	}
@@ -41,7 +73,11 @@ public class Location {
 	public String getImage() {
 		return image;
 	}
-
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public void setStreet(String street) {
 		this.street = street;
 	}

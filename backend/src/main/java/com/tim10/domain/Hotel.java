@@ -1,29 +1,45 @@
 package com.tim10.domain;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="Hotels")
 public class Hotel extends Company {
 	
-	@JsonIgnore
+	@OneToMany(/*mappedBy="hotel",*/ cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Room> rooms;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<RoomType> roomTypes;
 	
-	@JsonIgnore
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private PriceList additionalServicesPriceList;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
+		rooms = new HashSet<Room>();
+		roomTypes = new HashSet<RoomType>();
+		additionalServicesPriceList = new PriceList();
+		quickRoomReservations = new HashSet<QuickRoomReservation>();
+		administrators = new HashSet<HotelAdmin>();
 	}
-
+	
+	
+	
+	
 	public Set<Room> getRooms() {
 		return rooms;
 	}

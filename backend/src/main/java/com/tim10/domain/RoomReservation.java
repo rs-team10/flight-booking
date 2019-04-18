@@ -4,14 +4,48 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name="RoomReservations")
 public class RoomReservation {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="dateFrom", nullable=false)
 	private Date dateFrom;
+	
+	@Column(name="dateTo", nullable=false)
 	private Date dateTo;
+	
+	@Column(name="totalPrice", nullable=false)
 	private BigDecimal totalPrice;
+	
+	@OneToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
-	private Reservation reservation;
+	
+	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
+	//private Reservation reservation;
+	
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	private Room room;
 
 	public RoomReservation() {
@@ -38,9 +72,9 @@ public class RoomReservation {
 		return additionalServices;
 	}
 
-	public Reservation getReservation() {
-		return reservation;
-	}
+//	public Reservation getReservation() {
+//		return reservation;
+//	}
 
 	public Review getReview() {
 		return review;
@@ -70,9 +104,9 @@ public class RoomReservation {
 		this.additionalServices = additionalServices;
 	}
 
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
-	}
+//	public void setReservation(Reservation reservation) {
+//		this.reservation = reservation;
+//	}
 
 	public void setReview(Review review) {
 		this.review = review;

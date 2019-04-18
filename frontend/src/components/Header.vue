@@ -20,6 +20,11 @@
                 <v-icon left>hotel</v-icon>
                 <span>Hotels</span>
             </v-btn>
+            <v-btn router to="/rentACars">
+                <v-icon left>directions_car</v-icon>
+                <span>Rent-a-cars</span>
+            </v-btn>
+            
         </v-toolbar>
     </nav>
 </template>

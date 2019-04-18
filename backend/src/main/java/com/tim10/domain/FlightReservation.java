@@ -1,15 +1,41 @@
 
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name="FlightReservations")
 public class FlightReservation {
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="passengerName")
 	private String passengerName;
+	
+	@Column(name="passportNumber")
 	private Long passportNumber;
 
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Seat seat;
+	
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
-	private Reservation reservation;
+	
+	//NEMA POTREBE??????
+	//private Reservation reservation;
 
 	public FlightReservation() {
 	}
@@ -34,9 +60,9 @@ public class FlightReservation {
 		return review;
 	}
 
-	public Reservation getReservation() {
-		return reservation;
-	}
+//	public Reservation getReservation() {
+//		return reservation;
+//	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -58,8 +84,8 @@ public class FlightReservation {
 		this.review = review;
 	}
 
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
-	}
+//	public void setReservation(Reservation reservation) {
+//		this.reservation = reservation;
+//	}
 
 }

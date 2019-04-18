@@ -1,10 +1,35 @@
 package com.tim10.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Seats")
 public class Seat {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private Integer row;
-	private Integer column;
+	
+	@Column(name="red")
+	private Integer red;
+	
+	@Column(name="kolona")
+	private Integer kolona;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name="segmentClass")
 	private SegmentClass segmentClass;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Flight flight;
 
 	public Seat() {
@@ -15,12 +40,12 @@ public class Seat {
 		return id;
 	}
 
-	public Integer getRow() {
-		return row;
+	public Integer getRed() {
+		return red;
 	}
 
-	public Integer getColumn() {
-		return column;
+	public Integer getKolona() {
+		return kolona;
 	}
 
 	public SegmentClass getSegmentClass() {
@@ -35,12 +60,12 @@ public class Seat {
 		this.id = id;
 	}
 
-	public void setRow(Integer row) {
-		this.row = row;
+	public void setRed(Integer red) {
+		this.red = red;
 	}
 
-	public void setColumn(Integer column) {
-		this.column = column;
+	public void setKolona(Integer kolona) {
+		this.kolona = kolona;
 	}
 
 	public void setSegmentClass(SegmentClass segmentClass) {

@@ -1,14 +1,31 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
-public class PriceList {
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="PriceLists")
+public class PriceList implements Serializable{
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<PriceListItem> priceListItems;
 
 	public PriceList() {
-		super();
+		priceListItems = new HashSet<PriceListItem>();
 	}
 
 	public Long getId() {

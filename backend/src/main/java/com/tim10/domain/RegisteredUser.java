@@ -1,31 +1,39 @@
 package com.tim10.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity
 public class RegisteredUser extends User {
 	
+	@Column(name="phone")
 	private String phone;
 	
+	@Column(name="address")
 	private String address;
 	
-	@JsonIgnore
+	@Column(name="bonusPoints")
 	private Integer bonusPoints;
 	
-	@JsonIgnore
+	@Column(name="avatar")
 	private String avatar;
 	
-	@JsonIgnore
+	@Column(name="verificationCode")
 	private String verificationCode;
 	
-	@JsonIgnore
+	@Column(name="isConfirmed")
 	private Boolean isConfirmed;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Reservation> reservations;
 	
-	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Friendship> friendships;
 
 	public RegisteredUser() {

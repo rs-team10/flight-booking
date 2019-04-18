@@ -1,11 +1,36 @@
 package com.tim10.domain;
 
-public abstract class Company {
-	
+import java.io.Serializable;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
+
+@MappedSuperclass
+public abstract class Company implements Serializable {
+	 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name = "name", nullable = false)
 	private String name;
+	
+	@Column(name = "description")
 	private String description;
+	
+	//moze biti null ako nema nijedan feedback, nece se prikazivati korisniku
+	@Column(name = "averageFeedback")	
 	private Double averageFeedback;
+	
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "location_id")
 	private Location location;
 
 	public Company() {

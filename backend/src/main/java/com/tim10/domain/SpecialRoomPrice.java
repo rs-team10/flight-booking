@@ -1,12 +1,28 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class SpecialRoomPrice {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="SpecialRoomPrices")
+public class SpecialRoomPrice implements Serializable {
+	
+	@Id
 	private Long id;
+	
+	@Column(name="price")
 	private BigDecimal price;
+	
+	@Column(name="validFrom")
 	private Date validFrom;
+	
+	@Column(name="validTo")
 	private Date validTo;
 
 	public SpecialRoomPrice() {

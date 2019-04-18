@@ -1,12 +1,37 @@
 package com.tim10.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Reviews")
 public class Review {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="companyFeedback", nullable=true)
 	private Integer companyFeedback;
+	
+	@Column(name="serviceFeedback", nullable=true)
 	private Integer serviceFeedback;
-	private RoomReservation roomReservation;
-	private FlightReservation flightReservation;
-	private VehicleReservation vehicleReservation;
+	
+	
+	//OVO NEMA POTREBE DA BUDE TU
+	
+//	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+//	private RoomReservation roomReservation;
+//	
+//	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+//	private FlightReservation flightReservation;
+//	
+//	@Transient
+//	private VehicleReservation vehicleReservation;
 
 	public Review() {
 		super();
@@ -24,17 +49,17 @@ public class Review {
 		return serviceFeedback;
 	}
 
-	public RoomReservation getRoomReservation() {
-		return roomReservation;
-	}
-
-	public FlightReservation getFlightReservation() {
-		return flightReservation;
-	}
-
-	public VehicleReservation getVehicleReservation() {
-		return vehicleReservation;
-	}
+//	public RoomReservation getRoomReservation() {
+//		return roomReservation;
+//	}
+//
+//	public FlightReservation getFlightReservation() {
+//		return flightReservation;
+//	}
+//
+//	public VehicleReservation getVehicleReservation() {
+//		return vehicleReservation;
+//	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -48,16 +73,16 @@ public class Review {
 		this.serviceFeedback = serviceFeedback;
 	}
 
-	public void setRoomReservation(RoomReservation roomReservation) {
-		this.roomReservation = roomReservation;
-	}
-
-	public void setFlightReservation(FlightReservation flightReservation) {
-		this.flightReservation = flightReservation;
-	}
-
-	public void setVehicleReservation(VehicleReservation vehicleReservation) {
-		this.vehicleReservation = vehicleReservation;
-	}
+//	public void setRoomReservation(RoomReservation roomReservation) {
+//		this.roomReservation = roomReservation;
+//	}
+//
+//	public void setFlightReservation(FlightReservation flightReservation) {
+//		this.flightReservation = flightReservation;
+//	}
+//
+//	public void setVehicleReservation(VehicleReservation vehicleReservation) {
+//		this.vehicleReservation = vehicleReservation;
+//	}
 
 }
