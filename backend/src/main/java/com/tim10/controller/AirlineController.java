@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
+import com.tim10.domain.AirlineAdmin;
 import com.tim10.service.AirlineService;
+import com.tim10.service.UserService;
 
 @CrossOrigin
 @RestController
@@ -24,6 +26,8 @@ public class AirlineController {
 	@Autowired
 	private AirlineService airlineService;
 	
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(
 			value = "/airlines",
@@ -51,12 +55,15 @@ public class AirlineController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createAirline(@RequestBody Airline airline) {
-		
 		if(airlineService.findOneByName(airline.getName()) == null) {
-			Airline returnAirline = airlineService.save(airline);
-			return new ResponseEntity<>(returnAirline, HttpStatus.CREATED);
+			for(AirlineAdmin admin : airline.getAdministrators()) {
+				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
+					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
+				else if(userService.findOneByEmail(admin.getEmail()).isPresent()) 
+					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
+			}
+			return new ResponseEntity<>(airlineService.save(airline), HttpStatus.CREATED);
 		}
-		
 		return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	

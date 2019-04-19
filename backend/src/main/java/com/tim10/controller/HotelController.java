@@ -3,6 +3,8 @@ package com.tim10.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
+import com.tim10.domain.HotelAdmin;
 import com.tim10.service.HotelService;
+import com.tim10.service.UserService;
 
 @CrossOrigin
 @RestController
@@ -23,46 +27,37 @@ public class HotelController {
 	@Autowired
 	private HotelService hotelService;
 	
+	@Autowired 
+	private UserService userService;
+	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Hotel>> getHotels() {
-		
-		List<Hotel> hotels = hotelService.findAll();
-		
-		//convert hotels to DTOs
-//		List<HotelDTO> hotelsDTO = new ArrayList<>();
-//		for(Hotel h : hotels) {
-//			hotelsDTO.add(new HotelDTO(h));
-//		}
-	
-		return new ResponseEntity<List<Hotel>>(hotels, HttpStatus.OK);
+		return new ResponseEntity<List<Hotel>>(hotelService.findAll(), HttpStatus.OK);
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Page<Hotel>> getHotelsPage(Pageable page) {
+		//page object holds data about pagination and sorting
+		//the object is created based on the url parameters "page", "size" and "sort" 
+		return new ResponseEntity<>(hotelService.findAll(page), HttpStatus.OK);
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
-		
-		//proverimo da li postoji hotel sa tim imenom
-		if(hotelService.findOneByName(hotel.getName()) == null) {
-//			Hotel hotel = new Hotel();
-//			hotel.setName(hotelDTO.getName());
-//			hotel.setDescription(hotelDTO.getDescription());
-//			
-//			//Privremena lokacija (samo ulicu cuva)
-//			Location location = new Location();
-//			location.setStreet(hotelDTO.getLocation().getStreet());
-//			hotel.setLocation(location);
-			
-			//sta radi sa setovima???
-			Hotel returnHotel = hotelService.save(hotel);
-			return new ResponseEntity<>(returnHotel, HttpStatus.CREATED);
+		if(hotelService.hotelExists(hotel)) {
+			for(HotelAdmin admin : hotel.getAdministrators()) {
+				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
+					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
+				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
+					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
+			}
+			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.CREATED);
 		}
-		
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
-		
-		//da osiguramo da se ne izmeni ime na vec postojece ime
 		Hotel existingHotel = hotelService.findOneByName(hotel.getName());
 		if(existingHotel != null && existingHotel.getId() != hotel.getId())
 			return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);

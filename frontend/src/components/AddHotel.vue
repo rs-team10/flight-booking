@@ -133,7 +133,13 @@
                                                 <v-list-tile-sub-title>{{ admin.firstName }}  {{admin.lastName}}</v-list-tile-sub-title>
                                                 <v-list-tile-sub-title>{{ admin.email }}</v-list-tile-sub-title>
                                             </v-list-tile-content>
+                                            <v-icon
+                                                class="mr-1"
+                                                @click="deleteAdmin(admin)">
+                                                delete
+                                            </v-icon>
                                         </v-list-tile>
+                                        
                                     </template>
                                 </v-list>
                         </v-card>
@@ -184,7 +190,7 @@ export default {
             error: false,
             adminError: false,
             adminDialog: false,
-            tempAdmin: {},    
+            tempAdmin: {}    
         }
     },
     computed: {
@@ -276,6 +282,9 @@ export default {
                 return true;
             else
                 return false;
+        },
+        deleteAdmin(admin){
+            this.hotel.administrators.pop(admin);
         }
       
     }

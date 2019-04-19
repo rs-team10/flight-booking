@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RentACar;
+import com.tim10.domain.RentACarAdmin;
 import com.tim10.service.RentACarService;
+import com.tim10.service.UserService;
 
 
 @CrossOrigin
@@ -25,6 +27,9 @@ public class RentACarController {
 	
 	@Autowired
 	private RentACarService rentACarService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(
 			value = "api/rentACars",
@@ -63,13 +68,16 @@ public class RentACarController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> saveRentACar(
 			@RequestBody RentACar rentACar) throws Exception {
-			
-		if(rentACarService.findOneByName(rentACar.getName()).isPresent()) {
-			return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
+		if(!rentACarService.findOneByName(rentACar.getName()).isPresent()) {
+			for(RentACarAdmin admin : rentACar.getAdministrators()) {
+				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
+					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
+				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
+					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
+			}
+			return new ResponseEntity<RentACar>(rentACarService.save(rentACar), HttpStatus.CREATED);
 		}
-		
-		RentACar savedRentACar = rentACarService.save(rentACar);
-		return new ResponseEntity<RentACar>(savedRentACar, HttpStatus.CREATED);
+		return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
 	}
 	
 	

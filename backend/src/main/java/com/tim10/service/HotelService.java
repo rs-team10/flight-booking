@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Hotel;
@@ -18,9 +22,20 @@ public class HotelService {
 	public List<Hotel> findAll(){
 		return hotelRepository.findAll();
 	}
+	
+	public Page<Hotel> findAll(Pageable page) {
+		return hotelRepository.findAll(page);
+	}
 	 
 	public Hotel save(Hotel hotel) {
 		return hotelRepository.save(hotel);
+	}
+	
+	public boolean hotelExists(Hotel hotel){
+		if(findOneByName(hotel.getName()) == null) {
+			return true;
+		}
+		return false;
 	}
 	
 	public Hotel findOneByName(String name) {
@@ -30,6 +45,5 @@ public class HotelService {
 	public Optional<Hotel> findOne(Long id) {
 		return hotelRepository.findById(id);
 	}
-	
 
 }
