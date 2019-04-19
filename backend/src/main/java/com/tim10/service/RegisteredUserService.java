@@ -24,8 +24,14 @@ public class RegisteredUserService {
 		return registeredUserRepository.findOneByEmail(email);
 	}
 	
-	public Optional<RegisteredUser> findOne(Long id) {
-		return registeredUserRepository.findById(id);
+	public RegisteredUser findOne(Long id) {
+		
+		Optional<RegisteredUser> user = registeredUserRepository.findById(id);
+		
+		if (user.isPresent())
+			return user.get();
+		else
+			return null;
 	}
 
 	public RegisteredUser findVerificationCode (String findVerificationCode) throws ResourceNotFoundException {

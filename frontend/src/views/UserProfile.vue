@@ -2,16 +2,16 @@
     <div class="user-profile">
         <v-container grid-list>
             <v-layout row>
-                <v-layout column align-center justify-center ma-4 v-if="showProfile">
+                <v-layout class="user-data" column align-center justify-center ma-4 v-if="showProfile">
 
                     <v-avatar :tile="false" :size="192" color="grey lighten-4">
                         <img src="@/assets/img/user.png" alt="avatar">
                     </v-avatar>
 
-                    <h2>FirstName LastName</h2>
-                    <h4>test@booking.com</h4>
-                    <h4>+381637331063</h4>
-                    <h4>Novi Sad, Serbia</h4>
+                    <h2 class="text-xs-center">{{ user.firstName + ' ' + user.lastName }}</h2>
+                    <h4 class="text-xs-center">{{ user.email }}</h4>
+                    <h4 class="text-xs-center">{{ user.phone }}</h4>
+                    <h4 class="text-xs-center">{{ user.address }}</h4>
 
                     <div class="text-xs-center">
                         <v-btn v-on:click="changeToEdit()" round small flat color="primary" dark>Edit Profile</v-btn>
@@ -34,6 +34,8 @@ import EditUser from "@/components/EditUser.vue"
 import Friendships from "@/components/Friendships.vue"
 import SearchUsers from "@/components/SearchUsers.vue"
 
+var MOCK_USER_ID = 1;
+
 export default {
     components: {
         'edit-user' : EditUser,
@@ -49,7 +51,14 @@ export default {
     data() {
         return {
             activeComponent: 'friendships',
-            showProfile: true
+            showProfile: true,
+            user: {
+                firstName: 'TestName',
+                lastName: 'TestSurname',
+                email: 'test@flightbooking.com',
+                phone: '123123123',
+                address: 'Toronto, ON, Canada'
+            }
         };
     },
     methods: {
@@ -61,6 +70,19 @@ export default {
             this.activeComponent = 'search-users';
             this.showProfile = false;
         }
+    },
+    created() {
+        this.$axios.get('http://localhost:8081/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
+            this.user = response.data;
+        }).catch(function(error) {
+                alert(error.response.data.message);
+            });;
     }
 }
 </script>
+
+<style>
+.user-data {
+    max-width: 800px;
+}
+</style>

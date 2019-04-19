@@ -27,7 +27,7 @@ public class RegisteredUserController {
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<RegisteredUser> getRegisteredUser(@PathVariable("id") Long id) {
-		RegisteredUser registeredUser = registeredUserService.findOne(id).get();
+		RegisteredUser registeredUser = registeredUserService.findOne(id);
 		if (registeredUser == null)
 			return new ResponseEntity<RegisteredUser>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<RegisteredUser>(registeredUser, HttpStatus.OK);
@@ -57,11 +57,11 @@ public class RegisteredUserController {
 	public ResponseEntity<?> updateRegisteredUser(
 			@RequestBody RegisteredUser registeredUser) throws Exception {
 		
-		RegisteredUser existingUser = registeredUserService.findOneByEmail(registeredUser.getEmail());
+		RegisteredUser existingUser = registeredUserService.findOne(registeredUser.getId());
 		if(existingUser != null && existingUser.getId() != registeredUser.getId())
 			return new ResponseEntity<>("User with that email already exists!", HttpStatus.FORBIDDEN);
 		
-		if(registeredUserService.findOneByEmail(registeredUser.getEmail()) != null)
+		if(registeredUserService.findOne(registeredUser.getId()) != null)
 			return new ResponseEntity<>(registeredUserService.save(registeredUser), HttpStatus.OK);
 		
 		return new ResponseEntity<>("Wanted user does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);

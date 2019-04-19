@@ -9,7 +9,7 @@
             User profile edited successfully.
             </v-alert>
         </div>
-        <v-flex xs12 md4>
+        <v-flex xs12 md8>
             <h2>Edit profile</h2>
             <form v-if="!submitted">
 
@@ -103,13 +103,14 @@
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength, sameAs, numeric} from 'vuelidate/lib/validators'
 
+var MOCK_USER_ID = 1;
+
 export default {
     mixins: [validationMixin],
 
     data () {
         return {
             user: {
-                id: 1,                            // TODO: This is hardcoded. Change!
                 passwordConfirmation: ''
             },
             showPassword: false,
@@ -198,7 +199,7 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8081/api/registeredUsers/' + this.user.id).then((response) => {
+        this.$axios.get('http://localhost:8081/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
             this.user = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);
