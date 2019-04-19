@@ -8,9 +8,9 @@
                 </router-link>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn router to="/editUser">
+            <v-btn router to="/userProfile">
                 <v-icon left>account_circle</v-icon>
-                <span>Edit User</span>
+                <span>My Profile</span>
             </v-btn>
             <v-btn router to="/editAirline">
                 <v-icon left>flight</v-icon>

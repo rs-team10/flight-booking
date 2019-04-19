@@ -1,104 +1,102 @@
 <template>
-    <v-container grid-list>
-        <v-subheader>Edit user profile</v-subheader>
-        <v-layout row wrap>
-            <div>
-                <v-alert
-                    :value="submitted"
-                    type="success"
-                    transition="scale-transition"
-                >
-                User profile edited successfully.
-                </v-alert>
-            </div>
-            <v-flex xs12 md4>
-                <form v-if="!submitted">
+    <v-layout row wrap>
+        <div>
+            <v-alert
+                :value="submitted"
+                type="success"
+                transition="scale-transition"
+            >
+            User profile edited successfully.
+            </v-alert>
+        </div>
+        <v-flex xs12 md4>
+            <h2>Edit profile</h2>
+            <form v-if="!submitted">
 
-                    <v-text-field
-                        v-model="user.username"
-                        :error-messages="usernameErrors"
-                        label="Username"
-                        required
-                        @input="$v.user.username.$touch()"
-                        @blur="$v.user.username.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.username"
+                    :error-messages="usernameErrors"
+                    label="Username"
+                    required
+                    @input="$v.user.username.$touch()"
+                    @blur="$v.user.username.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.password"
-                        :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                        :type="showPassword ? 'text' : 'password'"
-                        :error-messages="passwordErrors"
-                        label="Password"
-                        required
-                        counter
-                        @click:append="showPassword = !showPassword"
-                        @input="$v.user.password.$touch()"
-                        @blur="$v.user.password.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.password"
+                    :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                    :type="showPassword ? 'text' : 'password'"
+                    :error-messages="passwordErrors"
+                    label="Password"
+                    required
+                    counter
+                    @click:append="showPassword = !showPassword"
+                    @input="$v.user.password.$touch()"
+                    @blur="$v.user.password.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.passwordConfirmation"
-                        :append-icon="showPasswordConfirmation ? 'visibility' : 'visibility_off'"
-                        :type="showPasswordConfirmation ? 'text' : 'password'"
-                        :error-messages="passwordConfirmationErrors"
-                        label="Password confirmation"
-                        required
-                        counter
-                        @click:append="showPasswordConfirmation = !showPasswordConfirmation"
-                        @input="$v.user.passwordConfirmation.$touch()"
-                        @blur="$v.user.passwordConfirmation.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.passwordConfirmation"
+                    :append-icon="showPasswordConfirmation ? 'visibility' : 'visibility_off'"
+                    :type="showPasswordConfirmation ? 'text' : 'password'"
+                    :error-messages="passwordConfirmationErrors"
+                    label="Password confirmation"
+                    required
+                    counter
+                    @click:append="showPasswordConfirmation = !showPasswordConfirmation"
+                    @input="$v.user.passwordConfirmation.$touch()"
+                    @blur="$v.user.passwordConfirmation.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.firstName"
-                        :error-messages="firstNameErrors"
-                        label="First Name"
-                        required
-                        @input="$v.user.firstName.$touch()"
-                        @blur="$v.user.firstName.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.firstName"
+                    :error-messages="firstNameErrors"
+                    label="First Name"
+                    required
+                    @input="$v.user.firstName.$touch()"
+                    @blur="$v.user.firstName.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.lastName"
-                        :error-messages="lastNameErrors"
-                        label="Last Name"
-                        required
-                        @input="$v.user.lastName.$touch()"
-                        @blur="$v.user.lastName.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.lastName"
+                    :error-messages="lastNameErrors"
+                    label="Last Name"
+                    required
+                    @input="$v.user.lastName.$touch()"
+                    @blur="$v.user.lastName.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.email"
-                        :error-messages="emailErrors"
-                        label="E-Mail"
-                        required
-                        @input="$v.user.email.$touch()"
-                        @blur="$v.user.email.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.email"
+                    :error-messages="emailErrors"
+                    label="E-Mail"
+                    required
+                    @input="$v.user.email.$touch()"
+                    @blur="$v.user.email.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.phone"
-                        :error-messages="phoneErrors"
-                        label="Phone number"
-                        required
-                        @input="$v.user.phone.$touch()"
-                        @blur="$v.user.phone.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.phone"
+                    :error-messages="phoneErrors"
+                    label="Phone number"
+                    required
+                    @input="$v.user.phone.$touch()"
+                    @blur="$v.user.phone.$touch()"
+                ></v-text-field>
 
-                    <v-text-field
-                        v-model="user.address"
-                        :error-messages="addressErrors"
-                        label="Address"
-                        required
-                        @input="$v.user.address.$touch()"
-                        @blur="$v.user.address.$touch()"
-                    ></v-text-field>
+                <v-text-field
+                    v-model="user.address"
+                    :error-messages="addressErrors"
+                    label="Address"
+                    required
+                    @input="$v.user.address.$touch()"
+                    @blur="$v.user.address.$touch()"
+                ></v-text-field>
 
-                     <v-btn @click="editUser">submit</v-btn>
-                </form>
-            </v-flex>
-        </v-layout>
-    </v-container>
+                    <v-btn @click="editUser">submit</v-btn>
+            </form>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>

@@ -12,6 +12,7 @@ import EditVehicle from './components/EditVehicle.vue'
 import ViewVehicles from './components/ViewVehicles.vue'
 import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
+import UserProfile from './views/UserProfile.vue'
 
 Vue.use(Router)
 
@@ -23,9 +24,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/editUser',
-      name: 'editUser',
-      component: EditUser
+      path: '/userProfile',
+      name: 'userProfile',
+      component: UserProfile
     },
     {
       path: '/editAirline',
