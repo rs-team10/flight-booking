@@ -34,6 +34,13 @@ public class Friendship {
 
 	public Friendship() {
 	}
+	
+	public Friendship(RequestStatus status, RegisteredUser sender, RegisteredUser receiver) {
+		super();
+		this.status = status;
+		this.sender = sender;
+		this.receiver = receiver;
+	}
 
 	public Long getId() {
 		return id;
@@ -43,13 +50,13 @@ public class Friendship {
 		return status;
 	}
 
-//	public RegisteredUser getSender() {
-//		return sender;
-//	}
-//
-//	public RegisteredUser getReceiver() {
-//		return receiver;
-//	}
+	public RegisteredUser getSender() {
+		return sender;
+	}
+
+	public RegisteredUser getReceiver() {
+		return receiver;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -59,12 +66,12 @@ public class Friendship {
 		this.status = status;
 	}
 
-//	public void setSender(RegisteredUser sender) {
-//		this.sender = sender;
-//	}
-//
-//	public void setReceiver(RegisteredUser receiver) {
-//		this.receiver = receiver;
-//	}
+	public void setSender(RegisteredUser sender) {
+		this.sender = sender;
+	}
+
+	public void setReceiver(RegisteredUser receiver) {
+		this.receiver = receiver;
+	}
 
 }

@@ -1,12 +1,16 @@
 package com.tim10.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.tim10.domain.Friendship;
 import com.tim10.domain.RegisteredUser;
+import com.tim10.domain.RequestStatus;
+import com.tim10.dto.RegisteredUserSearchDTO;
 import com.tim10.repository.RegisteredUserRepository;
 
 
@@ -43,4 +47,63 @@ public class RegisteredUserService {
 		else
 			throw new ResourceNotFoundException("Registered user with this verification code not found!"); 
 	}
+
+	public List<RegisteredUserSearchDTO> findByParameter(String parameter) {
+		return registeredUserRepository.findByParameter(parameter);
+	}
+	
+	public boolean addFriend(RegisteredUser user, RegisteredUser friend) {
+		
+		if(friendRequestSent(user, friend))
+			return false;
+		
+		Friendship userFriendship = new Friendship(RequestStatus.WAITING, user, friend);
+		Friendship friendFriendship = new Friendship(RequestStatus.WAITING, friend, user);
+		
+		user.getFriendships().add(userFriendship);
+		friend.getFriendships().add(friendFriendship);
+		
+		this.registeredUserRepository.save(user);
+		this.registeredUserRepository.save(friend);
+		
+		return true;
+	}
+	
+	private boolean friendRequestSent(RegisteredUser user, RegisteredUser friend){
+        for(Friendship f: user.getFriendships()){
+        	
+            if (f.getSender().getId().equals(user.getId()) && f.getReceiver().getId().equals(friend.getId())
+            	||
+            	f.getSender().getId().equals(friend.getId()) && f.getReceiver().getId().equals(user.getId()) ) {
+                
+            	return true;
+            }
+        }
+        return false;
+    }
+	
+
+    
+
+	public boolean acceptFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
+
+		if(friendRequestSent(currentUser, friend) && getUserFriendship(currentUser, friend).getStatus() != RequestStatus.WAITING)
+			return false;
+		
+		getUserFriendship(currentUser, friend).setStatus(RequestStatus.ACCEPTED);
+		getUserFriendship(friend, currentUser).setStatus(RequestStatus.ACCEPTED);
+        
+		this.registeredUserRepository.save(currentUser);
+		this.registeredUserRepository.save(friend);
+		
+		return true;
+	}
+	
+    private Friendship getUserFriendship(RegisteredUser user, RegisteredUser friend) {
+    	
+        for(Friendship f : user.getFriendships())
+            if (f.getSender().getId().equals(friend.getId()))
+                return f;
+        return null;
+    }
 }

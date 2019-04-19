@@ -203,7 +203,7 @@ export default {
             this.user = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);
-            });;
+            });
     }
 }
 </script>
