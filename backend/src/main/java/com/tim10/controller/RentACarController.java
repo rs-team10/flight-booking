@@ -19,7 +19,6 @@ import com.tim10.domain.RentACar;
 import com.tim10.service.RentACarService;
 
 
-@CrossOrigin
 @RestController
 public class RentACarController {
 	

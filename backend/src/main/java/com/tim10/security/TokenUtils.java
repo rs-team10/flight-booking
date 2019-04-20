@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.tim10.common.TimeProvider;
+import com.tim10.domain.Role;
 import com.tim10.domain.User;
 
 import io.jsonwebtoken.Claims;

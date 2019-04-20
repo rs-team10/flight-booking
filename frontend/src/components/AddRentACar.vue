@@ -108,13 +108,25 @@ export default {
             }
         },
         addRentACar: function(){
+            alert(localStorage.getItem("token"));
+            var yourConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }
+
+            this.$axios.interceptors.request.use(request => {
+            console.log('Starting Request', request)
+            return request
+            })
+
             this.$axios
-            .post('http://localhost:8081/api/rentACars', this.rentacar)
+            .post('http://localhost:8081/api/rentACars', this.rentacar, yourConfig)
             .then(response => {
-                console.log(response);
+
                 this.success = true;
             }).catch(error => {
-                console.log(error.response.data);
+
                 this.error = error.response.data;
             });
         }

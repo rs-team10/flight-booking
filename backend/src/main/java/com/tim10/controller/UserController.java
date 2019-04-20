@@ -117,7 +117,7 @@ public class UserController {
 		
 		//ovo obrisi 
 		Authority aut = new Authority();
-		aut.setRole(Role.ROLE_REGISTERED_USER);
+		aut.setRole(Role.ROLE_SYSTEM_ADMIN);//OVO MORA DA SE OBRISE
 		
 		user.getAuthorities().add(aut);
 		user.setVerificationCode(UUID.randomUUID().toString());		

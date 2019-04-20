@@ -113,18 +113,9 @@ export default {
             .post('http://localhost:8081/auth/login', this.user)
             .then(response => {
   
-                localStorage.setItem("accessToken", response.data.accessToken);
-                localStorage.setItem("role", response.data.role); 
-                localStorage.setItem("expiresIn", response.data.expiresIn);
-                
-                
-                localStorage.setItem("token", {
-                                                accessToken : response.data.accessToken,
-                                                role        : response.data.role,
-                                                expiresIn   : response.data.expiresIn
-                                                });
-            //za slucaj da zatreba, ne znam da li server
-            //to zna iz tokena...
+                localStorage.setItem("token", response.data.accessToken);
+                console.log(localStorage.getItem("token"));
+
             }).catch(error => {
                 this.error = error.response.data;
             });

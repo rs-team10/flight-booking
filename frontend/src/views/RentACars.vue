@@ -34,9 +34,20 @@ export default {
             this.selectedRentACar = rentACar;
             this.component = 'edit-rentACar';
         },
-        fetchHotels: function(){
+        fetchRentACars: function(){
+            var yourConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }
+
+            this.$axios.interceptors.request.use(request => {
+            console.log('Starting Request', request)
+            return request
+            })
+
             this.$axios
-            .get('http://localhost:8081/api/rentACars')
+            .get('http://localhost:8081/api/rentACars',yourConfig)
             .then(response => this.rentACars = response.data)
         }
     }
