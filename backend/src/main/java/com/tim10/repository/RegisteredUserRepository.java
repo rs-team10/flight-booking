@@ -14,9 +14,11 @@ public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, 
 	RegisteredUser findOneByEmail(String email);
 	Optional<RegisteredUser> findOneByVerificationCode (String findVerificationCode);
 	
-	@Query("SELECT u.firstName AS firstName, u.lastName AS lastName, u.email AS email " + 
+	@Query(value = "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email " + 
 			"FROM User u " + 
-			"WHERE lower(concat(u.firstName, ' ', u.lastName)) LIKE concat('%', lower(:parameter), '%')")
-	List<RegisteredUserSearchDTO> findByParameter(@Param("parameter") String parameter);
+			"WHERE lower(concat(u.first_name, ' ', u.last_name)) LIKE concat('%', lower(:parameter), '%') " +
+			"AND u.id NOT IN (SELECT f.receiver_id FROM Friendship f WHERE f.sender_id = :currentUserId) " +
+			"AND u.id != :currentUserId", nativeQuery = true)
+	List<RegisteredUserSearchDTO> findByParameter(@Param("parameter") String parameter, @Param("currentUserId") Long currentUserId);
 
 }

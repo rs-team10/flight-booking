@@ -85,11 +85,17 @@ public class RegisteredUserController {
 		
 		// TODO: Authorization
 		
-		List<RegisteredUserSearchDTO> resultList = registeredUserService.findByParameter(parameter);
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
 		
-		SearchUsersDTO usersDTO = new SearchUsersDTO(resultList);
+		if(currentUser != null) {
 		
-		return new ResponseEntity<>(usersDTO, HttpStatus.OK);
+			List<RegisteredUserSearchDTO> resultList = registeredUserService.findByParameter(parameter, currentUser.getId());
+			
+			SearchUsersDTO usersDTO = new SearchUsersDTO(resultList);
+			
+			return new ResponseEntity<>(usersDTO, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
 	@RequestMapping(
@@ -120,7 +126,7 @@ public class RegisteredUserController {
 	public ResponseEntity<?> addFriend(@RequestBody String friendEmail) {
 		
 		// TODO: Authorization
-		
+
 		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
 		
 		if(currentUser != null) {

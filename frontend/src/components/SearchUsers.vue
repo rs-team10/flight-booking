@@ -86,11 +86,11 @@ export default {
         },
         sendFriendRequest(email) {
                 this.$axios.put('http://localhost:8081/api/addFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
-               console.log(response);
+                    this.$swal('Success', 'Friend request sent successfuly', 'success')
           })
           .catch(response => {
-              console.log(response);
-          });
+              this.$swal('Unable to complete action', 'The user is already in your friends list', 'info');
+            });
         }
   },
   watch: {

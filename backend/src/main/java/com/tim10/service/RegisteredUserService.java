@@ -57,8 +57,8 @@ public class RegisteredUserService {
 	// FRIENDSHIPS
 	// =====================================================================
 	
-	public List<RegisteredUserSearchDTO> findByParameter(String parameter) {
-		return registeredUserRepository.findByParameter(parameter);
+	public List<RegisteredUserSearchDTO> findByParameter(String parameter, Long currentUserId) {
+		return registeredUserRepository.findByParameter(parameter, currentUserId);
 	}
 	
 	public List<UserFriendsDTO> getAllFriends(Long id) {
@@ -114,7 +114,8 @@ public class RegisteredUserService {
 	
     private Friendship getUserFriendship(RegisteredUser user, RegisteredUser friend) {
         for(Friendship f : user.getFriendships())
-            if (f.getSender().getId().equals(friend.getId()))
+            if (f.getSender().getId().equals(user.getId()) &&
+            		f.getReceiver().getId().equals(friend.getId()))
                 return f;
         return null;
     }
