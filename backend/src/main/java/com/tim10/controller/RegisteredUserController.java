@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RegisteredUser;
-import com.tim10.dto.RegisteredUserDTO;
 import com.tim10.dto.RegisteredUserSearchDTO;
 import com.tim10.dto.SearchUsersDTO;
+import com.tim10.dto.UserFriendsDTO;
 import com.tim10.service.RegisteredUserService;
 
 @CrossOrigin
@@ -27,70 +27,7 @@ public class RegisteredUserController {
 	@Autowired
 	private RegisteredUserService registeredUserService;
 	
-	@RequestMapping(
-			value = "/searchUsers/{parameter}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SearchUsersDTO> searchUsers(@PathVariable("parameter") String parameter) {
-		
-		List<RegisteredUserSearchDTO> resultList = registeredUserService.findByParameter(parameter);
-		
-		SearchUsersDTO usersDTO = new SearchUsersDTO(resultList);
-		
-		return new ResponseEntity<>(usersDTO, HttpStatus.OK);
-	}
-	
-	@RequestMapping(
-			value = "/addFriend",
-			method = RequestMethod.PUT,
-			consumes = MediaType.TEXT_PLAIN_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> addFriend(@RequestBody String friendEmail) {
-		
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
-		if(currentUser != null) {
-			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
-			
-			if(friend != null) {
-				boolean success = this.registeredUserService.addFriend(currentUser, friend);
-				
-				if(success) {
-					return new ResponseEntity<>(HttpStatus.OK);
-				}
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
-	
-	@RequestMapping(
-			value = "/acceptFriendRequest",
-			method = RequestMethod.PUT,
-			consumes = MediaType.TEXT_PLAIN_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> acceptFriendRequest(@RequestBody String friendEmail) {
 
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
-		if(currentUser != null) {
-			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
-			
-			if(friend != null) {
-				boolean success = this.registeredUserService.acceptFriendRequest(currentUser, friend);
-				
-				if(success) {
-					return new ResponseEntity<>(HttpStatus.OK);
-				}
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
-	
-	
 	
 	@RequestMapping(
 			value = "/registeredUsers/{id}",
@@ -138,4 +75,164 @@ public class RegisteredUserController {
 		
 		
 	}
+	
+	
+	
+	
+	@RequestMapping(
+			value = "/searchUsers/{parameter}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SearchUsersDTO> searchUsers(@PathVariable("parameter") String parameter) {
+		
+		// TODO: Authorization
+		
+		List<RegisteredUserSearchDTO> resultList = registeredUserService.findByParameter(parameter);
+		
+		SearchUsersDTO usersDTO = new SearchUsersDTO(resultList);
+		
+		return new ResponseEntity<>(usersDTO, HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value = "/getAllFriends",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<UserFriendsDTO>> getAllFriends() {
+		
+		// TODO: Authorization
+
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		
+		if(currentUser != null) {
+			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriends(currentUser.getId());
+			
+			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
+		}
+		
+		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@RequestMapping(
+			value = "/addFriend",
+			method = RequestMethod.PUT,
+			consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> addFriend(@RequestBody String friendEmail) {
+		
+		// TODO: Authorization
+		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		
+		if(currentUser != null) {
+			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
+			
+			if(friend != null) {
+				boolean success = this.registeredUserService.addFriend(currentUser, friend);
+				
+				if(success) {
+					
+					// TODO: Notification
+					
+					return new ResponseEntity<>(HttpStatus.OK);
+				}
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@RequestMapping(
+            value = "/removeFriend",
+            method = RequestMethod.PUT,
+            consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> removeFriend(@RequestBody String friendEmail){
+		
+		// TODO: Authorization
+
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		
+		if(currentUser != null) {
+			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
+			if(friend != null) {
+				
+				boolean success = this.registeredUserService.removeFriend(currentUser, friend);
+				
+				if(success) {
+					
+					// TODO: Notification
+					
+					return new ResponseEntity<>(HttpStatus.OK);
+				}
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	
+	@RequestMapping(
+			value = "/acceptFriendRequest",
+			method = RequestMethod.PUT,
+			consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> acceptFriendRequest(@RequestBody String friendEmail) {
+		
+		// TODO: Authorization
+
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		
+		if(currentUser != null) {
+			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
+			
+			if(friend != null) {
+				boolean success = this.registeredUserService.acceptFriendRequest(currentUser, friend);
+				
+				if(success) {
+					
+					// TODO: Notification
+					
+					return new ResponseEntity<>(HttpStatus.OK);
+				}
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@RequestMapping(
+            value = "/declineFriendRequest",
+            method = RequestMethod.PUT,
+            consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> declineFriendRequest(@RequestBody String friendEmail){
+		
+		// TODO: Authorization
+
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		
+		if(currentUser != null) {
+			
+			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
+			
+			if(friend != null) {
+				
+				boolean success = this.registeredUserService.declineFriendRequest(currentUser, friend);
+				if(success) {
+				
+					// TODO: Notification
+					
+					return new ResponseEntity<>(HttpStatus.OK);
+				}
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	    }
+	    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+
 }

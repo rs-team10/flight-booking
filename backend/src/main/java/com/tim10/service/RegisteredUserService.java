@@ -11,6 +11,8 @@ import com.tim10.domain.Friendship;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.RequestStatus;
 import com.tim10.dto.RegisteredUserSearchDTO;
+import com.tim10.dto.UserFriendsDTO;
+import com.tim10.repository.FriendshipRepository;
 import com.tim10.repository.RegisteredUserRepository;
 
 
@@ -19,6 +21,11 @@ public class RegisteredUserService {
 	
 	@Autowired
 	private RegisteredUserRepository registeredUserRepository;
+	
+    @Autowired
+    private FriendshipRepository friendshipRepository;
+    
+    
 	
 	public RegisteredUser save(RegisteredUser registeredUser) {
 		return registeredUserRepository.save(registeredUser);
@@ -48,9 +55,20 @@ public class RegisteredUserService {
 			throw new ResourceNotFoundException("Registered user with this verification code not found!"); 
 	}
 
+	
+	
+	
+	
 	public List<RegisteredUserSearchDTO> findByParameter(String parameter) {
+		
 		return registeredUserRepository.findByParameter(parameter);
+		
 	}
+	
+	public List<UserFriendsDTO> getAllFriends(Long id) {
+		return this.friendshipRepository.getAllFriends(id);
+	}
+
 	
 	public boolean addFriend(RegisteredUser user, RegisteredUser friend) {
 		
@@ -67,6 +85,8 @@ public class RegisteredUserService {
 		this.registeredUserRepository.save(friend);
 		
 		return true;
+		
+		// ToDo: Proveriti da li je dobro ovo
 	}
 	
 	private boolean friendRequestSent(RegisteredUser user, RegisteredUser friend){
@@ -82,7 +102,10 @@ public class RegisteredUserService {
         return false;
     }
 	
-
+	public boolean removeFriend(RegisteredUser currentUser, RegisteredUser friend) {
+		// TODO Auto-generated method stub
+		return false;
+	}
     
 
 	public boolean acceptFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
@@ -97,6 +120,8 @@ public class RegisteredUserService {
 		this.registeredUserRepository.save(friend);
 		
 		return true;
+		
+		// ToDo: Proveriti da li je dobro ovo
 	}
 	
     private Friendship getUserFriendship(RegisteredUser user, RegisteredUser friend) {
@@ -106,4 +131,18 @@ public class RegisteredUserService {
                 return f;
         return null;
     }
+    
+	public boolean declineFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+
+
+    
+    
+
+    
 }
