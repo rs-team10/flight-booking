@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="User")
@@ -34,7 +35,8 @@ public abstract class User {
 	@Column(name="lastName")
 	private String lastName;
 	
-	@Column(name="email")
+	@Column(name="email", nullable = false, unique = true)
+    @Size(min = 6, max = 50)
 	private String email;
 	
 	@Enumerated(EnumType.STRING)

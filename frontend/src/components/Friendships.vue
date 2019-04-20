@@ -15,6 +15,7 @@
             <template v-slot:items="props">
                 <td>{{ props.item.firstName }}</td>
                 <td>{{ props.item.lastName }}</td>
+                <td>{{ props.item.email }}</td>
                 <td class="text-xs-right">              
                     <v-btn depressed color="yellow" >
                         <span>Pending</span>
@@ -51,6 +52,12 @@ export default {
                     value: 'lastName'
                 },
                 {
+                    text: "Email",
+                    align: 'left',
+                    sortable: false,
+                    value: 'email'
+                },
+                {
                     text: "Status",
                     align: 'center',
                     sortable: true,
@@ -58,21 +65,21 @@ export default {
                     width: 170
                 }
             ],
-            users: [
-                {firstName: "FirstName1", lastName: "lastName"},
-                {firstName: "FirstName2", lastName: "lastName"},
-                {firstName: "FirstName3", lastName: "lastName"},
-                {firstName: "FirstName4", lastName: "lastName"},
-                {firstName: "FirstName5", lastName: "lastName"},
-                {firstName: "FirstName6", lastName: "lastName"},
-                {firstName: "FirstName7", lastName: "lastName"}
-            ]
+            users: []
         };
     },
     methods: {
         searchUsersClicked: function() {
             this.$emit('searchUsersClicked');
         }
+    },
+    created() {
+        this.$axios.get('http://localhost:8081/api/getAllFriends/').then((response) => {
+            this.users = response.data;
+            console.log(response.data);
+        }).catch(function(error) {
+                alert(error.response.data.message);
+            });
     }
 }
 </script>

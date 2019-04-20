@@ -192,8 +192,10 @@ export default {
 
             if(!this.$v.$invalid) {
                 delete this.user.passwordConfirmation;
-                this.$axios.put('http://localhost:8081/api/registeredUsers/', this.user).then((data) => {
+                this.$axios.put('http://localhost:8081/api/registeredUsers/', this.user).then((response) => {                    
                     this.submitted = true;
+                }).catch((response) => {
+                    alert(response);
                 });
             }
         }

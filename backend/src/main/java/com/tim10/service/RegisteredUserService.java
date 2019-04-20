@@ -25,8 +25,6 @@ public class RegisteredUserService {
     @Autowired
     private FriendshipRepository friendshipRepository;
     
-    
-	
 	public RegisteredUser save(RegisteredUser registeredUser) {
 		return registeredUserRepository.save(registeredUser);
 	}
@@ -36,9 +34,7 @@ public class RegisteredUserService {
 	}
 	
 	public RegisteredUser findOne(Long id) {
-		
 		Optional<RegisteredUser> user = registeredUserRepository.findById(id);
-		
 		if (user.isPresent())
 			return user.get();
 		else
@@ -57,45 +53,35 @@ public class RegisteredUserService {
 
 	
 	
-	
+	// =====================================================================
+	// FRIENDSHIPS
+	// =====================================================================
 	
 	public List<RegisteredUserSearchDTO> findByParameter(String parameter) {
-		
 		return registeredUserRepository.findByParameter(parameter);
-		
 	}
 	
 	public List<UserFriendsDTO> getAllFriends(Long id) {
-		return this.friendshipRepository.getAllFriends(id);
+		return friendshipRepository.getAllFriends(id);
 	}
 
-	
 	public boolean addFriend(RegisteredUser user, RegisteredUser friend) {
-		
 		if(friendRequestSent(user, friend))
 			return false;
-		
 		Friendship userFriendship = new Friendship(RequestStatus.WAITING, user, friend);
 		Friendship friendFriendship = new Friendship(RequestStatus.WAITING, friend, user);
-		
 		user.getFriendships().add(userFriendship);
 		friend.getFriendships().add(friendFriendship);
-		
 		this.registeredUserRepository.save(user);
 		this.registeredUserRepository.save(friend);
 		
 		return true;
-		
-		// ToDo: Proveriti da li je dobro ovo
 	}
 	
-	private boolean friendRequestSent(RegisteredUser user, RegisteredUser friend){
-        for(Friendship f: user.getFriendships()){
-        	
-            if (f.getSender().getId().equals(user.getId()) && f.getReceiver().getId().equals(friend.getId())
-            	||
+	private boolean friendRequestSent(RegisteredUser user, RegisteredUser friend) {
+        for(Friendship f: user.getFriendships()) {
+            if (f.getSender().getId().equals(user.getId()) && f.getReceiver().getId().equals(friend.getId()) ||
             	f.getSender().getId().equals(friend.getId()) && f.getReceiver().getId().equals(user.getId()) ) {
-                
             	return true;
             }
         }
@@ -103,29 +89,30 @@ public class RegisteredUserService {
     }
 	
 	public boolean removeFriend(RegisteredUser currentUser, RegisteredUser friend) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-    
-
-	public boolean acceptFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
-
-		if(friendRequestSent(currentUser, friend) && getUserFriendship(currentUser, friend).getStatus() != RequestStatus.WAITING)
-			return false;
-		
-		getUserFriendship(currentUser, friend).setStatus(RequestStatus.ACCEPTED);
-		getUserFriendship(friend, currentUser).setStatus(RequestStatus.ACCEPTED);
-        
+		Friendship userFriendship = getUserFriendship(currentUser, friend);
+		Friendship friendFriendship = getUserFriendship(friend, currentUser);
+		removeUserFriendship(currentUser, userFriendship.getId());
+		removeUserFriendship(friend, friendFriendship.getId());
+		friendshipRepository.delete(userFriendship);
+		friendshipRepository.delete(friendFriendship);
 		this.registeredUserRepository.save(currentUser);
 		this.registeredUserRepository.save(friend);
 		
 		return true;
+	}
+
+	public boolean acceptFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
+		if(friendRequestSent(currentUser, friend) && getUserFriendship(currentUser, friend).getStatus() != RequestStatus.WAITING)
+			return false;
+		getUserFriendship(currentUser, friend).setStatus(RequestStatus.ACCEPTED);
+		getUserFriendship(friend, currentUser).setStatus(RequestStatus.ACCEPTED);
+		this.registeredUserRepository.save(currentUser);
+		this.registeredUserRepository.save(friend);
 		
-		// ToDo: Proveriti da li je dobro ovo
+		return true;
 	}
 	
     private Friendship getUserFriendship(RegisteredUser user, RegisteredUser friend) {
-    	
         for(Friendship f : user.getFriendships())
             if (f.getSender().getId().equals(friend.getId()))
                 return f;
@@ -133,16 +120,25 @@ public class RegisteredUserService {
     }
     
 	public boolean declineFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!friendRequestSent(currentUser, friend) || getUserFriendship(currentUser, friend).getStatus() != RequestStatus.WAITING)
+			return false;
+		Friendship userFriendship = getUserFriendship(currentUser, friend);
+		Friendship friendFriendship = getUserFriendship(friend, currentUser);
+		removeUserFriendship(currentUser, userFriendship.getId());
+		removeUserFriendship(friend, friendFriendship.getId());
+		this.registeredUserRepository.save(currentUser);
+		this.registeredUserRepository.save(friend);
+		
+		return true;
 	}
-
-
-
-
-
-    
-    
-
-    
+	
+    private boolean removeUserFriendship(RegisteredUser user, Long id){
+        for(Friendship f: user.getFriendships()) {
+            if (f.getId().equals(id)) {
+                user.getFriendships().remove(f);
+                return true;
+            }
+        }
+        return false;
+    }
 }

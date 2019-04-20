@@ -11,26 +11,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="Friendship")
+@Table(name="Friendship", uniqueConstraints = @UniqueConstraint(columnNames = {"sender_id", "receiver_id"}))
 public class Friendship {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="status")
 	private RequestStatus status;
-	
-	//=======================================
+
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private RegisteredUser sender;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private RegisteredUser receiver;
-	//=======================================
 
 	public Friendship() {
 	}

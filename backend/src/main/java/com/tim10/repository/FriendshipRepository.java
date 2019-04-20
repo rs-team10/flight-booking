@@ -12,9 +12,9 @@ import com.tim10.dto.UserFriendsDTO;
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 	
 	
-	@Query(value = "SELECT u.* " +
-				   "FROM Friendship f JOIN User u ON f.receiver = r.id " +
-				   "WHERE f.sender = :id", nativeQuery = true)
+	@Query(value = "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email " +
+				   "FROM Friendship f JOIN User u ON f.receiver_id = u.id " +
+				   "WHERE f.sender_id = :id", nativeQuery = true)
 	List<UserFriendsDTO> getAllFriends(@Param("id") Long id);
 
 }

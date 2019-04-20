@@ -74,6 +74,7 @@ export default {
     created() {
         this.$axios.get('http://localhost:8081/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
             this.user = response.data;
+            console.log(response);
         }).catch(function(error) {
                 alert(error.response.data.message);
             });;

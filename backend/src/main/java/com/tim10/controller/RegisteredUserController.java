@@ -61,19 +61,17 @@ public class RegisteredUserController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateRegisteredUser(
-			@RequestBody RegisteredUser registeredUser) throws Exception {
+	public ResponseEntity<?> updateRegisteredUser(@RequestBody RegisteredUser registeredUser) throws Exception {
 		
-		RegisteredUser existingUser = registeredUserService.findOne(registeredUser.getId());
+		RegisteredUser existingUser = registeredUserService.findOneByEmail(registeredUser.getEmail());
+		
 		if(existingUser != null && existingUser.getId() != registeredUser.getId())
-			return new ResponseEntity<>("User with that email already exists!", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>("Email is already connected to another account.", HttpStatus.FORBIDDEN);
 		
 		if(registeredUserService.findOne(registeredUser.getId()) != null)
 			return new ResponseEntity<>(registeredUserService.save(registeredUser), HttpStatus.OK);
 		
-		return new ResponseEntity<>("Wanted user does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
-		
-		
+		return new ResponseEntity<>("User not found.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	
@@ -105,8 +103,9 @@ public class RegisteredUserController {
 		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
 		
 		if(currentUser != null) {
+
 			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriends(currentUser.getId());
-			
+
 			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
 		}
 		
