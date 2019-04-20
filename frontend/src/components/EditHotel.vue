@@ -100,6 +100,15 @@
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
+
+                            <v-dialog v-model="specialPricesDialog" max-width="800px">
+                                <component 
+                                    v-bind:is="component"
+                                    v-bind:selectedRoomType="selectedRoomType"
+                                ></component>
+                            </v-dialog>
+
+
                         </v-toolbar>
 
                         <v-data-table
@@ -119,26 +128,27 @@
                                 <td >{{ props.item.averageFeedback }}</td>
 
                                 <td class="justify-center layout px-0">
-                                    <v-icon
-                                        small
-                                        class="mr-2"
-                                        @click="roomEditItem(props.item)">
-                                    edit
-                                    </v-icon>
-                                    <v-icon
-                                        small
-                                        class="mr-2"
-                                        @click="roomDeleteItem(props.item)">
-                                    delete
-                                    </v-icon>
-                                    <v-icon
-                                        small
-                                        class="mr-2"
-                                        @click="roomDeleteItem(props.item)">
-                                    gesture
-                                    </v-icon>
+                                <v-icon
+                                    small
+                                    class="mr-2"
+                                    @click="roomEditItem(props.item)">
+                                edit
+                                </v-icon>
+                                <v-icon
+                                    small
+                                    class="mr-2"
+                                    @click="roomDeleteItem(props.item)">
+                                delete
+                                </v-icon>
+                                <v-icon
+                                    small
+                                    class="mr-2"
+                                    @click="specialRoomPrice(props.item)">
+                                gesture
+                                </v-icon>
                                 </td>
                             </template>
+
                         </v-data-table>
                         <div class="text-xs-center pt-2">
                             <v-pagination v-model="roomPagination.page" :length="roomPages"></v-pagination>
@@ -237,8 +247,13 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
+import SpecialRoomPrices from "@/components/SpecialRoomPrices.vue"
 
 export default {
+    components: {
+        "specialRoomPrices" : SpecialRoomPrices
+    },
+
     props: ['selectedHotel'],
 
     mixins: [validationMixin],
@@ -253,6 +268,8 @@ export default {
     },
     data(){
         return {
+            component: "specialRoomPrices",
+            selectedRoomType: {},
             //ZA SERVICE DATA TABLE
             //===========================================
             serviceDialog: false,
@@ -271,6 +288,7 @@ export default {
             //ZA ROOM TYPES DATA TABLE
             //===========================================
             roomDialog: false,
+            specialPricesDialog: false,
             roomPagination: {},
             roomsHeaders: [
                 //image
@@ -285,7 +303,7 @@ export default {
             ],
             roomEditedIndex: -1,
             roomEditedItem: {},
-            roomDefaultItem: {},
+            roomDefaultItem: {}, 
             //===========================================
 
             success: false,
@@ -343,7 +361,7 @@ export default {
         editHotel: function(){
             this.$axios
             .put('http://localhost:8081/api/hotels/' + this.selectedHotel.id, this.selectedHotel)
-            .then(response => {
+            .then(() => {
                 this.success = true;
                 setTimeout(() => {
                     this.success = false
@@ -408,6 +426,10 @@ export default {
             }
             this.roomClose()
         },
+        specialRoomPrice(item){
+            this.selectedRoomType = item
+            this.specialPricesDialog = true
+        }
         //=========================================================================================
     }
 }
