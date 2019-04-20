@@ -7,7 +7,7 @@
                 type="success"
                 transition="scale-transition"
             >
-            Login DONE!.
+            Login DONE!
             </v-alert>
 
             <v-alert
@@ -56,11 +56,9 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { required, email, minLength, sameAs, numeric} from 'vuelidate/lib/validators'
+import { required} from 'vuelidate/lib/validators'
 
 export default {
-    mixins: [validationMixin],
 
     data () {
         return {
@@ -110,14 +108,19 @@ export default {
         logIn: function(){
            
             this.$axios
-            .post('http://localhost:8081/auth/login', this.user)
+            .post('http://localhost:8080/auth/login', this.user)
             .then(response => {
-  
-                localStorage.setItem("token", response.data.accessToken);
-                console.log(localStorage.getItem("token"));
-
+                if(response.data.accessToken == undefined){
+                    this.error = "Wrong username or password!";
+                }
+                else{
+                    localStorage.setItem("token", response.data.accessToken);
+                    localStorage.setItem("username", this.user.username);
+                    localStorage.setItem("role", response.data.role);
+                    this.success=true;
+                }
             }).catch(error => {
-                this.error = error.response.data;
+                this.error = "Wrong username or password!";
             });
         }
     }

@@ -23,12 +23,19 @@ public class RegisteredUserService {
 	
 	
 	
-	public RegisteredUser save(RegisteredUser registeredUser) {
+	public RegisteredUser firstSave(RegisteredUser registeredUser) {
 		
 		
 		String password = passwordEncoder.encode(registeredUser.getPassword());
 		System.out.println(password);
 		registeredUser.setPassword(password);
+
+
+		return registeredUserRepository.save(registeredUser);
+	}
+	
+	public RegisteredUser save(RegisteredUser registeredUser) {
+		
 
 
 		return registeredUserRepository.save(registeredUser);

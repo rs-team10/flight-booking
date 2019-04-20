@@ -342,7 +342,7 @@ export default {
         },
         editHotel: function(){
             this.$axios
-            .put('http://localhost:8081/api/hotels/' + this.selectedHotel.id, this.selectedHotel)
+            .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel)
             .then(response => {
                 this.success = true;
                 setTimeout(() => {

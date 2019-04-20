@@ -52,7 +52,7 @@ export default {
           })
 
           this.$axios
-          .get('http://localhost:8081/api/rentACars',yourConfig)
+          .get('http://localhost:8080/api/rentACars',yourConfig)
           .then(response => this.rentACars = response.data)
       },
       rentACarSelected: function(rentACar){

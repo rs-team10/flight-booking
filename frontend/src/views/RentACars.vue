@@ -37,7 +37,8 @@ export default {
         fetchRentACars: function(){
             var yourConfig = {
                 headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
+                    Authorization: "Bearer " + localStorage.getItem("token") 
+
                 }
             }
 
@@ -47,7 +48,7 @@ export default {
             })
 
             this.$axios
-            .get('http://localhost:8081/api/rentACars',yourConfig)
+            .get('http://localhost:8080/api/rentACars',yourConfig)
             .then(response => this.rentACars = response.data)
         }
     }

@@ -237,7 +237,7 @@ export default {
         },
         addHotel: function(){
             this.$axios
-            .post('http://localhost:8081/api/hotels', this.hotel)
+            .post('http://localhost:8080/api/hotels', this.hotel)
             .then(response => {
                 this.success = true;
                 setTimeout(() => {
