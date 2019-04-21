@@ -75,24 +75,19 @@ public class RegisteredUserController {
 	}
 	
 	
-	
+	// =====================================================================
+	// FRIENDSHIPS
+	// =====================================================================
 	
 	@RequestMapping(
 			value = "/searchUsers/{parameter}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SearchUsersDTO> searchUsers(@PathVariable("parameter") String parameter) {
-		
-		// TODO: Authorization
-		
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
-		
 			List<RegisteredUserSearchDTO> resultList = registeredUserService.findByParameter(parameter, currentUser.getId());
-			
 			SearchUsersDTO usersDTO = new SearchUsersDTO(resultList);
-			
 			return new ResponseEntity<>(usersDTO, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -103,18 +98,24 @@ public class RegisteredUserController {
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<UserFriendsDTO>> getAllFriends() {
-		
-		// TODO: Authorization
-
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
-
 			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriends(currentUser.getId());
-
 			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
 		}
-		
+		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@RequestMapping(
+			value = "/getAllFriendshipRequests",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<UserFriendsDTO>> getAllFriendshipRequests() {
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
+		if(currentUser != null) {
+			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriendshipRequests(currentUser.getId());
+			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
+		}
 		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
@@ -124,17 +125,11 @@ public class RegisteredUserController {
 			consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> addFriend(@RequestBody String friendEmail) {
-		
-		// TODO: Authorization
-
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
 			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
-			
 			if(friend != null) {
 				boolean success = this.registeredUserService.addFriend(currentUser, friend);
-				
 				if(success) {
 					
 					// TODO: Notification
@@ -154,17 +149,11 @@ public class RegisteredUserController {
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> removeFriend(@RequestBody String friendEmail){
-		
-		// TODO: Authorization
-
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
-		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
 			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
 			if(friend != null) {
-				
 				boolean success = this.registeredUserService.removeFriend(currentUser, friend);
-				
 				if(success) {
 					
 					// TODO: Notification
@@ -185,17 +174,11 @@ public class RegisteredUserController {
 			consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> acceptFriendRequest(@RequestBody String friendEmail) {
-		
-		// TODO: Authorization
-
-		RegisteredUser currentUser = this.registeredUserService.findOne(4L); // TODO: Hardcoded
-		
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
 			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
-			
 			if(friend != null) {
 				boolean success = this.registeredUserService.acceptFriendRequest(currentUser, friend);
-				
 				if(success) {
 					
 					// TODO: Notification
@@ -214,21 +197,14 @@ public class RegisteredUserController {
             method = RequestMethod.PUT,
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> declineFriendRequest(@RequestBody String friendEmail){
-		
-		// TODO: Authorization
-
-		RegisteredUser currentUser = this.registeredUserService.findOne(2L); // TODO: Hardcoded
-		
+    public ResponseEntity<?> declineFriendRequest(@RequestBody String friendEmail) {
+		RegisteredUser currentUser = this.registeredUserService.findOne(1L); 			// TODO: Hardcoded
 		if(currentUser != null) {
-			
 			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
-			
 			if(friend != null) {
-				
 				boolean success = this.registeredUserService.declineFriendRequest(currentUser, friend);
 				if(success) {
-				
+		
 					// TODO: Notification
 					
 					return new ResponseEntity<>(HttpStatus.OK);

@@ -21,6 +21,7 @@
                 <component v-bind:is="activeComponent"
                    v-on:showFriendshipsClicked="changeToFriendships($event)"
                    v-on:searchUsersClicked="changeToSearch($event)"
+                   v-on:showFriendRequestsClicked="changeToFriendRequests($event)"
             />
             </v-layout>
 
@@ -33,6 +34,7 @@
 import EditUser from "@/components/EditUser.vue"
 import Friendships from "@/components/Friendships.vue"
 import SearchUsers from "@/components/SearchUsers.vue"
+import FriendRequests from "@/components/FriendRequests.vue"
 
 var MOCK_USER_ID = 1;
 
@@ -40,7 +42,8 @@ export default {
     components: {
         'edit-user' : EditUser,
         'friendships': Friendships,
-        'search-users' : SearchUsers
+        'search-users' : SearchUsers,
+        'friend-requests': FriendRequests
     },
     props: {
         userAvatar: {
@@ -53,11 +56,11 @@ export default {
             activeComponent: 'friendships',
             showProfile: true,
             user: {
-                firstName: 'TestName',
-                lastName: 'TestSurname',
-                email: 'test@flightbooking.com',
-                phone: '123123123',
-                address: 'Toronto, ON, Canada'
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: '',
+                address: ''
             }
         };
     },
@@ -69,6 +72,10 @@ export default {
         changeToSearch: function() {
             this.activeComponent = 'search-users';
             this.showProfile = false;
+        },
+        changeToFriendRequests: function() {
+            this.activeComponent = 'friend-requests';
+            this.showProfile = true;
         }
     },
     created() {

@@ -1,18 +1,11 @@
 <template>
     <v-layout column>
-        <h2>Friendships</h2>
-        <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search friends list"
-            single-line
-        ></v-text-field>
-
+        <h2>Pending friendship requests</h2>
         <v-data-table
             :headers="headers"
             :items="users"
-            :search="search"
             v-bind:pagination.sync="pagination">
+
             <template v-slot:items="props">
                 <td>{{ props.item.firstName }}</td>
                 <td>{{ props.item.lastName }}</td>
@@ -23,30 +16,28 @@
                     </v-btn>
                 </td>
                 <td class="text-xs-right">              
-                    <v-btn dark depressed color="red" @click="deleteFriendRequest(props.item.email)">
-                        <span>Remove</span>
+                    <v-btn dark depressed color="green" @click="acceptFriendRequest(props.item.email)">
+                        <span>Accept</span>
+                    </v-btn>
+                </td>
+                <td class="text-xs-right">              
+                    <v-btn dark depressed color="red" @click="declineFriendRequest(props.item.email)">
+                        <span>Decline</span>
                     </v-btn>
                 </td>
             </template>
             <v-alert v-slot:no-results :value="true" color="error" icon="warning">
-                Your search for "{{ search }}" found no results.
+                No results.
             </v-alert>
         </v-data-table>
-        <div class="text-xs-right">
-            <v-btn v-on:click="searchUsersClicked()" color="green" dark class="mt-3">Search Users</v-btn>
-        </div>
-        <div class="text-xs-right">
-            <v-btn v-on:click="showFriendRequestsClicked()" color="blue" dark class="mt-3">Friend Requests</v-btn>
-        </div>
     </v-layout>
 </template>
 
 <script>
 export default {
-    name: "friendships",
+    name: 'friend-requests',
     data() {
         return {
-            search: '',
             headers: [
                 {
                     text: "First Name",
@@ -74,10 +65,17 @@ export default {
                     width: 170
                 },
                 {
-                    text: "Actions",
+                    text: "",
                     align: 'center',
                     sortable: false,
-                    value: 'actions',
+                    value: 'accept',
+                    width: 70
+                },
+                {
+                    text: "",
+                    align: 'center',
+                    sortable: false,
+                    value: 'decline',
                     width: 70
                 }
             ],
@@ -94,43 +92,31 @@ export default {
             else
                 return "red";
         },
-        searchUsersClicked: function() {
-            this.$emit('searchUsersClicked');
-        },
-        showFriendRequestsClicked: function() {
-            this.$emit('showFriendRequestsClicked');
-        },
-        deleteFriendRequest: function(email) {
-
-            this.$swal({
-                title: 'Are you sure?',
-                text: 'You can\'t revert your action',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                showCloseButton: true,
-            }).then((result) => {
-
-                if(result.value) {
-
-                    var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
-                    (removeIndex >= 0) && this.users.splice(removeIndex, 1);
-
-                    this.$axios.put('http://localhost:8081/api/removeFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
-                        this.$swal('Deleted', 'You successfully removed the user from friends list', 'success');
-                    })
-                    .catch(response => {
-                        console.log(response);
-                    });           
-                }
+        acceptFriendRequest: function(email) {
+            var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
+            
+            this.$axios.put('http://localhost:8081/api/acceptFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+                (removeIndex >= 0) && this.users.splice(removeIndex, 1);
+                this.$swal('Accepted', 'Friend request accepted.', 'success');
             })
+            .catch(response => {
+                console.log(response);
+            });           
+        },
+        declineFriendRequest: function(email) {
+            var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
+            
+            this.$axios.put('http://localhost:8081/api/declineFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+                (removeIndex >= 0) && this.users.splice(removeIndex, 1);
+                this.$swal('Declined', 'Friend request declined.', 'success');
+            })
+            .catch(response => {
+                console.log(response);
+            });
         }
     },
     created() {
-        this.$axios.get('http://localhost:8081/api/getAllFriends/').then((response) => {
+        this.$axios.get('http://localhost:8081/api/getAllFriendshipRequests/').then((response) => {
             this.users = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);

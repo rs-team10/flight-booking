@@ -64,6 +64,10 @@ public class RegisteredUserService {
 	public List<UserFriendsDTO> getAllFriends(Long id) {
 		return friendshipRepository.getAllFriends(id);
 	}
+	
+	public List<UserFriendsDTO> getAllFriendshipRequests(Long id) {
+		return friendshipRepository.getAllFriendshipRequests(id);
+	}
 
 	public boolean addFriend(RegisteredUser currentUser, RegisteredUser friend) {
 		if(friendRequestSent(currentUser, friend))
