@@ -127,8 +127,10 @@ public class RegisteredUserService {
 		Friendship friendFriendship = getUserFriendship(friend, currentUser);
 		removeUserFriendship(currentUser, userFriendship.getId());
 		removeUserFriendship(friend, friendFriendship.getId());
-		this.registeredUserRepository.save(currentUser);
-		this.registeredUserRepository.save(friend);
+		friendshipRepository.deleteById(userFriendship.getId());
+		friendshipRepository.deleteById(friendFriendship.getId());
+		registeredUserRepository.save(currentUser);
+		registeredUserRepository.save(friend);
 		
 		return true;
 	}

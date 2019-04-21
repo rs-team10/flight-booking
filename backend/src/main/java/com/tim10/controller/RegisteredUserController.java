@@ -188,7 +188,7 @@ public class RegisteredUserController {
 		
 		// TODO: Authorization
 
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		RegisteredUser currentUser = this.registeredUserService.findOne(4L); // TODO: Hardcoded
 		
 		if(currentUser != null) {
 			RegisteredUser friend = this.registeredUserService.findOneByEmail(friendEmail);
@@ -218,7 +218,7 @@ public class RegisteredUserController {
 		
 		// TODO: Authorization
 
-		RegisteredUser currentUser = this.registeredUserService.findOne(1L); // TODO: Hardcoded
+		RegisteredUser currentUser = this.registeredUserService.findOne(2L); // TODO: Hardcoded
 		
 		if(currentUser != null) {
 			
