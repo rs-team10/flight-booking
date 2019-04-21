@@ -1,7 +1,91 @@
 <template>
     <v-card>
+
+      <v-dialog v-model="addDialog" max-width="600" persistent>
+
+        <template v-slot:activator="{on}">
+          <v-btn color="primary" dark class="mb-2" v-on="on">New special price</v-btn>
+        </template>
+
+        <v-card id="addSpecialPrice">
+          <v-card-title>
+            <span class="headline">New special price</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs4>
+                  <v-text-field 
+                    v-model="newPrice" 
+                    label="Special price" 
+                    prepend-icon="attach_money"
+                    type="number">
+                  </v-text-field>
+                </v-flex>
+
+                <v-flex xs4>
+                  <v-menu
+                    v-model="addStartDateMenu"
+                    :close-on-content-click="true"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="addStartDate"
+                        prepend-icon="event"
+                        readonly
+                        label="Start date"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addStartDate" @input="startMenu = false" :min="minDate"></v-date-picker>
+                  </v-menu>
+                </v-flex>
+
+                <v-flex xs4>
+                  <v-menu
+                    v-model="addEndDateMenu"
+                    :close-on-content-click="true"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="addEndDate"
+                        prepend-icon="event"
+                        readonly
+                        label="End date"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addEndDate" @input="startMenu = false" :min="minDate"></v-date-picker>
+                  </v-menu>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click="closeAddDialog">Cancel</v-btn>
+            <v-btn color="blue darken-1" flat @click="savePrice">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+
+      </v-dialog>
+
       <v-data-table
-        :items="temps"
+        :items="selectedRoomType.specialRoomPrices"
         :headers="headers"
         class="elevation-1"
         hide-actions
@@ -13,16 +97,14 @@
               large
               lazy
               persistent
-              @save="save"
-              @cancel="cancel"
-              @open="open"
-              @close="close">
+              >
             {{ props.item.price }}
               <template v-slot:input>
                 <v-text-field
                   v-model="props.item.price"
                   label="Edit"
                   single-line
+                  type="number"
                 ></v-text-field>
               </template>
             </v-edit-dialog>
@@ -30,15 +112,11 @@
 
             <td>
               <v-edit-dialog
-                :return-value.sync="props.item.dateFrom"
+                :return-value.sync="props.item.validFrom"
                 large
                 lazy
-                persistent
-                @save="save"
-                @cancel="cancel"
-                @open="open"
-                @close="close">
-              {{ props.item.dateFrom }}
+                persistent>
+              {{ props.item.validFrom }}
                 <template v-slot:input>
                   <v-menu
                     v-model="startMenu"
@@ -51,14 +129,14 @@
                     min-width="290px">
                     <template v-slot:activator="{ on }">
                       <v-text-field
-                        v-model="props.item.dateFrom"
+                        v-model="props.item.validFrom"
                         prepend-icon="event"
                         readonly
                         v-on="on"
                       ></v-text-field>
                     </template>
                       <v-date-picker 
-                        v-model="props.item.dateFrom" 
+                        v-model="props.item.validFrom" 
                         @input="startMenu = false"
                         :min="minDate">
                       </v-date-picker>
@@ -69,50 +147,45 @@
 
             <td>
               <v-edit-dialog
-                :return-value.sync="props.item.dateFrom"
+                :return-value.sync="props.item.validTo"
                 large
                 lazy
-                persistent
-                @save="save"
-                @cancel="cancel"
-                @open="open"
-                @close="close">
-              {{ props.item.dateTo }}
-              <template v-slot:input>
-                <v-menu
-                  v-model="endMenu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  lazy
-                  transition="scale-transition"
-                  offset-y
-                  full-width
-                  min-width="290px">
-                  <template v-slot:activator="{ on }">
-                    <v-text-field
-                      v-model="props.item.dateTo"
-                      prepend-icon="event"
-                      readonly
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker 
-                    v-model="props.item.dateTo" 
-                    @input="endMenu = false"
-                    :min="minDate">
-                  </v-date-picker>
-                </v-menu>
-              </template>
+                persistent>
+                {{ props.item.validTo }}
+                <template v-slot:input>
+                  <v-menu
+                    v-model="endMenu"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px">
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="props.item.validTo"
+                        prepend-icon="event"
+                        readonly
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker 
+                      v-model="props.item.validTo" 
+                      @input="endMenu = false"
+                      :min="minDate">
+                    </v-date-picker>
+                  </v-menu>
+                </template>
               </v-edit-dialog>
+            </td>
+
+            <td class="justify-center layout px-0">
+              <v-icon size="20px" @click="deletePrice(props.item)">delete</v-icon>
             </td>
         </template>
       </v-data-table>
 
-      <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat>Cancel</v-btn>
-          <v-btn color="blue darken-1" flat>Save</v-btn>
-      </v-card-actions>
   </v-card>
 </template>
     
@@ -129,19 +202,45 @@ export default {
       endMenu: false,
       minDate: new Date().toISOString().substr(0, 10),
       
-      temps: [
-        {
-          price: 30,
-          dateFrom: '2019-04-20',
-          dateTo: '2019-04-25'
-        }
-      ],
+      addDialog: false,
+
+      newPrice: null,
+      addStartDate: new Date().toISOString().substr(0, 10),
+      addStartDateMenu: false,
+      addEndDate: new Date().toISOString().substr(0, 10),
+      addEndDateMenu: false,
+
+      newSpecialPrice: {},
+      
       headers: [
-        { text: "Price", align: "left", sortable: false, value: "price" },
+        { text: "Price", align: "left", sortable: false, value: "price"},
         { text: "Start date", align: "left", sortable: false, value: "startDate" },
-        { text: "End date", align: "left", sortable: false, value: "endDate" }
+        { text: "End date", align: "left", sortable: false, value: "endDate" },
+        { text: "", align: "right", sortable: false, value: "actions" }
 
       ]
+    }
+  },
+  methods:{
+    savePrice(){
+      this.newSpecialPrice = 
+        { price: this.newPrice, 
+          validFrom: this.addStartDate.substr(0, 10), 
+          validTo: this.addEndDate.substr(0, 10)
+        }
+      this.selectedRoomType.specialRoomPrices.push(this.newSpecialPrice);
+      this.closeAddDialog();
+    },
+    closeAddDialog(){
+      this.addDialog = false;
+      this.newPrice = null;
+      this.addStartDate = new Date().toISOString();
+      this.addEndDate = new Date().toISOString();
+    },
+
+    deletePrice(item){
+      const index = this.selectedRoomType.specialRoomPrices.indexOf(item);
+      this.selectedRoomType.specialRoomPrices.splice(index, 1);
     }
   }
 };

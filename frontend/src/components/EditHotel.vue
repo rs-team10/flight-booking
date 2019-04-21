@@ -140,12 +140,19 @@
                                     @click="roomDeleteItem(props.item)">
                                 delete
                                 </v-icon>
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                    @click="specialRoomPrice(props.item)">
-                                gesture
-                                </v-icon>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon
+                                            small
+                                            class="mr-2"
+                                            @click="specialRoomPrice(props.item)"
+                                            v-on="on">
+                                            list 
+                                        </v-icon>
+
+                                    </template>
+                                    <span>Special prices</span>
+                                </v-tooltip>     
                                 </td>
                             </template>
 
@@ -355,6 +362,7 @@ export default {
             this.$v.$touch();
 
             if(!this.$v.$invalid){
+                console.log(this.selectedHotel);
                 this.editHotel();
             }
         },
@@ -422,7 +430,9 @@ export default {
                 Object.assign(this.selectedHotel.roomTypes[this.roomEditedIndex], this.roomEditedItem)
             }else{
                 //ako nijedan item nije selektovan znaci da dodajemo novi
-                this.selectedHotel.roomTypes.push(this.roomEditedItem)
+                this.roomEditedItem["specialRoomPrices"] = new Array();
+                this.selectedHotel.roomTypes.push(this.roomEditedItem);
+                console.log(this.selectedHotel);
             }
             this.roomClose()
         },
@@ -431,6 +441,9 @@ export default {
             this.specialPricesDialog = true
         }
         //=========================================================================================
+    },
+    created(){
+        console.log(this.selectedHotel);
     }
 }
 </script>

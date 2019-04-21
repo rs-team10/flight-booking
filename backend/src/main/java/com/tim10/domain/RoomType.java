@@ -2,6 +2,7 @@ package com.tim10.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -54,7 +55,7 @@ public class RoomType implements Serializable {
 	private Set<SpecialRoomPrice> specialRoomPrices;
 
 	public RoomType() {
-		super();
+		specialRoomPrices = new HashSet<SpecialRoomPrice>();
 	}
 
 	public Long getId() {
