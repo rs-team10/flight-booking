@@ -14,7 +14,17 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 	
 	@Query(value = "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
 				   "FROM Friendship f JOIN User u ON f.receiver_id = u.id " +
-				   "WHERE f.sender_id = :id", nativeQuery = true)
+				   "WHERE f.sender_id = :id " +
+				   "UNION ALL " +
+				   "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
+				   "FROM Friendship f JOIN User u ON f.sender_id = u.id " +
+				   "WHERE f.receiver_id = :id", nativeQuery = true)
 	List<UserFriendsDTO> getAllFriends(@Param("id") Long id);
+
+	@Query(value = "SELECT * " + 
+					"FROM Friendship f " +
+					"WHERE (f.sender_id = :userId AND f.receiver_id = :friendId) " +
+					"OR (f.sender_id = :friendId AND f.receiver_id = :userId)", nativeQuery = true)
+	Friendship findOneByUserAndFriend(@Param("userId") Long userId, @Param("friendId") Long friendId);
 
 }

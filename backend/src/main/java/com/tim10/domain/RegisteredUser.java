@@ -35,7 +35,7 @@ public class RegisteredUser extends User {
 	private Set<Reservation> reservations;
 	
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="sender", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Friendship> friendships;
 
 	public RegisteredUser() {

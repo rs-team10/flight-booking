@@ -7,12 +7,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="Friendship", uniqueConstraints = @UniqueConstraint(columnNames = {"sender_id", "receiver_id"}))
+@Table(name="Friendship")
 public class Friendship {
 	
 	@Id
@@ -24,10 +24,12 @@ public class Friendship {
 	@Column(name="status")
 	private RequestStatus status;
 
-	@OneToOne
+	@ManyToOne
+	@JoinColumn(name="sender_id", nullable=false)
 	private RegisteredUser sender;
 	
-	@OneToOne
+	@ManyToOne
+	@JoinColumn(name="receiver_id", nullable=false)
 	private RegisteredUser receiver;
 
 	public Friendship() {
