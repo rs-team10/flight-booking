@@ -23,7 +23,7 @@ public class BranchOffice {
 	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Location location;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="branchOffice", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Vehicle> vehicle;
 	
 	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

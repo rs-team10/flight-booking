@@ -65,9 +65,10 @@ public class VehicleController {
 	
 	@RequestMapping(
 			value = "api/vehicles",
-			method = RequestMethod.PUT,
+			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> changeVehicle(Vehicle vehicle){
+	public ResponseEntity<?> changeVehicle(
+			@RequestBody Vehicle vehicle){
 		
 		
 		try {
@@ -116,9 +117,5 @@ public class VehicleController {
 
 	
 	
-	
-
-	
-	//SELECT * FROM flight_booking.vehicles where branch_office_id = 2;
 
 }

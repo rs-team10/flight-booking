@@ -261,9 +261,9 @@ export default {
         },
         editVehicle: function(){
             this.$axios
-            .post('http://localhost:8081/api/editVehicle', this.vehicle)
-            .then(function(response){
-                alert("Vehicle is edited");
+            .post('http://localhost:8080/api/vehicles', this.selectedVehicle)
+            .then(response => {
+                alert(response.data);
             }).catch(function(error) {
                 alert(error.response.data.message);
             });

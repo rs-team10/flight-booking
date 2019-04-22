@@ -143,20 +143,8 @@ public class VehicleService {
 	
 	
 	public Vehicle changeVehicle(Vehicle vehicle) throws ResourceNotFoundException {
+		
 		Long id = vehicle.getId();
-		
-		
-		/*
-		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(branchOfficeId);
-		if(!branchOfficeMyb.isPresent())
-			throw new ResourceNotFoundException("Branch office with id: "+branchOfficeId+" doesn't exist!"); 
-		*/
-		
-		/*proveri da li je to vozilo od tog brancha... 
-		pitaj da li mora... 
-		ako mora onda to moras dto da dodas id brancha i da to cuvas na forntu
-		*/
-		
 		Vehicle forChange = vehicleRepository.findById(id).get();
 		
 		if(forChange==null)
@@ -190,33 +178,15 @@ public class VehicleService {
 	public void deleteById(Long VehicleId) throws ResourceNotFoundException {
 
 		
-		//NEMAM POJMA KAKO
-		
-		
-		
 		Optional<Vehicle> vehicleMyb = vehicleRepository.findById(VehicleId);
 
+		
 		if(!vehicleMyb.isPresent()) 
 			throw new ResourceNotFoundException("Vehicle with id: "+VehicleId+" doesn't exist!");
-		Vehicle vehicle = vehicleMyb.get();
+		//Vehicle vehicle = vehicleMyb.get();
 		
-		//Long boId = vehicle.getBranchOffice().getId();
-	
-		BranchOffice branchOffice = vehicle.getBranchOffice();
-		
-		/*
-		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(boId);
 
-		if(!branchOfficeMyb.isPresent()) 
-			throw new ResourceNotFoundException("Branch office with id: "+boId+" doesn't exist!");
-
-		
-		
-		BranchOffice branchOffice = branchOfficeMyb.get();
-		*/
-		branchOffice.getVehicle().remove(vehicle);
-		branchOfficeRepository.save(branchOffice);
-		//vehicleRepository.deleteById(VehicleId);
+		vehicleRepository.deleteById(VehicleId);
 		
 		
 
