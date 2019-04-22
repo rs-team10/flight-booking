@@ -95,7 +95,7 @@ export default {
         acceptFriendRequest: function(email) {
             var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
             
-            this.$axios.put('http://localhost:8081/api/acceptFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+            this.$axios.put('http://localhost:8080/api/acceptFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
                 (removeIndex >= 0) && this.users.splice(removeIndex, 1);
                 this.$swal('Accepted', 'Friend request accepted.', 'success');
             })
@@ -106,7 +106,7 @@ export default {
         declineFriendRequest: function(email) {
             var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
             
-            this.$axios.put('http://localhost:8081/api/declineFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+            this.$axios.put('http://localhost:8080/api/declineFriendRequest/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
                 (removeIndex >= 0) && this.users.splice(removeIndex, 1);
                 this.$swal('Declined', 'Friend request declined.', 'success');
             })
@@ -116,7 +116,7 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8081/api/getAllFriendshipRequests/').then((response) => {
+        this.$axios.get('http://localhost:8080/api/getAllFriendshipRequests/').then((response) => {
             this.users = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);

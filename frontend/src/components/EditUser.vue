@@ -202,7 +202,7 @@ export default {
 
             if(!this.$v.$invalid) {
                 delete this.user.passwordConfirmation;
-                this.$axios.put('http://localhost:8081/api/registeredUsers/', this.user).then((response) => {                    
+                this.$axios.put('http://localhost:8080/api/registeredUsers/', this.user).then((response) => {                    
                     this.submitted = true;
                 }).catch((response) => {
                     alert(response);
@@ -215,7 +215,7 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8081/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
+        this.$axios.get('http://localhost:8080/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
             this.user = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);

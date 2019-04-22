@@ -63,7 +63,7 @@ export default {
   },
   methods: {
       searchUsers () {
-          this.$axios.get('http://localhost:8081/api/searchUsers/' + this.search).then((response) => {
+          this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search).then((response) => {
               this.users = response.data.users;
           })
           .catch(response => {
@@ -85,7 +85,7 @@ export default {
         return users.slice(from, to);
         },
         sendFriendRequest(email) {
-                this.$axios.put('http://localhost:8081/api/addFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+                this.$axios.put('http://localhost:8080/api/addFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
                     this.$swal('Success', 'Friend request sent successfuly', 'success')
           })
           .catch(response => {
