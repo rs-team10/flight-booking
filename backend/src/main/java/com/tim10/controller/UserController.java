@@ -63,7 +63,7 @@ public class UserController {
 		return new ResponseEntity<User>(userPres.get(), HttpStatus.OK);
 		
 	}
-	*/
+	
 	
 	@RequestMapping(
 			value = "/api/users/{email}",
@@ -82,7 +82,7 @@ public class UserController {
 		
 	}
 	
-	
+	*/
 	
 	
 
