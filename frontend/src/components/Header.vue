@@ -22,7 +22,11 @@
             </v-btn>
             <v-btn router to="/rentACars">
                 <v-icon left>directions_car</v-icon>
-                <span>Rent-a-cars</span>
+                <span>Rent a cars</span>
+            </v-btn>
+            <v-btn router v-bind:to = "route" @click = "log()">
+                <v-icon left>rowing</v-icon>
+                <span>{{this.title}}</span>
             </v-btn>
             
         </v-toolbar>
@@ -30,7 +34,41 @@
 </template>
 
 <script>
-export default {}
+export default {
+    data(){ 
+        return{
+            title:'login',
+            route: '/login'
+        }
+    },
+
+    methods: { 
+
+        log: function(){
+
+            if(localStorage.getItem("token") == undefined){
+                this.title = 'login';
+                this.route = '/login';
+                console.log("LOGIN TREBA DA PISE!")
+            }else{
+                this.title = 'logout';
+                this.route = '/logout';
+                console.log("LOGOUT TREBA DA PISE!")
+            }
+            
+
+        }
+    },
+    mounted(){
+        this.log();
+    }
+
+
+}
+
+
+
+
 </script>
 
 <style scoped>

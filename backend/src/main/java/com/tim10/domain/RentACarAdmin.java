@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class RentACarAdmin extends User {
 
+
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
