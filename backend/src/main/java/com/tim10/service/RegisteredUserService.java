@@ -27,7 +27,6 @@ public class RegisteredUserService {
 		
 		
 		String password = passwordEncoder.encode(registeredUser.getPassword());
-		System.out.println(password);
 		registeredUser.setPassword(password);
 
 
