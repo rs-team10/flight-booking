@@ -83,7 +83,7 @@
                     @input="$v.user.phone.$touch()"
                     @blur="$v.user.phone.$touch()"
                 ></v-text-field>
-
+                <!--
                 <v-text-field
                     v-model="user.address"
                     :error-messages="addressErrors"
@@ -92,6 +92,16 @@
                     @input="$v.user.address.$touch()"
                     @blur="$v.user.address.$touch()"
                 ></v-text-field>
+                -->
+                <vuetify-google-autocomplete
+                    id="map"
+                    classname="form-control"
+                    label="Address"
+                    v-model="user.address"
+                    placeholder="New address"
+                    v-on:placechanged="getAddressData"
+                >
+                </vuetify-google-autocomplete>
 
                     <v-btn @click="editUser">submit</v-btn>
             </form>
@@ -198,6 +208,10 @@ export default {
                     alert(response);
                 });
             }
+        },
+        getAddressData: function (addressData, placeResultData, id) {
+            if(placeResultData)
+                this.user.address = placeResultData.formatted_address;
         }
     },
     created() {
