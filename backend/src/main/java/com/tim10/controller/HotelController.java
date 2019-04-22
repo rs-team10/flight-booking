@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
+import com.tim10.dto.HotelDTO;
 import com.tim10.service.HotelService;
 import com.tim10.service.UserService;
 
@@ -33,6 +35,12 @@ public class HotelController {
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Hotel>> getHotels() {
 		return new ResponseEntity<List<Hotel>>(hotelService.findAll(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/{parameter}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Hotel>> searchHotels(@PathVariable("parameter") String param) {
+		List<Hotel> hotels = hotelService.findByParameter(param);
+		return new ResponseEntity<>(hotels, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
