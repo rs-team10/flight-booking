@@ -24,7 +24,7 @@ public class EmailService {
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("flightbooking.tim10@gmail.com");
         mailMessage.setText("To confirm your account, please click here : "
-        +"http://localhost:8081/confirm-account/"+ user.getVerificationCode());
+        +"http://localhost:8081/auth/"+ user.getVerificationCode());
     	
         mailSender.send(mailMessage);
     }
