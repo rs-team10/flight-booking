@@ -1,5 +1,5 @@
 <template>
-    <div id="add-Vehicle">
+    <div id="edit-Vehicle">
         <h1>Edit {{selectedVehicle.manufacturer}} {{selectedVehicle.model}}</h1>
 
         <div id="edit-form">
@@ -131,7 +131,7 @@
                 </v-layout>
                 
                 <v-switch
-                    v-model="selectedVehicle.airCondition"
+                    v-model.lazy="selectedVehicle.airCondition"
                     :error-messages="airConditionErrors"
                     :label="`Aircondition: ${selectedVehicle.airCondition.toString()}`"
                 ></v-switch>
@@ -161,8 +161,21 @@ import { validationMixin } from 'vuelidate'
 import { required, maxLength, numeric } from 'vuelidate/lib/validators'
 
 export default {
-    mixins: [validationMixin],
+    
     props: ['selectedVehicle'],
+    data(){
+        
+        return {
+            
+            items: ['Gasoline' ,'Diesel', 'Liquified Petroleum', 
+                'Compressed Natural Gas', 'Ethanol', 'Bio-diesel'],
+            rules: [
+                    v => !!v || 'The value is required'
+                    ]
+        }
+    },
+
+    mixins: [validationMixin],
     validations: {
         selectedVehicle: {
             manufacturer        : { required, 
@@ -179,71 +192,61 @@ export default {
                                    
         }
     },
-      
-    data(){
-        return {
-            items: ['Gasoline' ,'Diesel', 'Liquified Petroleum', 
-                'Compressed Natural Gas', 'Ethanol', 'Bio-diesel'],
-            rules: [
-                    v => !!v || 'The value is required'
-                    ]
-        }
-    },
     computed: {
         manufacturerErrors () {
             const errors = []
-            if (!this.$v.vehicle.manufacturer.$dirty) return errors
-            !this.$v.vehicle.manufacturer.maxLength && errors.push('Manufacturer must be at most 10 characters long')
-            !this.$v.vehicle.manufacturer.required && errors.push('Manufacturer is required.')
+            if (!this.$v.selectedVehicle.manufacturer.$dirty) return errors
+            !this.$v.selectedVehicle.manufacturer.maxLength && errors.push('Manufacturer must be at most 10 characters long')
+            !this.$v.selectedVehicle.manufacturer.required && errors.push('Manufacturer is required.')
             return errors
         },
         modelErrors() {
             const errors = []
-            if (!this.$v.vehicle.model.$dirty) return errors
-            !this.$v.vehicle.model.required && errors.push('Model is required.')
+            if (!this.$v.selectedVehicle.model.$dirty) return errors
+            !this.$v.selectedVehicle.model.required && errors.push('Model is required.')
             return errors
         },
         yearErrors() {
             const errors = []
-            if (!this.$v.vehicle.year.$dirty) return errors
-            !this.$v.vehicle.year.required && errors.push('Year is required.')
+            if (!this.$v.selectedVehicle.year.$dirty) return errors
+            !this.$v.selectedVehicle.year.required && errors.push('Year is required.')
             return errors
         },
         fuelErrors(){
             const errors = []
-            if (!this.$v.vehicle.fuel.$dirty) return errors
-            !this.$v.vehicle.fuel.required && errors.push('Fuel is required.')
+            if (!this.$v.selectedVehicle.fuel.$dirty) return errors
+            !this.$v.selectedVehicle.fuel.required && errors.push('Fuel is required.')
             return errors
         },
         engineErrors(){
             const errors = []
-            if (!this.$v.vehicle.engine.$dirty) return errors
-            !this.$v.vehicle.engine.required && errors.push('Engine is required.')
+            if (!this.$v.selectedVehicle.engine.$dirty) return errors
+            !this.$v.selectedVehicle.engine.required && errors.push('Engine is required.')
             return errors
         },
         transmissionErrors(){
             const errors = []
-            if (!this.$v.vehicle.transmission.$dirty) return errors
-            !this.$v.vehicle.transmission.required && errors.push('Transmission is required.')
+            if (!this.$v.selectedVehicle.transmission.$dirty) return errors
+            !this.$v.selectedVehicle.transmission.required && errors.push('Transmission is required.')
             return errors
         },
         seatsCountErrors(){
             const errors = []
-            if (!this.$v.vehicle.seatsCount.$dirty) return errors
-            !this.$v.vehicle.seatsCount.required && errors.push('Seats count is required.')
+            if (!this.$v.selectedVehicle.seatsCount.$dirty) return errors
+            !this.$v.selectedVehicle.seatsCount.required && errors.push('Seats count is required.')
             return errors
         },
         airConditionErrors(){
             const errors = []
-            if (!this.$v.vehicle.airCondition.$dirty) return errors
-            !this.$v.vehicle.airCondition.required && errors.push('Aircondition is required.')
+            if (!this.$v.selectedVehicle.airCondition.$dirty) return errors
+            !this.$v.selectedVehicle.airCondition.required && errors.push('Aircondition is required.')
             return errors
         },
         dailyRentalPriceErrors() {
             const errors = []
-            if (!this.$v.vehicle.dailyRentalPrice.$dirty) return errors
-            !this.$v.vehicle.dailyRentalPrice.required && errors.push('Daily rental price is required.')
-            !this.$v.vehicle.dailyRentalPrice.numeric && errors.push('Daily rental price must be positive number.')
+            if (!this.$v.selectedVehicle.dailyRentalPrice.$dirty) return errors
+            !this.$v.selectedVehicle.dailyRentalPrice.required && errors.push('Daily rental price is required.')
+            !this.$v.selectedVehicle.dailyRentalPrice.numeric && errors.push('Daily rental price must be positive number.')
             return errors
         }
     },
@@ -252,7 +255,8 @@ export default {
             this.$v.$touch();
 
             if(!this.$v.$invalid){
-                this.editVehicle();
+                if(confirm('Are you sure you want to edit this vehicle?'))
+                    this.editVehicle();
             }
         },
         editVehicle: function(){

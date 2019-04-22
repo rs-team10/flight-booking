@@ -148,8 +148,12 @@
                 </v-text-field>
 
 
-        
-                <v-btn @click="submit">submit</v-btn>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn  @click="submit">submit</v-btn>
+                    <v-btn  color ='error' @click="cancel">Cancel</v-btn>
+                </v-card-actions>
+                
             </form>
         </div>
 
@@ -266,6 +270,19 @@ export default {
             if(!this.$v.$invalid){
                 this.addVehicle();
             }
+        },
+        cancel(){
+            this.vehicle =  {
+                manufacturer        : '',
+                model               : '',
+                year                : '',
+                fuel                : '',
+                engine              : '',
+                transmission        : '',
+                seatsCount          : '',
+                airCondition        : '',
+                dailyRentalPrice    : ''
+            };
         },
         addVehicle: function(){
             this.$axios

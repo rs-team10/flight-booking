@@ -88,7 +88,7 @@ export default {
         },
         editRentACar: function(){
             this.$axios
-            .put('http://localhost:8081/api/rentACars/', 
+            .put('http://localhost:8080/api/rentACars/', 
                 this.selectedRentACar)
             .then(function(response){
                 alert("Rent-a-car with name "+ response.data.name+" is edited");

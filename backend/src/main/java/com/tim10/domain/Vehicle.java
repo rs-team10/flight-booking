@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+//a kako tip vozila!?
 @Entity
 @Table(name="Vehicles")
 public class Vehicle {
@@ -35,10 +35,10 @@ public class Vehicle {
 	private String fuel;
 	
 	@Column(name="engine")
-	private String engine;
+	private Double engine;
 	
 	@Column(name="transmission")
-	private String transmission;
+	private Boolean transmission;
 	
 	@Column(name="seatsCount")
 	private Integer seatsCount;
@@ -85,11 +85,11 @@ public class Vehicle {
 		return fuel;
 	}
 
-	public String getEngine() {
+	public Double getEngine() {
 		return engine;
 	}
 
-	public String getTransmission() {
+	public Boolean getTransmission() {
 		return transmission;
 	}
 
@@ -141,11 +141,11 @@ public class Vehicle {
 		this.fuel = fuel;
 	}
 
-	public void setEngine(String engine) {
+	public void setEngine(Double engine) {
 		this.engine = engine;
 	}
 
-	public void setTransmission(String transmission) {
+	public void setTransmission(Boolean transmission) {
 		this.transmission = transmission;
 	}
 

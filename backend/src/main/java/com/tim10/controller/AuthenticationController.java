@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.common.DeviceProvider;
 import com.tim10.domain.Authority;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.Role;

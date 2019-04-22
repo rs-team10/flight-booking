@@ -24,6 +24,12 @@
                 <v-icon left>directions_car</v-icon>
                 <span>Rent a cars</span>
             </v-btn>
+
+
+            <v-btn router to="/rentACar">
+                <v-icon left>directions_boat</v-icon>
+                <span>RentACar flow</span>
+            </v-btn>
             <v-btn router v-bind:to = "route" @click = "log()">
                 <v-icon left>rowing</v-icon>
                 <span>{{this.title}}</span>

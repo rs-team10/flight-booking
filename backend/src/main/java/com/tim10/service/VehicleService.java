@@ -1,8 +1,8 @@
 package com.tim10.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.Vehicle;
+import com.tim10.dto.VehicleDTO;
 import com.tim10.repository.BranchOfficeRepository;
 import com.tim10.repository.VehicleRepository;
 
@@ -22,7 +23,7 @@ public class VehicleService {
 	@Autowired
 	BranchOfficeRepository branchOfficeRepository;
 	
-	
+/*
 	public void addAndReference(Long branchOfficeId, Long vehicleId)  throws Exception{
 		
 		Optional<BranchOffice> boM = branchOfficeRepository.findById(branchOfficeId);
@@ -41,16 +42,32 @@ public class VehicleService {
 		vehicle.setBranchOffice(branchOffice);
 
 	}
+*/	
+	public Collection<VehicleDTO> getVehiclesFromBranch(Long branchId){
+
+		return vehicleRepository.getVehiclesFromBranch(branchId); 
+	}
+	
+	
+	public VehicleDTO getVehicleFromBranch(Long branchId, Long vehicleId) throws ResourceNotFoundException{
+		
+		VehicleDTO vehicle = vehicleRepository.getVehicleFromBranch(branchId, vehicleId);
+		if(vehicle == null)
+			throw new ResourceNotFoundException("Branch id: "+branchId+" doesn't contain vehicle id: "+ vehicleId);
+		
+		return  vehicle;
+	}
 	
 	
 	public List<Vehicle> findAll(){
 		return vehicleRepository.findAll();
 	}
 	
+	/*
 	public Vehicle save(Vehicle vehicle) throws Exception {
 		return vehicleRepository.save(vehicle);
 	}
-	
+	*/
 	public Vehicle update(Vehicle vehicle) {
 		Long id = vehicle.getId();
 		Optional<Vehicle> vehicleMyb = vehicleRepository.findById(id);
@@ -71,25 +88,13 @@ public class VehicleService {
 		forChange.setAirCondition(vehicle.getAirCondition());
 		forChange.setDailyRentalPrice(vehicle.getDailyRentalPrice());
 		
+		vehicleRepository.save(forChange);
+		
+		
 		return forChange;
 		
 		
 	}
-	
-	
-	public Set<Vehicle> findVehicles(Long branchOfficeId) throws ResourceNotFoundException {
-		
-		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(branchOfficeId);
-		
-		if(!branchOfficeMyb.isPresent())
-			throw new ResourceNotFoundException("Branch office with id: "+branchOfficeId+" doesn't exist!"); 
-		
-		
-		BranchOffice branchOffice = branchOfficeMyb.get();
-		return branchOffice.getVehicle();
-	}
-		
-	
 	
 	
 	public Vehicle findById(Long id) throws ResourceNotFoundException {
@@ -108,37 +113,51 @@ public class VehicleService {
 		
 		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(branchOfficeId);
 		
+		
 		if(!branchOfficeMyb.isPresent())
 			throw new ResourceNotFoundException("Branch office with id: "+branchOfficeId+" doesn't exist!"); 
 		
+		
 		BranchOffice branchOffice = branchOfficeMyb.get();
+		
+		
 		branchOffice.getVehicle().add(vehicle);
+		vehicle.setBranchOffice(branchOffice);
+		
+		
+		branchOfficeRepository.save(branchOffice);
+		//vehicleRepository.save(vehicle);
 		
 		
 		return vehicle;
 	}
 	
 	
-	public Vehicle changeVehicle(Long branchOfficeId, Vehicle vehicle) throws Exception {
-		Long id = vehicle.getId();
-		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(branchOfficeId);
-
+	public BranchOffice test(Long branchOfficeId) {
 		
+		return branchOfficeRepository.findById(branchOfficeId).get();
+	}
+	
+	
+	
+	
+	
+	public Vehicle changeVehicle(Vehicle vehicle) throws ResourceNotFoundException {
+		Long id = vehicle.getId();
+		
+		
+		/*
+		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(branchOfficeId);
 		if(!branchOfficeMyb.isPresent())
 			throw new ResourceNotFoundException("Branch office with id: "+branchOfficeId+" doesn't exist!"); 
+		*/
 		
+		/*proveri da li je to vozilo od tog brancha... 
+		pitaj da li mora... 
+		ako mora onda to moras dto da dodas id brancha i da to cuvas na forntu
+		*/
 		
-		BranchOffice branchOffice = branchOfficeMyb.get();
-		Set<Vehicle> vehicles = branchOffice.getVehicle();
-		Vehicle forChange = null;
-		
-		for(Vehicle v : vehicles){
-			if(v.getId() == id) {
-				forChange = v;
-				break;
-			}
-		}
-		
+		Vehicle forChange = vehicleRepository.findById(id).get();
 		
 		if(forChange==null)
 			throw new ResourceNotFoundException("Vehicle with id: "+ id +" doesn't exist!"); 
@@ -159,23 +178,48 @@ public class VehicleService {
 		forChange.setDailyRentalPrice(vehicle.getDailyRentalPrice());
 
 		//setImage(String image) 
-
+		
+		
+		vehicleRepository.save(forChange);
 		
 		return forChange;
 	}
 	
 	
 	
-	public void deleteById(Long id) throws Exception {
-			
-		Optional<Vehicle> vehicleMyb = vehicleRepository.findById(id);
+	public void deleteById(Long VehicleId) throws ResourceNotFoundException {
+
 		
+		//NEMAM POJMA KAKO
+		
+		
+		
+		Optional<Vehicle> vehicleMyb = vehicleRepository.findById(VehicleId);
+
 		if(!vehicleMyb.isPresent()) 
-			throw new ResourceNotFoundException("Vehicle with id: "+id+" doesn't exist!");
+			throw new ResourceNotFoundException("Vehicle with id: "+VehicleId+" doesn't exist!");
+		Vehicle vehicle = vehicleMyb.get();
 		
-		//proveri da li ima rezervacija ovog vozila
+		//Long boId = vehicle.getBranchOffice().getId();
+	
+		BranchOffice branchOffice = vehicle.getBranchOffice();
 		
-		branchOfficeRepository.deleteById(id);
+		/*
+		Optional<BranchOffice> branchOfficeMyb = branchOfficeRepository.findById(boId);
+
+		if(!branchOfficeMyb.isPresent()) 
+			throw new ResourceNotFoundException("Branch office with id: "+boId+" doesn't exist!");
+
+		
+		
+		BranchOffice branchOffice = branchOfficeMyb.get();
+		*/
+		branchOffice.getVehicle().remove(vehicle);
+		branchOfficeRepository.save(branchOffice);
+		//vehicleRepository.deleteById(VehicleId);
+		
+		
+
 		
 	}
 
