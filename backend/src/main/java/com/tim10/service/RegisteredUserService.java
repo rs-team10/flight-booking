@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Friendship;
@@ -25,7 +26,26 @@ public class RegisteredUserService {
     @Autowired
     private FriendshipRepository friendshipRepository;
     
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	
+	
+	public RegisteredUser firstSave(RegisteredUser registeredUser) {
+		
+		
+		String password = passwordEncoder.encode(registeredUser.getPassword());
+		registeredUser.setPassword(password);
+
+
+		return registeredUserRepository.save(registeredUser);
+	}
+	
 	public RegisteredUser save(RegisteredUser registeredUser) {
+		
+
+
 		return registeredUserRepository.save(registeredUser);
 	}
 	

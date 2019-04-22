@@ -1,22 +1,30 @@
 package com.tim10.domain;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name="User")
 //svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class User {
+public abstract class User implements UserDetails  {
 	
 	@Id
 	@Column(name = "id")
@@ -39,13 +47,23 @@ public abstract class User {
     @Size(min = 6, max = 50)
 	private String email;
 	
+	/*
 	@Enumerated(EnumType.STRING)
 	@Column(name="role")
 	private Role role;
+	*/
 
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private Set<Authority> authorities;
+	// Neka bude set tako je najzgodnije
+	
+	
 	public User() {
-
+		super();
+		authorities = new LinkedHashSet<Authority>();
 	}
+	
 
 	public Long getId() {
 		return id;
@@ -70,9 +88,9 @@ public abstract class User {
 	public String getEmail() {
 		return email;
 	}
-
-	public Role getRole() {
-		return role;
+	@Override
+	public Set<Authority> getAuthorities() {
+		return authorities;
 	}
 
 	public void setId(Long id) {
@@ -99,8 +117,34 @@ public abstract class User {
 		this.email = email;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
+	public void setAuthorities(Set<Authority> authorities) {
+		this.authorities = authorities;
+	}
+	
+	// Deo za UserDetails
+	
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }

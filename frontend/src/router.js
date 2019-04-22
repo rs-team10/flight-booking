@@ -13,6 +13,9 @@ import ViewVehicles from './components/ViewVehicles.vue'
 import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
 import UserProfile from './views/UserProfile.vue'
+import Login from './components/login&signup/login.vue'
+import Logout from './components/login&signup/logout.vue'
+
 
 Vue.use(Router)
 
@@ -54,6 +57,16 @@ export default new Router({
       path: '/signup',
       name: 'signup',
       component: Signup
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Logout
     },
     //=====================================
     //=====================================
