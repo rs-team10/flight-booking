@@ -1,11 +1,17 @@
 <template>
-    <v-layout column>
-        <h2>Pending friendship requests</h2>
+    <v-layout column ma-4>
+        <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search friends list"
+            single-line
+        ></v-text-field>
+
         <v-data-table
             :headers="headers"
             :items="users"
+            :search="search"
             v-bind:pagination.sync="pagination">
-
             <template v-slot:items="props">
                 <td>{{ props.item.firstName }}</td>
                 <td>{{ props.item.lastName }}</td>
@@ -16,18 +22,13 @@
                     </v-btn>
                 </td>
                 <td class="text-xs-right">              
-                    <v-btn dark depressed color="green" @click="acceptFriendRequest(props.item.email)">
-                        <span>Accept</span>
-                    </v-btn>
-                </td>
-                <td class="text-xs-right">              
-                    <v-btn dark depressed color="red" @click="declineFriendRequest(props.item.email)">
-                        <span>Decline</span>
+                    <v-btn dark depressed color="red" @click="deleteFriendRequest(props.item.email)">
+                        <span>Remove</span>
                     </v-btn>
                 </td>
             </template>
             <v-alert v-slot:no-results :value="true" color="error" icon="warning">
-                No results.
+                Your search for "{{ search }}" found no results.
             </v-alert>
         </v-data-table>
     </v-layout>
@@ -35,9 +36,10 @@
 
 <script>
 export default {
-    name: 'friend-requests',
+    name: "friendships",
     data() {
         return {
+            search: '',
             headers: [
                 {
                     text: "First Name",
@@ -65,17 +67,10 @@ export default {
                     width: 170
                 },
                 {
-                    text: "",
+                    text: "Actions",
                     align: 'center',
                     sortable: false,
-                    value: 'accept',
-                    width: 70
-                },
-                {
-                    text: "",
-                    align: 'center',
-                    sortable: false,
-                    value: 'decline',
+                    value: 'actions',
                     width: 70
                 }
             ],
@@ -92,40 +87,39 @@ export default {
             else
                 return "red";
         },
-        acceptFriendRequest: function(email) {
-            var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
+        deleteFriendRequest: function(email) {
+
+            this.$swal({
+                title: 'Are you sure?',
+                text: 'You can\'t revert your action',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                showCloseButton: true,
+            }).then((result) => {
+
+                if(result.value) {
+
+                    var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
+                    (removeIndex >= 0) && this.users.splice(removeIndex, 1);
 
                     var yourConfig = {
                         headers: {
                             'Authorization': "Bearer " + localStorage.getItem("token"),
                             'Content-type': "text/plain"
                         }
-                    }
-            
-            this.$axios.put('http://localhost:8080/api/acceptFriendRequest/', email, yourConfig).then((response) => {
-                (removeIndex >= 0) && this.users.splice(removeIndex, 1);
-                this.$swal('Accepted', 'Friend request accepted.', 'success');
-            })
-            .catch(response => {
-                console.log(response);
-            });           
-        },
-        declineFriendRequest: function(email) {
-            var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
-            
-                    var yourConfig = {
-                        headers: {
-                            'Authorization': "Bearer " + localStorage.getItem("token"),
-                            'Content-type': "text/plain"
-                        }
-                    }
-            
-            this.$axios.put('http://localhost:8080/api/declineFriendRequest/', email, yourConfig).then((response) => {
-                (removeIndex >= 0) && this.users.splice(removeIndex, 1);
-                this.$swal('Declined', 'Friend request declined.', 'success');
-            })
-            .catch(response => {
-                console.log(response);
+                    };
+
+                    this.$axios.put('http://localhost:8080/api/removeFriend/', email, yourConfig).then((response) => {
+                        this.$swal('Deleted', 'You successfully removed the user from your friends list', 'success');
+                    })
+                    .catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });           
+                }
             });
         }
     },
@@ -137,11 +131,11 @@ export default {
             }
         }
 
-        this.$axios.get('http://localhost:8080/api/getAllFriendshipRequests/', yourConfig).then((response) => {
+        this.$axios.get('http://localhost:8080/api/getAllFriends/', yourConfig).then((response) => {
             this.users = response.data;
-        }).catch(function(error) {
-                alert(error.response.data.message);
-            });
+        }).catch((error) => {
+            this.$swal("Error", error.response.data.message, 'error');
+        });
     }
 }
 </script>

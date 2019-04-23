@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import EditUser from './components/EditUser.vue'
 import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
 import AddAirline from './components/AddAirline.vue'
@@ -12,7 +11,9 @@ import EditVehicle from './components/EditVehicle.vue'
 import ViewVehicles from './components/ViewVehicles.vue'
 import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
-import UserProfile from './views/UserProfile.vue'
+import ViewUserProfile from './views/ViewUserProfile.vue'
+import EditUserProfile from './views/EditUserProfile.vue'
+import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
@@ -29,7 +30,17 @@ export default new Router({
     {
       path: '/userProfile',
       name: 'userProfile',
-      component: UserProfile
+      component: ViewUserProfile
+    },
+    {
+      path: '/editUserProfile',
+      name: 'editUserProfile',
+      component: EditUserProfile
+    },
+    {
+      path: '/searchUsers',
+      name: 'searchUsers',
+      component: SearchUsers
     },
     {
       path: '/editAirline',

@@ -62,50 +62,49 @@ export default {
     }
   },
   methods: {
-      searchUsers () {
+    searchUsers () {
         
-            var yourConfig = {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
+        var yourConfig = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
             }
+        };
 
-          this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
-              this.users = response.data.users;
-          })
-          .catch(response => {
-              console.log(response);
-          });
-        },
-      setPages () {
-            this.pages = [];
-            let numberOfPages = Math.ceil(this.users.length / this.perPage);
-            for (let index = 1; index <= numberOfPages; index++) {
-                this.pages.push(index);
-            }
-        },
-      paginate (users) {
+        this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
+            this.users = response.data.users;
+        }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+        });
+    },
+    setPages () {
+        this.pages = [];
+        let numberOfPages = Math.ceil(this.users.length / this.perPage);
+        for (let index = 1; index <= numberOfPages; index++) {
+            this.pages.push(index);
+        }
+    },
+    paginate (users) {
         let page = this.page;
         let perPage = this.perPage;
         let from = (page * perPage) - perPage;
         let to = (page * perPage);
         return users.slice(from, to);
-        },
-        sendFriendRequest(email) {
-                    var yourConfig = {
-                        headers: {
-                            'Authorization': "Bearer " + localStorage.getItem("token"),
-                            'Content-type': "text/plain"
-                        }
-                    }
+    },
+    sendFriendRequest(email) {
 
-                this.$axios.put('http://localhost:8080/api/addFriend/', email, yourConfig).then((response) => {
-                    this.$swal('Success', 'Friend request sent successfuly', 'success')
-          })
-          .catch(response => {
+        var yourConfig = {
+            headers: {
+                'Authorization': "Bearer " + localStorage.getItem("token"),
+                'Content-type': "text/plain"
+            }
+        };
+
+        this.$axios.put('http://localhost:8080/api/addFriend/', email, yourConfig).then((response) => {
+            this.$swal('Success', 'Friend request sent successfuly', 'success');
+        }).catch(response => {
               this.$swal('Unable to complete action', 'The user is already in your friends list', 'info');
-            });
-        }
+        });
+    }
   },
   watch: {
     users () {

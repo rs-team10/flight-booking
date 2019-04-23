@@ -1,18 +1,9 @@
 <template>
     <v-layout row wrap>
-        <div>
-            <v-alert
-                :value="submitted"
-                type="success"
-                transition="scale-transition"
-            >
-            User profile edited successfully.
-            </v-alert>
-        </div>
         <v-flex xs12 md8>
             <h2>Edit profile</h2>
-            <form v-if="!submitted">
-
+            <form>
+                
                 <v-text-field
                     v-model="user.username"
                     :error-messages="usernameErrors"
@@ -83,16 +74,7 @@
                     @input="$v.user.phone.$touch()"
                     @blur="$v.user.phone.$touch()"
                 ></v-text-field>
-                <!--
-                <v-text-field
-                    v-model="user.address"
-                    :error-messages="addressErrors"
-                    label="Address"
-                    required
-                    @input="$v.user.address.$touch()"
-                    @blur="$v.user.address.$touch()"
-                ></v-text-field>
-                -->
+
                 <vuetify-google-autocomplete
                     id="map"
                     classname="form-control"
@@ -102,7 +84,7 @@
                 >
                 </vuetify-google-autocomplete>
 
-                    <v-btn @click="editUser">submit</v-btn>
+                <v-btn @click="editUser">submit</v-btn>
             </form>
         </v-flex>
     </v-layout>
@@ -123,7 +105,6 @@ export default {
             },
             showPassword: false,
             showPasswordConfirmation: false,
-            submitted: false
         }
     },
 
@@ -188,16 +169,14 @@ export default {
             return errors
         },
         addressErrors () {
-            const errors = []
+            const errors = [];
             return errors
         }
     },
 
     methods: {
         editUser: function() {
-
-            this.$v.$touch()
-
+            this.$v.$touch();
             if(!this.$v.$invalid) {
                 delete this.user.passwordConfirmation;
 
@@ -205,29 +184,29 @@ export default {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
-                }
+                };
                 
                 this.$axios.put('http://localhost:8080/api/registeredUsers/', this.user, yourConfig).then((response) => {                    
-                    this.submitted = true;
+                    
+                    this.$swal('Success', 'User profile edited successfuly', 'success');
 
                     this.$axios
                         .post('http://localhost:8080/auth/login', this.user)
                         .then(response => {
                             if(response.data.accessToken == undefined){
-                                this.error = "Wrong username or password!";
+                                this.$swal('Login unsuccessful', "Invalid credentials", 'error');
                             }
                             else{
                                 localStorage.setItem("token", response.data.accessToken);
                                 localStorage.setItem("username", this.user.username);
                                 localStorage.setItem("role", response.data.role);
-                                this.success=true;
+                                //this.$swal('Success', 'Login successful', 'success');
                             }
                         }).catch(error => {
-                            this.error = "Wrong username or password!";
+                            this.$swal('Login unsuccessful', "Invalid credentials", 'error');
                         });
-
-                }).catch((response) => {
-                    alert(response);
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
                 });
             }
         },
@@ -242,13 +221,13 @@ export default {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
-        }
+        };
 
         this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig).then((response) => {
             this.user = response.data;
-        }).catch(function(error) {
-                alert(error.response.data.message);
-            });
+        }).catch((error) => {
+            this.$swal("Error", error.response.data.message, 'error');
+        });
     }
 }
 </script>
