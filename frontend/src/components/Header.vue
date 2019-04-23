@@ -9,13 +9,13 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn flat router to="/editUser">
+                <v-btn flat router to="/userProfile">
                     <v-icon left>account_circle</v-icon>
-                    <span>Edit User</span>
+                    <span>My profile</span>
                 </v-btn>
                 <v-btn flat router to="/editAirline">
                     <v-icon left>flight</v-icon>
-                    <span>Edit Airline</span>
+                    <span>Airlines</span>
                 </v-btn>
 
                 <v-btn flat router to="/hotels" blur>

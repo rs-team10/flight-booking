@@ -107,7 +107,7 @@ export default {
             this.$v.$touch()
 
             if(!this.$v.$invalid) {
-                this.$axios.put('http://localhost:8081/api/airlines/', this.airline).then((data) => {
+                this.$axios.put('http://localhost:8080/api/airlines/', this.airline).then((data) => {
                     this.submitted = true;
                 });
             }
@@ -115,7 +115,7 @@ export default {
     },
 
     created() {
-        this.$axios.get('http://localhost:8081/api/airlines/' + this.airline.id).then((response) => {
+        this.$axios.get('http://localhost:8080/api/airlines/' + this.airline.id).then((response) => {
             this.airline = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);
