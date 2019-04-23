@@ -3,7 +3,9 @@
         <h1>Add new vehicle</h1>
 
         <div id="add-form">
-            <form>
+            <v-form
+                ref="form"
+            >
                 <v-text-field
                     v-model.lazy="vehicle.manufacturer"
                     :error-messages="manufacturerErrors"
@@ -148,9 +150,13 @@
                 </v-text-field>
 
 
-        
-                <v-btn @click="submit">submit</v-btn>
-            </form>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn  @click="submit">submit</v-btn>
+                    <v-btn  color ='error' @click="cancel">Cancel</v-btn>
+                </v-card-actions>
+                
+            </v-form>
         </div>
 
     </div>
@@ -161,6 +167,7 @@ import { validationMixin } from 'vuelidate'
 import { required, maxLength, numeric } from 'vuelidate/lib/validators'
 
 export default {
+    props: ['myBranch'],
     mixins: [validationMixin],
 
     validations: {
@@ -267,12 +274,32 @@ export default {
                 this.addVehicle();
             }
         },
+        resetValidation () {
+            this.$refs.form.resetValidation()
+        },
+        cancel(){
+            this.vehicle =  {
+                manufacturer        : '',
+                model               : '',
+                year                : '',
+                fuel                : '',
+                engine              : '',
+                transmission        : '',
+                seatsCount          : '',
+                airCondition        : '',
+                dailyRentalPrice    : ''
+            };
+            this.resetValidation();
+            this.$v.$reset();
+
+        },
         addVehicle: function(){
             this.$axios
-            .post('http://localhost:8081/api/addVehicle', this.vehicle)
-            .then(function(response){
-                alert("Vehicle "+ response.date.manufacturer +" is added");
-            }).catch(function(error) {
+            .post('http://localhost:8080/api/vehicles/'+this.myBranch, this.vehicle)
+            .then(response => {
+                //fali event, da obavesti roditelja da je dodato novo vozilo
+                alert(response.data);
+            }).catch(error => {
                 alert(error.response.data.message);
             });
         }

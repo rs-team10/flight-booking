@@ -7,7 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class RegisteredUser extends User {
@@ -30,10 +31,12 @@ public class RegisteredUser extends User {
 	@Column(name="isConfirmed")
 	private Boolean isConfirmed;
 	
+	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Reservation> reservations;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JsonIgnore
+	@OneToMany(mappedBy="sender", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Friendship> friendships;
 
 	public RegisteredUser() {

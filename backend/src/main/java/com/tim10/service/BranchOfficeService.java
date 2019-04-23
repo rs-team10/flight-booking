@@ -1,5 +1,6 @@
 package com.tim10.service;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.RentACar;
+import com.tim10.dto.BranchOfficeLocationDTO;
 import com.tim10.repository.BranchOfficeRepository;
 import com.tim10.repository.RentACarRepository;
 
@@ -21,6 +23,15 @@ public class BranchOfficeService {
 	
 	@Autowired
 	RentACarRepository rentACarRepository;
+	
+	
+	
+	public Collection<BranchOfficeLocationDTO> getBranchOfficesFromRentACar(Long rentACarId){
+		
+		return branchOfficeRepository.getBranchOfficesFromRentACar(rentACarId);
+	}
+	
+	
 	
 	
 	
@@ -62,7 +73,13 @@ public class BranchOfficeService {
 			throw new EntityExistsException("Branch office on location: "+ lokacija +" already exists!");
 		*/
 		RentACar rentACar = rentACarMyb.get();
+		
+		
 		rentACar.getBranchOffices().add(branchOffice);
+		branchOffice.setMainOffice(rentACar);
+		
+		rentACarRepository.save(rentACar);
+		branchOfficeRepository.save(branchOffice);
 		
 		
 		return branchOffice;
@@ -79,6 +96,7 @@ public class BranchOfficeService {
 			throw new ResourceNotFoundException("Branch office with id: "+id+" doesn't exist!");
 		
 		//proveri da li ima rezervacija u ovoj filijali
+		
 		
 		branchOfficeRepository.deleteById(id);
 		

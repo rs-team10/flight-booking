@@ -9,13 +9,13 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn flat router to="/editUser">
+                <v-btn flat router to="/userProfile">
                     <v-icon left>account_circle</v-icon>
-                    <span>Edit User</span>
+                    <span>My profile</span>
                 </v-btn>
                 <v-btn flat router to="/editAirline">
                     <v-icon left>flight</v-icon>
-                    <span>Edit Airline</span>
+                    <span>Airlines</span>
                 </v-btn>
 
                 <v-btn flat router to="/hotels" blur>
@@ -34,6 +34,11 @@
 
                 <v-btn v-if="showSignUp" flat router to="/signup">
                     <span>Sign up</span>
+                </v-btn>
+            
+                <v-btn flat router to="/rentACar/1">
+                    <v-icon left>directions_boat</v-icon>
+                    <span>RentACar flow</span>
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>

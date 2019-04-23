@@ -16,8 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="User")
@@ -26,7 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public abstract class User implements UserDetails  {
 	
 	@Id
-	@Column(name = "id")
+	@Column(name = "userId")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	
 	
@@ -42,11 +45,12 @@ public abstract class User implements UserDetails  {
 	@Column(name="lastName")
 	private String lastName;
 	
-	@Column(name="email")
+	@Column(name="email", nullable = false, unique = true)
+    @Size(min = 6, max = 50)
 	private String email;
-
+	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Authority> authorities;
 	
 	public User() {

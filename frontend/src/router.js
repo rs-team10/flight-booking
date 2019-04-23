@@ -1,20 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import EditUser from './components/EditUser.vue'
 import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
 import AddAirline from './components/AddAirline.vue'
 import AddRentACar from './components/AddRentACar.vue'
 import RentACars from './views/RentACars.vue'
-import AddVehicle from './components/AddVehicle.vue'
-import EditVehicle from './components/EditVehicle.vue'
-import ViewVehicles from './components/ViewVehicles.vue'
+
+import RentACar from './components/rentACarComp/RentACar.vue'
+
+
 import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
+import ViewUserProfile from './views/ViewUserProfile.vue'
+import EditUserProfile from './views/EditUserProfile.vue'
+import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
+
+/*
+import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
+import AddVehicle from './components/rentACarComp/AddVehicle.vue'
+import EditVehicle from './components/rentACarComp/EditVehicle.vue'
+import ViewVehiclesA from './components/rentACarComp/ViewVehiclesA.vue'
+*/
 
 Vue.use(Router)
 
@@ -26,9 +36,19 @@ export default new Router({
       component: Home
     },
     {
-      path: '/editUser',
-      name: 'editUser',
-      component: EditUser
+      path: '/userProfile',
+      name: 'userProfile',
+      component: ViewUserProfile
+    },
+    {
+      path: '/editUserProfile',
+      name: 'editUserProfile',
+      component: EditUserProfile
+    },
+    {
+      path: '/searchUsers',
+      name: 'searchUsers',
+      component: SearchUsers
     },
     {
       path: '/editAirline',
@@ -47,6 +67,14 @@ export default new Router({
     },
     //=====================================
     //TEST
+    
+    {
+      props: true,
+      path: '/rentACar/:rentACarId',
+      name: 'rentACar',
+      component: RentACar
+    },
+    
     {
       path: '/signupAdmin',
       name: 'signupAdmin',
@@ -69,8 +97,8 @@ export default new Router({
     },
     //=====================================
     //=====================================
-    //PRIVREMENE RUTE, NECE BITI KASNIJE
-   
+    //PRIVREMENE RUTE, NECE BITI KASNIJE - OVOME SAMO ADMIN SME DA PRISTUPA, I PRISTUPACE U VIDU KOMPONENTE
+    /*
     {
       path: '/addVehicle',
       name: 'addVehicle',
@@ -81,11 +109,22 @@ export default new Router({
       name: 'editVehicle',
       component: EditVehicle
     },
+ 
     {
-      path: '/viewVehicles',
-      name: 'viewVehicles',
-      component: ViewVehicles
+      path: '/viewVehiclesA',
+      name: 'viewVehiclesA',
+      component: ViewVehiclesA
     },
+     {
+      path: '/viewBranchOfficesA',
+      name: 'viewBranchOfficesA',
+      component: ViewBranchOfficesA
+    },
+    */
+  //=====================================
+
+
+
     {
       path: '/addAirline',
       name: 'addAirline',

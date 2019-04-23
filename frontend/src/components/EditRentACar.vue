@@ -25,7 +25,7 @@
                 <v-textarea
                     v-model.lazy.trim="selectedRentACar.description"
                     :error-messages="descriptionErrors"
-                    label="Description"
+                    label="description"
                     required
                     @input="$v.selectedRentACar.description.$touch()"
                     @blur="$v.selectedRentACar.description.$touch()">
@@ -88,7 +88,7 @@ export default {
         },
         editRentACar: function(){
             this.$axios
-            .put('http://localhost:8081/api/rentACars/', 
+            .put('http://localhost:8080/api/rentACars/', 
                 this.selectedRentACar)
             .then(function(response){
                 alert("Rent-a-car with name "+ response.data.name+" is edited");
