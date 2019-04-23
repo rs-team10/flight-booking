@@ -8,27 +8,34 @@
                 </router-link>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn router to="/editUser">
-                <v-icon left>account_circle</v-icon>
-                <span>Edit User</span>
-            </v-btn>
-            <v-btn router to="/editAirline">
-                <v-icon left>flight</v-icon>
-                <span>Edit Airline</span>
-            </v-btn>
-            <v-btn router to="/hotels">
-                <v-icon left>hotel</v-icon>
-                <span>Hotels</span>
-            </v-btn>
-            <v-btn router to="/rentACars">
-                <v-icon left>directions_car</v-icon>
-                <span>Rent a cars</span>
-            </v-btn>
-            <v-btn router v-bind:to = "route" @click = "log()">
-                <v-icon left>rowing</v-icon>
-                <span>{{this.title}}</span>
-            </v-btn>
-            
+            <v-toolbar-items>
+                <v-btn flat router to="/editUser">
+                    <v-icon left>account_circle</v-icon>
+                    <span>Edit User</span>
+                </v-btn>
+                <v-btn flat router to="/editAirline">
+                    <v-icon left>flight</v-icon>
+                    <span>Edit Airline</span>
+                </v-btn>
+
+                <v-btn flat router to="/hotels" blur>
+                    <v-icon left>hotel</v-icon>
+                    <span>Hotels</span>
+                </v-btn>
+                    
+                <v-btn flat router to="/rentACars">
+                    <v-icon left>directions_car</v-icon>
+                    <span>Rent a cars</span>
+                </v-btn>
+                <v-btn flat router v-bind:to = "route" @click = "log()">
+                    <v-icon left>rowing</v-icon>
+                    <span>{{this.title}}</span>
+                </v-btn>
+
+                <v-btn v-if="showSignUp" flat router to="/signup">
+                    <span>Sign up</span>
+                </v-btn>
+            </v-toolbar-items>
         </v-toolbar>
     </nav>
 </template>
@@ -58,6 +65,15 @@ export default {
             
 
         }
+        
+
+    },
+    computed: {
+        showSignUp(){
+            if(localStorage.getItem("token") === null)
+                return true
+            return false
+        }
     },
     mounted(){
         this.log();
@@ -65,10 +81,6 @@ export default {
 
 
 }
-
-
-
-
 </script>
 
 <style scoped>

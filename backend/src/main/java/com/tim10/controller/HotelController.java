@@ -1,18 +1,26 @@
 package com.tim10.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
+import com.tim10.domain.HotelAdmin;
+import com.tim10.dto.HotelDTO;
 import com.tim10.service.HotelService;
+import com.tim10.service.UserService;
 
 @RestController
 @RequestMapping(value="/api/hotels")
@@ -21,51 +29,55 @@ public class HotelController {
 	@Autowired
 	private HotelService hotelService;
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Hotel>> getHotels() {
-		
-		List<Hotel> hotels = hotelService.findAll();
-		
-		//convert hotels to DTOs
-//		List<HotelDTO> hotelsDTO = new ArrayList<>();
-//		for(Hotel h : hotels) {
-//			hotelsDTO.add(new HotelDTO(h));
-//		}
+	@Autowired 
+	private UserService userService;
 	
-		return new ResponseEntity<List<Hotel>>(hotels, HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> getHotels() {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h: hotelService.findAll())
+			dtos.add(new HotelDTO(h));
+		return new ResponseEntity<List<HotelDTO>>(dtos, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{parameter}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> searchHotels(@PathVariable("parameter") String param) {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h : hotelService.findByParameter(param))
+			dtos.add(new HotelDTO(h));
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Page<Hotel>> getHotelsPage(Pageable page) {
+		//page object holds data about pagination and sorting
+		//the object is created based on the url parameters "page", "size" and "sort" 
+		return new ResponseEntity<>(hotelService.findAll(page), HttpStatus.OK);
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
-		
-		//proverimo da li postoji hotel sa tim imenom
-		if(hotelService.findOneByName(hotel.getName()) == null) {
-//			Hotel hotel = new Hotel();
-//			hotel.setName(hotelDTO.getName());
-//			hotel.setDescription(hotelDTO.getDescription());
-//			
-//			//Privremena lokacija (samo ulicu cuva)
-//			Location location = new Location();
-//			location.setStreet(hotelDTO.getLocation().getStreet());
-//			hotel.setLocation(location);
-			
-			//sta radi sa setovima???
-			Hotel returnHotel = hotelService.save(hotel);
-			return new ResponseEntity<>(returnHotel, HttpStatus.CREATED);
+		if(hotelService.hotelExists(hotel)) {
+			for(HotelAdmin admin : hotel.getAdministrators()) {
+				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
+					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
+				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
+					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
+			}
+			return new ResponseEntity<>(hotelService.registerHotel(hotel), HttpStatus.CREATED);
 		}
-		
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
-		
-		//da osiguramo da se ne izmeni ime na vec postojece ime
 		Hotel existingHotel = hotelService.findOneByName(hotel.getName());
 		if(existingHotel != null && existingHotel.getId() != hotel.getId())
 			return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 		
-		if(hotelService.findOne(hotel.getId()) != null){
+		Optional<Hotel> h = hotelService.findOne(hotel.getId());
+		if(h.isPresent()){
+			hotel.setAdministrators(h.get().getAdministrators());
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
 		

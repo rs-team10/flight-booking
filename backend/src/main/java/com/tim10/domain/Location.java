@@ -42,6 +42,19 @@ public class Location implements Serializable {
 		super();
 	}
 	
+	public Location(Long id, String street, String city, String postalCode, String country, Double latitude,
+			Double longitude, String image) {
+		super();
+		this.id = id;
+		this.street = street;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.country = country;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.image = image;
+	}
+
 	public Long getId() {
 		return id;
 	}

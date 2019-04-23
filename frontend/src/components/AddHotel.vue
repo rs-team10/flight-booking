@@ -21,7 +21,7 @@
 
         </div>
         
-        <div id="add-form" >
+        <div id="add-form" class="mt-3">
             <v-flex xs12 sm6 offset-sm3>
                 <h1 class="text-xs-center indigo--text">Register new hotel</h1>
                 <v-form>
@@ -133,7 +133,13 @@
                                                 <v-list-tile-sub-title>{{ admin.firstName }}  {{admin.lastName}}</v-list-tile-sub-title>
                                                 <v-list-tile-sub-title>{{ admin.email }}</v-list-tile-sub-title>
                                             </v-list-tile-content>
+                                            <v-icon
+                                                class="mr-1"
+                                                @click="deleteAdmin(admin)">
+                                                delete
+                                            </v-icon>
                                         </v-list-tile>
+                                        
                                     </template>
                                 </v-list>
                         </v-card>
@@ -152,6 +158,10 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength } from 'vuelidate/lib/validators'
+
+var yourConfig = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
 
 export default {
     mixins: [validationMixin],
@@ -184,7 +194,7 @@ export default {
             error: false,
             adminError: false,
             adminDialog: false,
-            tempAdmin: {},    
+            tempAdmin: {}    
         }
     },
     computed: {
@@ -237,18 +247,18 @@ export default {
         },
         addHotel: function(){
             this.$axios
-            .post('http://localhost:8080/api/hotels', this.hotel)
+            .post('http://localhost:8080/api/hotels', this.hotel, yourConfig)
             .then(response => {
                 this.success = true;
                 setTimeout(() => {
                     this.success = false
             }, 3000)
             }).catch(error => {
-                console.log(error.response.data);
                 this.error = error.response.data;
             });
         },
         close(){
+            this.$v.tempAdmin.$reset();
             this.adminDialog = false;
             this.tempAdmin = Object.assign({}, {});
         }, 
@@ -276,6 +286,10 @@ export default {
                 return true;
             else
                 return false;
+        },
+        deleteAdmin(admin){
+            const index = this.hotel.administrators.indexOf(admin);
+            this.hotel.administrators.splice(index, 1);
         }
       
     }
