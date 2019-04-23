@@ -254,7 +254,6 @@ export default {
                     this.success = false
             }, 3000)
             }).catch(error => {
-                console.log(error.response.data);
                 this.error = error.response.data;
             });
         },

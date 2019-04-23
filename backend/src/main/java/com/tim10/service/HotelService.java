@@ -31,9 +31,8 @@ public class HotelService {
 	}
 	
 	public Hotel registerHotel(Hotel hotel) {
-		for(HotelAdmin admin : hotel.getAdministrators()) {
+		for(HotelAdmin admin : hotel.getAdministrators()) 
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		}
 		return hotelRepository.save(hotel);
 	}
 	 

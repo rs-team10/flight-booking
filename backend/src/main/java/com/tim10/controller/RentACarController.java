@@ -72,7 +72,7 @@ public class RentACarController {
 				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
 					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
 			}
-			return new ResponseEntity<RentACar>(rentACarService.save(rentACar), HttpStatus.CREATED);
+			return new ResponseEntity<RentACar>(rentACarService.registerRentACar(rentACar), HttpStatus.CREATED);
 		}
 		return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
 	}

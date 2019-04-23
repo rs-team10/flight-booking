@@ -60,7 +60,7 @@ public class AirlineController {
 				else if(userService.findOneByEmail(admin.getEmail()).isPresent()) 
 					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
 			}
-			return new ResponseEntity<>(airlineService.save(airline), HttpStatus.CREATED);
+			return new ResponseEntity<>(airlineService.registerAirline(airline), HttpStatus.CREATED);
 		}
 		return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
 	}
