@@ -27,7 +27,7 @@
                     :append-icon="showPassword ? 'visibility' : 'visibility_off'"
                     :type="showPassword ? 'text' : 'password'"
                     :error-messages="passwordErrors"
-                    label="Password"
+                    label="New password"
                     required
                     counter
                     @click:append="showPassword = !showPassword"
@@ -40,7 +40,7 @@
                     :append-icon="showPasswordConfirmation ? 'visibility' : 'visibility_off'"
                     :type="showPasswordConfirmation ? 'text' : 'password'"
                     :error-messages="passwordConfirmationErrors"
-                    label="Password confirmation"
+                    label="New password confirmation"
                     required
                     counter
                     @click:append="showPasswordConfirmation = !showPasswordConfirmation"
@@ -98,7 +98,6 @@
                     classname="form-control"
                     label="Address"
                     v-model="user.address"
-                    placeholder="New address"
                     v-on:placechanged="getAddressData"
                 >
                 </vuetify-google-autocomplete>
@@ -113,14 +112,13 @@
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength, sameAs, numeric} from 'vuelidate/lib/validators'
 
-var MOCK_USER_ID = 1;
-
 export default {
     mixins: [validationMixin],
 
     data () {
         return {
             user: {
+                password: '',
                 passwordConfirmation: ''
             },
             showPassword: false,
@@ -202,8 +200,32 @@ export default {
 
             if(!this.$v.$invalid) {
                 delete this.user.passwordConfirmation;
-                this.$axios.put('http://localhost:8080/api/registeredUsers/', this.user).then((response) => {                    
+
+                var yourConfig = {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                }
+                
+                this.$axios.put('http://localhost:8080/api/registeredUsers/', this.user, yourConfig).then((response) => {                    
                     this.submitted = true;
+
+                    this.$axios
+                        .post('http://localhost:8080/auth/login', this.user)
+                        .then(response => {
+                            if(response.data.accessToken == undefined){
+                                this.error = "Wrong username or password!";
+                            }
+                            else{
+                                localStorage.setItem("token", response.data.accessToken);
+                                localStorage.setItem("username", this.user.username);
+                                localStorage.setItem("role", response.data.role);
+                                this.success=true;
+                            }
+                        }).catch(error => {
+                            this.error = "Wrong username or password!";
+                        });
+
                 }).catch((response) => {
                     alert(response);
                 });
@@ -215,7 +237,14 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8080/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
+
+        var yourConfig = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+
+        this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig).then((response) => {
             this.user = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);

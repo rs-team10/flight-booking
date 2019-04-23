@@ -119,7 +119,14 @@ export default {
                     var removeIndex = this.users.map(function(item) { return item.email; }).indexOf(email);
                     (removeIndex >= 0) && this.users.splice(removeIndex, 1);
 
-                    this.$axios.put('http://localhost:8080/api/removeFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+                    var yourConfig = {
+                        headers: {
+                            'Authorization': "Bearer " + localStorage.getItem("token"),
+                            'Content-type': "text/plain"
+                        }
+                    }
+
+                    this.$axios.put('http://localhost:8080/api/removeFriend/', email, yourConfig).then((response) => {
                         this.$swal('Deleted', 'You successfully removed the user from friends list', 'success');
                     })
                     .catch(response => {
@@ -130,7 +137,15 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8080/api/getAllFriends/').then((response) => {
+
+        
+        var yourConfig = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+
+        this.$axios.get('http://localhost:8080/api/getAllFriends/', yourConfig).then((response) => {
             this.users = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);

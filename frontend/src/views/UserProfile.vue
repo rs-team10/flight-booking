@@ -36,8 +36,6 @@ import Friendships from "@/components/Friendships.vue"
 import SearchUsers from "@/components/SearchUsers.vue"
 import FriendRequests from "@/components/FriendRequests.vue"
 
-var MOCK_USER_ID = 1;
-
 export default {
     components: {
         'edit-user' : EditUser,
@@ -79,11 +77,18 @@ export default {
         }
     },
     created() {
-        this.$axios.get('http://localhost:8080/api/registeredUsers/' + MOCK_USER_ID).then((response) => {
+
+                var yourConfig = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+
+        this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig).then((response) => {
             this.user = response.data;
         }).catch(function(error) {
                 alert(error.response.data.message);
-            });;
+            });
     }
 }
 </script>

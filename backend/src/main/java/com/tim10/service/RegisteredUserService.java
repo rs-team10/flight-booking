@@ -16,7 +16,6 @@ import com.tim10.dto.UserFriendsDTO;
 import com.tim10.repository.FriendshipRepository;
 import com.tim10.repository.RegisteredUserRepository;
 
-
 @Service
 public class RegisteredUserService {
 	
@@ -26,26 +25,16 @@ public class RegisteredUserService {
     @Autowired
     private FriendshipRepository friendshipRepository;
     
-	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	
-	
 	public RegisteredUser firstSave(RegisteredUser registeredUser) {
-		
-		
 		String password = passwordEncoder.encode(registeredUser.getPassword());
 		registeredUser.setPassword(password);
-
-
 		return registeredUserRepository.save(registeredUser);
 	}
 	
 	public RegisteredUser save(RegisteredUser registeredUser) {
-		
-
-
 		return registeredUserRepository.save(registeredUser);
 	}
 	
@@ -60,6 +49,10 @@ public class RegisteredUserService {
 		else
 			return null;
 	}
+	
+	public RegisteredUser findOneByUsername(String username) {
+		return registeredUserRepository.findOneByUsername(username);
+	}
 
 	public RegisteredUser findVerificationCode (String findVerificationCode) throws ResourceNotFoundException {
 		
@@ -70,8 +63,6 @@ public class RegisteredUserService {
 		else
 			throw new ResourceNotFoundException("Registered user with this verification code not found!"); 
 	}
-
-	
 	
 	// =====================================================================
 	// FRIENDSHIPS
@@ -126,6 +117,20 @@ public class RegisteredUserService {
 			return false;
 		friendshipRepository.deleteById(friendship.getId());
 		
+		return true;
+	}
+	
+	// =====================================================================
+	// UPDATE USER
+	// =====================================================================
+	
+	public boolean updateUserProfile(RegisteredUser registeredUser) {
+		
+		registeredUser.setAuthorities(registeredUserRepository.findById(registeredUser.getId()).get().getAuthorities());
+		
+		registeredUser.setPassword(passwordEncoder.encode(registeredUser.getPassword()));
+		registeredUser.setIsConfirmed(true);
+		registeredUserRepository.save(registeredUser);
 		return true;
 	}
 }

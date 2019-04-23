@@ -63,7 +63,14 @@ export default {
   },
   methods: {
       searchUsers () {
-          this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search).then((response) => {
+        
+            var yourConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }
+
+          this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
               this.users = response.data.users;
           })
           .catch(response => {
@@ -85,7 +92,14 @@ export default {
         return users.slice(from, to);
         },
         sendFriendRequest(email) {
-                this.$axios.put('http://localhost:8080/api/addFriend/', email, {headers: {"Content-Type": "text/plain"}}).then((response) => {
+                    var yourConfig = {
+                        headers: {
+                            'Authorization': "Bearer " + localStorage.getItem("token"),
+                            'Content-type': "text/plain"
+                        }
+                    }
+
+                this.$axios.put('http://localhost:8080/api/addFriend/', email, yourConfig).then((response) => {
                     this.$swal('Success', 'Friend request sent successfuly', 'success')
           })
           .catch(response => {

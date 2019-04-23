@@ -21,5 +21,8 @@ public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, 
 			"AND lower(concat(u.first_name, ' ', u.last_name)) LIKE concat('%', lower(:parameter), '%') " +
 			"AND u.id != :currentUserId", nativeQuery = true)
 	List<RegisteredUserSearchDTO> findByParameter(@Param("parameter") String parameter, @Param("currentUserId") Long currentUserId);
+	
+	
+	RegisteredUser findOneByUsername(String username);
 
 }
