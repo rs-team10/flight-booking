@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+
 @Entity
 @Table(name="Rooms")
 public class Room {
@@ -30,8 +32,8 @@ public class Room {
 	@Column(name="hasBalcony")
 	private Boolean hasBalcony;
 	
-	//KAKAV CASCADETYPE OVDE??? DA LI IKAKAV???
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private RoomType roomType;
 		
 	//mappedBy room znaci da ce se foreign key nalaziti u tabeli u kojoj 
@@ -39,16 +41,6 @@ public class Room {
 	//@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
 	@OneToMany(fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
-	
-	
-	//=====================================================
-	//ako se ne stavi bidirekciona veza, pravi medjutabelu
-	//ovako u sobu stavi hotel_id od hotela u kojem se nalazi
-	
-//	@ManyToOne
-//	private Hotel hotel;
-//	
-	//========================================================
 	
 	public Room() {
 		super();

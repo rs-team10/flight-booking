@@ -103,8 +103,16 @@
 
                             <v-dialog v-model="specialPricesDialog" max-width="800px">
                                 <component 
-                                    v-bind:is="component"
+                                    v-bind:is="specialPricesComp"
                                     v-bind:selectedRoomType="selectedRoomType"
+                                ></component>
+                            </v-dialog>
+
+                            <v-dialog v-model="editRoomsDialog" max-width="800px">
+                                <component 
+                                    v-bind:is="editRoomsComp"
+                                    v-bind:selectedRoomType="selectedRoomType"
+                                    v-bind:hotelRooms="selectedHotel.rooms"
                                 ></component>
                             </v-dialog>
 
@@ -147,11 +155,23 @@
                                             class="mr-2"
                                             @click="specialRoomPrice(props.item)"
                                             v-on="on">
-                                            list 
+                                            star
                                         </v-icon>
 
                                     </template>
                                     <span>Special prices</span>
+                                </v-tooltip>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon
+                                            small
+                                            class="mr-2"
+                                            @click="editRooms(props.item)"
+                                            v-on="on">
+                                            hotel
+                                        </v-icon>
+                                    </template>
+                                    <span>Rooms</span>
                                 </v-tooltip>     
                                 </td>
                             </template>
@@ -255,6 +275,7 @@
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
 import SpecialRoomPrices from "@/components/SpecialRoomPrices.vue"
+import EditRooms from "@/components/EditRooms.vue"
 
 var yourConfig = {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") }
@@ -262,7 +283,8 @@ var yourConfig = {
 
 export default {
     components: {
-        "specialRoomPrices" : SpecialRoomPrices
+        "specialRoomPrices" : SpecialRoomPrices,
+        "editRooms" : EditRooms
     },
 
     props: ['selectedHotel'],
@@ -279,8 +301,12 @@ export default {
     },
     data(){
         return {
-            component: "specialRoomPrices",
+            specialPricesComp: "specialRoomPrices",
+            editRoomsComp: "editRooms",
             selectedRoomType: {},
+            //---------------------------------
+            rooms: [],
+
             //ZA SERVICE DATA TABLE
             //===========================================
             serviceDialog: false,
@@ -300,6 +326,7 @@ export default {
             //===========================================
             roomDialog: false,
             specialPricesDialog: false,
+            editRoomsDialog: false,
             roomPagination: {},
             roomsHeaders: [
                 //image
@@ -443,8 +470,12 @@ export default {
         specialRoomPrice(item){
             this.selectedRoomType = item
             this.specialPricesDialog = true
-        }
+        },
         //=========================================================================================
+        editRooms(roomType){
+            this.selectedRoomType = roomType
+            this.editRoomsDialog = true
+        }
     },
     created(){
         console.log(this.selectedHotel);
