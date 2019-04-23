@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.RentACar;
-import com.tim10.dto.LocationDTO;
+import com.tim10.dto.BranchOfficeLocationDTO;
 import com.tim10.repository.BranchOfficeRepository;
 import com.tim10.repository.RentACarRepository;
 
@@ -26,7 +26,7 @@ public class BranchOfficeService {
 	
 	
 	
-	public Collection<LocationDTO> getBranchOfficesFromRentACar(Long rentACarId){
+	public Collection<BranchOfficeLocationDTO> getBranchOfficesFromRentACar(Long rentACarId){
 		
 		return branchOfficeRepository.getBranchOfficesFromRentACar(rentACarId);
 	}

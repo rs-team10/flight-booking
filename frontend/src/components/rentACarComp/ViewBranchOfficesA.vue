@@ -1,9 +1,17 @@
 <template>
   <div>
-     
+    <v-card
+      class="hide-overflow"
+      color="grey lighten-4"            
+    >
+    <v-toolbar
+      card
+      color="grey lighten-4"
+    >
+      <v-toolbar-title class="headline font-weight-regular black--text">Branch offices</v-toolbar-title>
+    </v-toolbar>
     <v-layout rowt>
       <v-flex xs12 sm10 md10 offset-sm1>
-        <h1>Branch offices</h1>
         <v-card>
           <v-expansion-panel focusable>
             <v-expansion-panel-content
@@ -60,6 +68,7 @@
         </v-card>
       </v-flex>
     </v-layout>
+    </v-card>
     
   </div>
 </template>

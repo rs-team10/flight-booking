@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public abstract class User implements UserDetails  {
 	
 	@Id
-	@Column(name = "id")
+	@Column(name = "userId")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	
 	
@@ -52,7 +52,7 @@ public abstract class User implements UserDetails  {
 	*/
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Authority> authorities;
 	// Neka bude set tako je najzgodnije
 	

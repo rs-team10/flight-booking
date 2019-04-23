@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RentACar;
+import com.tim10.dto.RentACarDTO;
 import com.tim10.service.RentACarService;
 
 @RestController
@@ -22,6 +23,11 @@ public class RentACarController {
 	
 	@Autowired
 	private RentACarService rentACarService;
+	
+	//UZMI RENT A CAR SERVICE od LOGOVANOG RENT A CAR ADMINA
+	
+	
+	
 	
 	@RequestMapping(
 			value = "api/rentACars",
@@ -47,6 +53,26 @@ public class RentACarController {
 		}
 		
 		return new ResponseEntity<RentACar>(rentACarPres.get(), HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(
+			value = "/api/rentACar/{id}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getRentACarById(
+			@PathVariable("id") Long id) {
+		
+		RentACarDTO rac;
+		
+		try {
+			rac = rentACarService.getRentACarById(id);
+		}catch(ResourceNotFoundException e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<RentACarDTO>(rac, HttpStatus.OK);
 		
 	}
 	
@@ -94,7 +120,7 @@ public class RentACarController {
 		
 		rentACarReal = rentACarService.save(rentACarReal);
 		
-		
+		//GRESKA Rent-A-Car with id: 1 doesn't exist! - a ja uneo ga u bazu regularno (PITAJ ZA BAZU VISE)
 		return new ResponseEntity<RentACar>(rentACarReal, HttpStatus.OK);
 	}
 	

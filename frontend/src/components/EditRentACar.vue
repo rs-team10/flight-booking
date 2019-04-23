@@ -25,7 +25,7 @@
                 <v-textarea
                     v-model.lazy.trim="selectedRentACar.description"
                     :error-messages="descriptionErrors"
-                    label="Description"
+                    label="description"
                     required
                     @input="$v.selectedRentACar.description.$touch()"
                     @blur="$v.selectedRentACar.description.$touch()">

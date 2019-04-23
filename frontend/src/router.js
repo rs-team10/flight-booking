@@ -57,7 +57,8 @@ export default new Router({
     //TEST
     
     {
-      path: '/rentACar',
+      props: true,
+      path: '/rentACar/:rentACarId',
       name: 'rentACar',
       component: RentACar
     },

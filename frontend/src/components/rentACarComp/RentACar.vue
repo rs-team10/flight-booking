@@ -13,7 +13,7 @@
                             <v-toolbar-side-icon></v-toolbar-side-icon>
                             za ovo takodje
                             -->
-                            <v-toolbar-title>Rent a car service</v-toolbar-title>
+                            <v-toolbar-title>Rent a car service: <b>{{this.rentACarId}}</b></v-toolbar-title> <!-- Promeni u name kada preuzmes ceo sa backa-->
 
                             <v-spacer></v-spacer>
                             <!--
@@ -50,7 +50,14 @@
                                     <v-card>
                                         <!-- Ovde ce da ide komponenta sa informacijama u zavisnosti od toga ko pristupa (ako je admin
                                         ovog rent a cara prikazace se adminska komponenta)-->
-                                        <v-card-text>{{ text }}</v-card-text>
+                    
+
+                                        <component 
+                                            v-bind:is="component1"
+                                            :rentACarId="rentACarId"
+                                        > 
+                                        </component>
+
                                     </v-card>
                                 </v-tab-item>
                                 <v-tab-item :value="'mobile-tabs-5-2'">
@@ -59,7 +66,7 @@
                                     <v-card>
                                         <!--Ovde takodje na ovaj template mogu samo komponente da se menjaju, a linkovi da ostaju isti-->
                                         <component 
-                                            v-bind:is="component"
+                                            v-bind:is="component2"
                                             :rentACarId="rentACarId"
                                         > 
                                         </component>
@@ -83,15 +90,23 @@
 
 <script>
 import ViewBranchOfficesA from "@/components/rentACarComp/ViewBranchOfficesA.vue"
+import ViewRentACarA from "@/components/rentACarComp/ViewRentACarA.vue"
 
 export default {
-     components: {
-        'viewBranchOfficesA' : ViewBranchOfficesA
-  },
+    props:{
+        rentACarId:{
+            type: String,
+            default: '0'
+        }
+    },
+    components: {
+        'viewBranchOfficesA' : ViewBranchOfficesA,
+        'viewRentACarA' : ViewRentACarA
+    },
     data () {
       return {
-        rentACarId : '1', //ovo je zacementirano za sada
-        component : 'viewBranchOfficesA',
+        component1 : 'viewRentACarA',
+        component2 : 'viewBranchOfficesA',
         tabs: null,
         text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu'
       }

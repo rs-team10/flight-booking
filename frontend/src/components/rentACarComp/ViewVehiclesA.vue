@@ -39,6 +39,7 @@
                  <component 
                   v-bind:is="component"
                   :selectedVehicle="selectedVehicle"
+                  :myBranch="branchOfficeId"
                  > 
                  </component>
   
@@ -223,9 +224,16 @@ export default {
   },
   methods:{
       fetchVehicles: function(){
+         
           this.$axios
           .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId)
           .then(response => this.vehicles = response.data)
+          .catch(error => {
+                this.search = 'error';
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
       },
  
       showAlert: function(){
@@ -257,7 +265,13 @@ export default {
       },
       deleteItem (item) {
          if(confirm('Are you sure you want to delete this vehicle?')){
-           this.vehicles = this.vehicles.filter(i=>i !== item);
+            this.$axios
+               .delete('http://localhost:8080/api/vehicle/'+item.id)
+               .then(response => {
+                     this.vehicles = this.vehicles.filter(i=>i !== item);
+                     alert(response.data);
+               })
+
            //poziv na backend
          }
       }
@@ -269,8 +283,7 @@ export default {
       }
    },
    created(){
-      //initialise...
-      //alert(this.branchOfficeId);
+
       this.fetchVehicles();
    }
 }

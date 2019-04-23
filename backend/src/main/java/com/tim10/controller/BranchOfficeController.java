@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.dto.LocationDTO;
+import com.tim10.dto.BranchOfficeLocationDTO;
 import com.tim10.service.BranchOfficeService;
 
 @RestController
@@ -25,11 +25,11 @@ public class BranchOfficeController {
 			value = "api/branchOffices/{rentACarId}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Collection<LocationDTO>> getBranchOfficesFromRentACar( 
+	public ResponseEntity<Collection<BranchOfficeLocationDTO>> getBranchOfficesFromRentACar( 
 			@PathVariable("rentACarId") Long rentACarId) {
 		
-		Collection<LocationDTO> brancOffices= branchOfficeService.getBranchOfficesFromRentACar(rentACarId);
-		return new ResponseEntity<Collection<LocationDTO>>(brancOffices, HttpStatus.OK);
+		Collection<BranchOfficeLocationDTO> brancOffices= branchOfficeService.getBranchOfficesFromRentACar(rentACarId);
+		return new ResponseEntity<Collection<BranchOfficeLocationDTO>>(brancOffices, HttpStatus.OK);
 		
 	}
 	

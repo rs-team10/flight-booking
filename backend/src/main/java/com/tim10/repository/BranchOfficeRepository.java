@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tim10.domain.BranchOffice;
-import com.tim10.dto.LocationDTO;
+import com.tim10.dto.BranchOfficeLocationDTO;
 
 public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Long>{
 
 	@Query(value = "SELECT "
-			+ "bo.id, "
+			+ "bo.branch_office_id, "
 			+ "city, "
 			+ "country"  
 			+ "  FROM "
@@ -22,7 +22,7 @@ public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Long
 			+" ON "
 			+ 	"bo.location_id = l.id"
 			+" WHERE "
-			+ 	"main_office_id = :rentACarId", nativeQuery = true)
-	Collection<LocationDTO> getBranchOfficesFromRentACar(@Param("rentACarId") Long rentACarId);
+			+ 	"company_id = :rentACarId", nativeQuery = true)
+	Collection<BranchOfficeLocationDTO> getBranchOfficesFromRentACar(@Param("rentACarId") Long rentACarId);
 	
 }
