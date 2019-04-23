@@ -49,18 +49,9 @@ public abstract class User implements UserDetails  {
     @Size(min = 6, max = 50)
 	private String email;
 	
-	/*
-	@Enumerated(EnumType.STRING)
-	@Column(name="role")
-	private Role role;
-	*/
-	
-	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Authority> authorities;
-	// Neka bude set tako je najzgodnije
-	
 	
 	public User() {
 		super();

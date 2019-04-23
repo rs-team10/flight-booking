@@ -26,7 +26,7 @@ public class Hotel extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
@@ -36,10 +36,7 @@ public class Hotel extends Company {
 		quickRoomReservations = new HashSet<QuickRoomReservation>();
 		administrators = new HashSet<HotelAdmin>();
 	}
-	
-	
-	
-	
+
 	public Set<Room> getRooms() {
 		return rooms;
 	}

@@ -1,9 +1,11 @@
 <template>
   <div class="hotels">
-    <div id="hotel-buttons">
-        <v-btn v-on:click="component = 'hotels'" outline color="indigo">View hotels</v-btn>
-        <v-btn v-on:click="component = 'add-hotel'" outline color="indigo">Add hotel</v-btn>
-    </div>
+
+    <v-tabs fixed-tabs color="#F5F4F9">
+        <v-tab v-on:click="component = 'hotels'" outline color="indigo">View hotels</v-tab>
+        <v-tab v-on:click="component = 'add-hotel'" outline color="indigo">Add hotel</v-tab>
+    </v-tabs>
+
     <component v-bind:is="component" 
         v-on:hotelSelected="changeComp($event)" 
         v-bind:selectedHotel="selectedHotel"></component>
