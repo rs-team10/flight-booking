@@ -18,8 +18,6 @@
                     <v-btn dark depressed color="green" @click="acceptFriendRequest(props.item.email)">
                         <span>Accept</span>
                     </v-btn>
-                </td>
-                <td class="text-xs-right">              
                     <v-btn dark depressed color="red" @click="declineFriendRequest(props.item.email)">
                         <span>Decline</span>
                     </v-btn>
@@ -58,24 +56,17 @@ export default {
                 },
                 {
                     text: "Status",
-                    align: 'center',
+                    align: 'left',
                     sortable: true,
                     value: 'status',
-                    width: 170
+                    width: 130
                 },
                 {
                     text: "",
-                    align: 'center',
+                    align: 'right',
                     sortable: false,
-                    value: 'accept',
-                    width: 70
-                },
-                {
-                    text: "",
-                    align: 'center',
-                    sortable: false,
-                    value: 'decline',
-                    width: 70
+                    value: 'actions',
+                    width: 300
                 }
             ],
             pagination: {'sortBy': 'status', 'descending': false, 'rowsPerPage': 5},

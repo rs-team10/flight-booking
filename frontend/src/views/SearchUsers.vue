@@ -1,10 +1,7 @@
 <template>
     <div class="search-users">
-        <v-container grid-list>
-            <v-layout row>
                 <search-users/>
-            </v-layout>
-        </v-container>
+            
     </div>
 </template>
 

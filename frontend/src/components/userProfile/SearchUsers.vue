@@ -2,7 +2,8 @@
   <div class="users">
     <v-container class="my-1">
         <h1 class="mx-3">Search users</h1>
-
+        <h4 class="mx-3">Type in the first or last name of the user you want to add to your friends list.</h4>
+        <h4 class="mx-3">Note that the results do not contain users that are in your friends list.</h4>
         <v-layout row>
             <v-text-field
                 v-model="search"
@@ -10,6 +11,7 @@
                 label="Search users"
                 single-line
                 class="mx-3"
+                @keyup.enter.native="searchUsers"
             ></v-text-field>
             <v-btn @click="searchUsers" :disabled=isDisabled>
                 <span>Search</span>
@@ -17,11 +19,11 @@
         </v-layout>
 
         <v-layout row wrap>
-            <v-flex xs12 md6 lg3 v-for="user in displayedUsers" :key="user.email" >
+            <v-flex xs12 sm6 lg2 v-for="user in displayedUsers" :key="user.email" >
                 <v-card flat class="text-xs-center ma-3" >
                     <v-responsive class="pt-4">
                         <v-avatar size="100" class="grey lighten-2">
-                            <img :src="user.avatar">
+                            <img src="@/assets/img/user.png">
                         </v-avatar>
                     </v-responsive>
                     <v-card-text>
@@ -63,18 +65,24 @@ export default {
   },
   methods: {
     searchUsers () {
-        
-        var yourConfig = {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        };
 
-        this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
-            this.users = response.data.users;
-        }).catch((error) => {
+        if (/\S/.test(this.search)) {
+        
+            var yourConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            };
+
+            this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
+                this.users = response.data.users;
+                if(this.users.length == 0) {
+                    this.$swal("No results", "Your search returned 0 results. Please try another query.", 'info');
+                }
+            }).catch((error) => {
                 this.$swal("Error", error.response.data.message, 'error');
-        });
+            });
+        }
     },
     setPages () {
         this.pages = [];

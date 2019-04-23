@@ -55,10 +55,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.user-data {
-    min-width: 400px;
-    max-width: 600px;
-}
-</style>
