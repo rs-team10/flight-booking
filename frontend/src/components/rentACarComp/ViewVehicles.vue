@@ -1,19 +1,59 @@
 <template>
   <div id="view-vehicles">
-  <h1>Available vehicles</h1> 
+
     <v-layout row>
-        <v-flex xs12 sm8 offset-sm1>
+        <v-flex xs12 sm10 offset-sm1>
+         <v-toolbar flat color="white">
+      <v-toolbar-title>Available vehicles</v-toolbar-title>
+      <v-divider
+        class="mx-1"
+        inset
+        vertical
+      ></v-divider>
+      <v-spacer></v-spacer>
+      <v-text-field
+            append-icon="search"
+            label="Search"
+            single-line
+            hide-details
+            v-model="search"
+         >
+      </v-text-field>
+
+
+      <v-divider
+        class="mx-1"
+        inset
+        vertical
+      ></v-divider>
+      <v-spacer></v-spacer>
+      <!-- Mozda zatreba za neki dijalog
+      <v-dialog v-model="dialog" max-width="500px">
+        <template v-slot:activator="{ on }">
+          <v-btn color="primary" dark class="mb-3" @click="addItem">Add vehicle</v-btn> verovatno bez dugmeta
+        </template>
+        <v-card>
+          <v-card-text>
+            <v-container>
+              <v-layout wrap>
+
+                
+                 <component 
+                  v-bind:is="component"
+                  :selectedVehicle="selectedVehicle"
+                 > 
+                 </component>
+  
+
+              </v-layout>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-toolbar> 
+    -->
          <template>
-               <v-flex xs3 sm4>
-                  <v-text-field
-                     append-icon="search"
-                     label="Search"
-                     single-line
-                     hide-details
-                     v-model="search"
-                  >
-               </v-text-field>
-               </v-flex>
+
                <v-data-table  
                :headers="headers"
                :items="vehicles"
@@ -21,49 +61,16 @@
                class="elevation-1"
                         >
                <template slot="items" slot-scope="props">
-                  <tr @click="showAlert(props.item)"><!--vehicleSelected(props.item)-->
-                     <td>{{ props.item.manufacturer }}</td>
-                     <td class="text-xs-right">{{ props.item.model }}</td>
-                     <td class="text-xs-right">{{ props.item.year }}</td>
-                     <td class="text-xs-right">{{ props.item.fuel }}</td>
-                     <td class="text-xs-right">{{ props.item.engine }}</td>
-                     <td class="text-xs-right">{{ props.item.transmission }}</td>
-                     <td class="text-xs-right">{{ props.item.seatsCount }}</td>
-                     <td class="text-xs-right">{{ props.item.airCondition }}</td>
-                     <td class="text-xs-right">{{ props.item.dailyRentalPrice }}</td>
-                     <td>
-                        <v-menu
-                              open-on-hover
-                              offset-y
-                              :close-on-content-click="false"
-                              lazy
-                              :key="props.item.id"
-                              >
-                              <v-btn
-                                 icon
-                                 class="mx-0"
-                                 slot="activator"
-                                 >
-                                 <v-icon color="blue">label_important</v-icon>
-                              </v-btn>
-                              <v-list>
-                                    <v-list-tile avatar>
-                                       <v-btn
-                                          color="error"
-                                          @click="removeOne(props.item)"
-                                       >
-                                          Delete
-                                       </v-btn>
-         
-                                       <v-btn
-                                          @click="removeOne(props.item)"
-                                       >
-                                          Edit
-                                       </v-btn>
-                                    </v-list-tile>
-                                 </v-list>
-                              </v-menu>
-                        </td>
+                  <tr @click="showAlert(props.item)">  <!--vehicleSelected(props.item)    -->
+                     <td class="text-xs-left">{{ props.item.manufacturer }}</td>
+                     <td class="text-xs-left">{{ props.item.model }}</td>
+                     <td class="text-xs-left">{{ props.item.year }}</td>
+                     <td class="text-xs-left">{{ props.item.fuel }}</td>
+                     <td class="text-xs-left">{{ props.item.engine }}</td>
+                     <td class="text-xs-left">{{ props.item.transmission }}</td>
+                     <td class="text-xs-left">{{ props.item.seatsCount }}</td>
+                     <td class="text-xs-left">{{ props.item.airCondition }}</td>
+                     <td class="text-xs-left">{{ props.item.dailyRentalPrice }}</td>
                      </tr>
                   </template>
                   <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -77,13 +84,28 @@
 </template>
 
 
+
+
+
+
+
 <script>
+
+import AddVehicle from "@/components/rentACarComp/AddVehicle.vue"
+import EditVehicle from "@/components/rentACarComp/EditVehicle.vue"
+
+
+
 export default {
+
+   components: {
+      //mozda za neki odabir vozila zatreba
+   },
   name: 'vehicles',
   data(){
       return{
-         
-          selectedVehicle  :  [],
+  
+          selectedVehicle  : {},
           search           :  '',
           headers : [
                      {
@@ -145,7 +167,15 @@ export default {
                         value: 'id', 
                         sortable: false
                      }
-                     ],
+                  ],
+
+
+            component: "addVehicle",
+            dialog: false,
+
+
+
+
           vehicles: [
               {
                 id                  : 1,
@@ -176,25 +206,31 @@ export default {
   methods:{
       fetchVehicles: function(){
           this.$axios
-          .get('http://localhost:8081/api/vehicles')
+          .get('http://localhost:8080/api/branchOffice/vehicles/1')//+branchOffice.id
           .then(response => this.vehicles = response.data)
       },
+ 
+      showAlert: function(){
+         alert(this.selectedVehicle.manufacturer) 
+      },
+   
+
+   //kacin nacin
       vehicleSelected: function(vehicle){
           this.$emit('selectedVehicle', vehicle);
       },
-      showAlert:function(a){
-         alert('Alert! \n' + a.manufacturer);
+      changeComp: function(vehicle){
+            this.selectedVehicle = vehicle;
+            this.component = 'editVehicle';
       },
 
+   },
 
-      removeOne:function(item){
-         this.vehicles = this.vehicles.filter(i=>i !== item)
-      }
-      
-  },
-  mounted(){
-
+   created(){
       this.fetchVehicles();
-  }
+   }
 }
+
 </script>
+
+

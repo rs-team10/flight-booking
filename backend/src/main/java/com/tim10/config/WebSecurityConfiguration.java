@@ -105,6 +105,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers("/auth/login").permitAll()
 			.antMatchers("/api/*").permitAll()
 			.antMatchers("/**/**").permitAll()
+			.antMatchers("/**/**/**").permitAll()
 			/*
 			.antMatchers("/api/hotels").hasAnyRole("USER")
 			.antMatchers("/api/users").hasAnyRole("USER", "SYSTEM_ADMIN")

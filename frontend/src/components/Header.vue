@@ -35,6 +35,11 @@
                 <v-btn v-if="showSignUp" flat router to="/signup">
                     <span>Sign up</span>
                 </v-btn>
+            
+                <v-btn flat router to="/rentACar/1">
+                    <v-icon left>directions_boat</v-icon>
+                    <span>RentACar flow</span>
+                </v-btn>
             </v-toolbar-items>
         </v-toolbar>
     </nav>
