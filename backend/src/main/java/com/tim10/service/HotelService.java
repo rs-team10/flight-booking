@@ -6,10 +6,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Hotel;
-import com.tim10.dto.HotelDTO;
+import com.tim10.domain.HotelAdmin;
 import com.tim10.repository.HotelRepository;
 
 @Service
@@ -18,12 +19,22 @@ public class HotelService {
 	@Autowired
 	private HotelRepository hotelRepository;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	public List<Hotel> findAll(){
 		return hotelRepository.findAll();
 	}
 	
 	public Page<Hotel> findAll(Pageable page) {
 		return hotelRepository.findAll(page);
+	}
+	
+	public Hotel registerHotel(Hotel hotel) {
+		for(HotelAdmin admin : hotel.getAdministrators()) {
+			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+		}
+		return hotelRepository.save(hotel);
 	}
 	 
 	public Hotel save(Hotel hotel) {

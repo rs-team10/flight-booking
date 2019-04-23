@@ -21,7 +21,7 @@
 
         </div>
         
-        <div id="add-form" >
+        <div id="add-form" class="mt-3">
             <v-flex xs12 sm6 offset-sm3>
                 <h1 class="text-xs-center indigo--text">Register new hotel</h1>
                 <v-form>
@@ -159,6 +159,10 @@
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength } from 'vuelidate/lib/validators'
 
+var yourConfig = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
+
 export default {
     mixins: [validationMixin],
 
@@ -243,7 +247,7 @@ export default {
         },
         addHotel: function(){
             this.$axios
-            .post('http://localhost:8080/api/hotels', this.hotel)
+            .post('http://localhost:8080/api/hotels', this.hotel, yourConfig)
             .then(response => {
                 this.success = true;
                 setTimeout(() => {
@@ -255,6 +259,7 @@ export default {
             });
         },
         close(){
+            this.$v.tempAdmin.$reset();
             this.adminDialog = false;
             this.tempAdmin = Object.assign({}, {});
         }, 
@@ -284,7 +289,8 @@ export default {
                 return false;
         },
         deleteAdmin(admin){
-            this.hotel.administrators.pop(admin);
+            const index = this.hotel.administrators.indexOf(admin);
+            this.hotel.administrators.splice(index, 1);
         }
       
     }

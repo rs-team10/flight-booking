@@ -1,11 +1,14 @@
 <template>
     <v-card>
+      <v-toolbar color="indigo lighten-2">
 
       <v-dialog v-model="addDialog" max-width="600" persistent>
 
-        <template v-slot:activator="{on}">
-          <v-btn color="primary" dark class="mb-2" v-on="on">New special price</v-btn>
-        </template>
+          <template v-slot:activator="{on}">
+            <v-btn absolute color="indigo" dark fab right small class="mt-3 mr-3" v-on="on">
+              <v-icon>add</v-icon>
+            </v-btn>
+          </template>
 
         <v-card id="addSpecialPrice">
           <v-card-title>
@@ -68,7 +71,7 @@
                         v-on="on"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="addEndDate" @input="startMenu = false" :min="minDate"></v-date-picker>
+                    <v-date-picker v-model="addEndDate" @input="endMenu = false" :min="minDate"></v-date-picker>
                   </v-menu>
                 </v-flex>
               </v-layout>
@@ -80,10 +83,10 @@
             <v-btn color="blue darken-1" flat @click="closeAddDialog">Cancel</v-btn>
             <v-btn color="blue darken-1" flat @click="savePrice">Save</v-btn>
           </v-card-actions>
+
         </v-card>
-
       </v-dialog>
-
+      </v-toolbar>
       <v-data-table
         :items="selectedRoomType.specialRoomPrices"
         :headers="headers"
@@ -234,8 +237,8 @@ export default {
     closeAddDialog(){
       this.addDialog = false;
       this.newPrice = null;
-      this.addStartDate = new Date().toISOString();
-      this.addEndDate = new Date().toISOString();
+      this.addStartDate = new Date().toISOString().substr(0, 10);
+      this.addEndDate = new Date().toISOString().substr(0, 10);
     },
 
     deletePrice(item){

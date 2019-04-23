@@ -1,6 +1,8 @@
 package com.tim10.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,14 +33,19 @@ public class HotelController {
 	private UserService userService;
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Hotel>> getHotels() {
-		return new ResponseEntity<List<Hotel>>(hotelService.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<HotelDTO>> getHotels() {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h: hotelService.findAll())
+			dtos.add(new HotelDTO(h));
+		return new ResponseEntity<List<HotelDTO>>(dtos, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/{parameter}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Hotel>> searchHotels(@PathVariable("parameter") String param) {
-		List<Hotel> hotels = hotelService.findByParameter(param);
-		return new ResponseEntity<>(hotels, HttpStatus.OK);
+	public ResponseEntity<List<HotelDTO>> searchHotels(@PathVariable("parameter") String param) {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h : hotelService.findByParameter(param))
+			dtos.add(new HotelDTO(h));
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,7 +64,7 @@ public class HotelController {
 				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
 					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
 			}
-			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.CREATED);
+			return new ResponseEntity<>(hotelService.registerHotel(hotel), HttpStatus.CREATED);
 		}
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
@@ -67,7 +75,9 @@ public class HotelController {
 		if(existingHotel != null && existingHotel.getId() != hotel.getId())
 			return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 		
-		if(hotelService.findOne(hotel.getId()) != null){
+		Optional<Hotel> h = hotelService.findOne(hotel.getId());
+		if(h.isPresent()){
+			hotel.setAdministrators(h.get().getAdministrators());
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
 		

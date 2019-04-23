@@ -48,7 +48,6 @@ public class RoomType implements Serializable {
 	private String image;
 	
 	@Column(name="averageFeedback")							
-	//moze biti null ako nema nikakav feedback, ne prikazujes korisniku
 	private Double averageFeedback;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)

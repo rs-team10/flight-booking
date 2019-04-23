@@ -1,6 +1,5 @@
 <template>
     <div id="edit-hotel">
-        <h1>Edit {{selectedHotel.name}}</h1>
         <div id="alerts">
             <v-alert
                 :value="success"
@@ -20,8 +19,9 @@
 
         </div>  
 
-        <div id="edit-form">
+        <div id="edit-form" class="mt-3">
             <v-flex xs12 sm6 offset-sm3> 
+                <h1 class="text-xs-center indigo--text">Edit {{selectedHotel.name}}</h1>
                 <form>
                     <v-text-field
                         v-model.lazy="selectedHotel.name"
@@ -46,14 +46,14 @@
                         Mesto za tabelu sa cenovnikom tipova soba
                     -->
                     <div id="cenovnik-soba">
-                        <v-toolbar flat color="blue lighten-2">
+                        <v-toolbar color="indigo lighten-2">
                             <v-toolbar-title>Room types</v-toolbar-title>
                             <v-spacer></v-spacer>
 
                             <v-dialog v-model="roomDialog" max-width="500px">
 
                                 <template v-slot:activator="{on}">
-                                    <v-btn color="primary" dark class="mb-2" v-on="on">New room type</v-btn>
+                                    <v-btn color="indigo" dark class="mb-2" v-on="on">New room type</v-btn>
                                 </template>
 
                                 <v-card>
@@ -95,8 +95,8 @@
 
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" flat @click="roomClose">Cancel</v-btn>
-                                        <v-btn color="blue darken-1" flat @click="roomSave">Save</v-btn>
+                                        <v-btn color="indigo darken-1" flat @click="roomClose">Cancel</v-btn>
+                                        <v-btn color="indigo darken-1" flat @click="roomSave">Save</v-btn>
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
@@ -167,14 +167,14 @@
                         Mesto za tabelu sa cenovnikom dodatnih usluga
                     -->
                     <div id="cenovnik-dodatnih" class="mt-2">
-                        <v-toolbar flat color="blue lighten-2">
+                        <v-toolbar color="indigo lighten-2">
                             <v-toolbar-title>Additional services</v-toolbar-title>
                             <v-spacer></v-spacer>
 
                             <v-dialog v-model="serviceDialog" max-width="500px">
 
                                 <template v-slot:activator="{on}">
-                                    <v-btn color="primary" dark class="mb-2" v-on="on">New service</v-btn>
+                                    <v-btn color="indigo" dark class="mb-2" v-on="on">New service</v-btn>
                                 </template>
 
                                 <v-card>
@@ -204,8 +204,8 @@
 
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" flat @click="serviceClose">Cancel</v-btn>
-                                        <v-btn color="blue darken-1" flat @click="serviceSave">Save</v-btn>
+                                        <v-btn color="indigo darken-1" flat @click="serviceClose">Cancel</v-btn>
+                                        <v-btn color="indigo darken-1" flat @click="serviceSave">Save</v-btn>
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
@@ -243,7 +243,7 @@
                     </div>
                     <!-- ========================================================== -->
                     
-                    <v-btn block color="primary" dark class="mt-2" @click="submit">submit</v-btn>
+                    <v-btn block color="indigo" dark class="mt-2" @click="submit">submit</v-btn>
                     
                 </form>
             </v-flex>
@@ -255,6 +255,10 @@
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
 import SpecialRoomPrices from "@/components/SpecialRoomPrices.vue"
+
+var yourConfig = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
 
 export default {
     components: {
@@ -368,7 +372,7 @@ export default {
         },
         editHotel: function(){
             this.$axios
-            .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel)
+            .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel, yourConfig)
             .then(response => {
                 this.success = true;
                 setTimeout(() => {
@@ -430,7 +434,7 @@ export default {
                 Object.assign(this.selectedHotel.roomTypes[this.roomEditedIndex], this.roomEditedItem)
             }else{
                 //ako nijedan item nije selektovan znaci da dodajemo novi
-                this.roomEditedItem["specialRoomPrices"] = new Array();
+                //this.roomEditedItem["specialRoomPrices"] = new Array();
                 this.selectedHotel.roomTypes.push(this.roomEditedItem);
                 console.log(this.selectedHotel);
             }
