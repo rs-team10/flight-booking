@@ -6,27 +6,35 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name="SpecialRoomPrices")
 public class SpecialRoomPrice implements Serializable {
 	
-	@Id
+	@Id	
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
 	@Column(name="price")
 	private BigDecimal price;
 	
 	@Column(name="validFrom")
+	@Type(type="date")
 	private Date validFrom;
 	
 	@Column(name="validTo")
+	@Type(type="date")
 	private Date validTo;
 
 	public SpecialRoomPrice() {
-		super();
+		validFrom = new Date();
+		validTo = new Date();
 	}
 
 	public Long getId() {

@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +18,6 @@ public class HotelAdmin extends User {
 	public HotelAdmin() {
 		super();
 		hasCustomPassword = false;
-		//this.setRole(Role.ROLE_HOTEL_ADMIN);
 		
 		//Ne znam sta se desava sa tabelom autoriteta u bazi - bukvalno veze blage nemam
 		//ako se sa onim joinom tabela i ova druga tabela updatuje ovo je okej

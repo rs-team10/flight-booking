@@ -26,7 +26,6 @@ public abstract class Company implements Serializable {
 	@Column(name = "description")
 	private String description;
 	
-	//moze biti null ako nema nijedan feedback, nece se prikazivati korisniku
 	@Column(name = "averageFeedback")	
 	private Double averageFeedback;
 	

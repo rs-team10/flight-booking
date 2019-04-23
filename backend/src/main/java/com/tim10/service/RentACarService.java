@@ -6,10 +6,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.RentACar;
 import com.tim10.dto.RentACarDTO;
+import com.tim10.domain.RentACarAdmin;
 import com.tim10.repository.RentACarRepository;
 
 @Service
@@ -19,7 +21,11 @@ public class RentACarService {
 	private RentACarRepository rentACarRepository;
 	
 	
-	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+
+		
 	public RentACarDTO getRentACarById(@Param("rentACarId") Long rentACarId)throws ResourceNotFoundException {
 		
 		RentACarDTO rac =  rentACarRepository.getRentACarById(rentACarId);
@@ -31,14 +37,18 @@ public class RentACarService {
 	}
 	
 	
-	
-	
 	public List<RentACar> findAll(){
 		return rentACarRepository.findAll();
 	}
 	
 	public Optional<RentACar> findById(Long id) {
 		return rentACarRepository.findById(id);
+	}
+	
+	public RentACar registerRentACar(RentACar rentacar) {
+		for(RentACarAdmin admin : rentacar.getAdministrators()) 
+			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+		return rentACarRepository.save(rentacar);
 	}
 	
 	public RentACar save(RentACar rentACar) {

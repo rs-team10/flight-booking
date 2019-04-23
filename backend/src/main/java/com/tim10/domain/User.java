@@ -16,8 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="User")
@@ -42,20 +45,13 @@ public abstract class User implements UserDetails  {
 	@Column(name="lastName")
 	private String lastName;
 	
-	@Column(name="email")
+	@Column(name="email", nullable = false, unique = true)
+    @Size(min = 6, max = 50)
 	private String email;
 	
-	/*
-	@Enumerated(EnumType.STRING)
-	@Column(name="role")
-	private Role role;
-	*/
-
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Authority> authorities;
-	// Neka bude set tako je najzgodnije
-	
 	
 	public User() {
 		super();
