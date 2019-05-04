@@ -194,7 +194,7 @@ export default {
             error: false,
             adminError: false,
             adminDialog: false,
-            tempAdmin: {}    
+            tempAdmin: {}
         }
     },
     computed: {
@@ -248,7 +248,7 @@ export default {
         addHotel: function(){
             this.$axios
             .post('http://localhost:8080/api/hotels', this.hotel, yourConfig)
-            .then(response => {
+            .then(() => {
                 this.success = true;
                 setTimeout(() => {
                     this.success = false
@@ -291,7 +291,6 @@ export default {
             const index = this.hotel.administrators.indexOf(admin);
             this.hotel.administrators.splice(index, 1);
         }
-      
     }
 }
 

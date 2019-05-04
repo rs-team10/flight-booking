@@ -18,6 +18,7 @@ import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
+import HotelReservation from './components/HotelReservation/HotelReservation.vue'
 
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
@@ -135,7 +136,13 @@ export default new Router({
       path: '/addRentACar',
       name: 'addRentACar',
       component: AddRentACar
+    },
+    {
+      path: '/hotelReservation',
+      name: 'hotelReservation',
+      component: HotelReservation
     }
+
     //=====================================
   ]
 })

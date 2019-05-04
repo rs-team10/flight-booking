@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,10 +50,16 @@ public class HotelController {
 	}
 	
 	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Page<Hotel>> getHotelsPage(Pageable page) {
+	public ResponseEntity<List<HotelDTO>> getHotelsPage(Pageable page) {
 		//page object holds data about pagination and sorting
-		//the object is created based on the url parameters "page", "size" and "sort" 
-		return new ResponseEntity<>(hotelService.findAll(page), HttpStatus.OK);
+		//the object is created based on the url parameters "page", "size" and "sort"
+		Page<Hotel> pageHotels = hotelService.findAll(page);
+		
+		List<HotelDTO> hotelsDTO = new ArrayList<>();
+		for(Hotel h : pageHotels) {
+			hotelsDTO.add(new HotelDTO(h));
+		}
+		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
