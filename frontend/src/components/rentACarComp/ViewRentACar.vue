@@ -1,95 +1,83 @@
 <template>
     
-  <v-card
-    color="grey lighten-4"
-  >
-    <v-toolbar
-      card
-      color="grey lighten-4"
-    >
-      <v-toolbar-title class="headline font-weight-regular black--text">Informations</v-toolbar-title>
-      
-    </v-toolbar>
-    <v-flex xs12 sm10 md10 offset-sm1>
-        <v-card
-        color="white"
-        >
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                    ref = 'btn'
-                    :dark = "true"
-                    color="black"
-                    fab
-                    small
-                    @click="changeCanc"
-                >
-                    <v-icon v-if="isEditing">close</v-icon>
+    <v-card>
 
-                    <v-icon v-else>edit</v-icon>
-                </v-btn>
-            </v-card-actions>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                ref = 'btn'
+                :dark = "true"
+                color="black"
+                fab
+                small
+                @click="changeCanc"
+            >
+                <v-icon v-if="isEditing">close</v-icon>
+
+                <v-icon v-else>edit</v-icon>
+            </v-btn>
+        </v-card-actions>
             
-            <v-card-text v-if="isEditing">
+        <v-card-text v-if="isEditing">
         
                  
-                <v-flex center xs12 sm6 md10 offset-sm1>
-    
-                    <v-text-field
-                        v-model.lazy="rentACar.name"
-                        label="Name"
-                        placeholder="Rent-a-car name"
-                        outline
-                    ></v-text-field>
+            <v-flex center xs12 sm6 md10 offset-sm1>
 
-                    <v-textarea
-                        v-model.lazy="rentACar.description"
-                        outline
-                        label="Description"
-                        placeholder="Rent-a-car descsriptin"
-                        
-                    ></v-textarea>
-                </v-flex>
+                <v-text-field
+                    v-model.lazy="rentACar.name"
+                    label="Name"
+                    placeholder="Rent-a-car name"
+                    outline
+                ></v-text-field>
+
+                <v-textarea
+                    v-model.lazy="rentACar.description"
+                    outline
+                    label="Description"
+                    placeholder="Rent-a-car descsriptin"
+                    
+                ></v-textarea>
+            </v-flex>
                 
-            </v-card-text>
-            <v-card-text v-else>
+        </v-card-text>
+        <v-card-text v-else>
+    
+                
+            <v-flex center xs12 sm6 md10 offset-sm1>
+
+                <v-text-field
+                    @focus.stop = "noClick"
+                    v-model.lazy="rentACar.name"
+                    label="Name"
+                    placeholder="Rent-a-car name"
+                    outline
+                ></v-text-field>
+
+                <v-textarea
+                    @focus.stop = "noClick"
+                    v-model.lazy="rentACar.description"
+                    outline
+                    label="Description"
+                    placeholder="Rent-a-car descsriptin"
+                    
+                ></v-textarea>
+            </v-flex>
+            
+        </v-card-text>
+
+        <v-card-actions>
+
+            <v-spacer></v-spacer>
+            <v-btn
+                :dark = "true"
+                :disabled="!isEditing"
+                color="black"
+                @click="save"
+            >
+                Save
+            </v-btn>
+        </v-card-actions>
         
-                 
-                <v-flex center xs12 sm6 md10 offset-sm1>
-    
-                    <v-text-field
-                        @focus.stop = "noClick"
-                        v-model.lazy="rentACar.name"
-                        label="Name"
-                        placeholder="Rent-a-car name"
-                        outline
-                    ></v-text-field>
-
-                    <v-textarea
-                        @focus.stop = "noClick"
-                        v-model.lazy="rentACar.description"
-                        outline
-                        label="Description"
-                        placeholder="Rent-a-car descsriptin"
-                        
-                    ></v-textarea>
-                </v-flex>
-                
-            </v-card-text>
-
-        <v-divider></v-divider>
-
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                    :dark = "true"
-                    :disabled="!isEditing"
-                    color="black"
-                    @click="save"
-                >
-                    Save
-                </v-btn>
-            </v-card-actions>
         <v-snackbar
             v-model="hasSaved"
             :timeout="2000"
@@ -99,8 +87,7 @@
         >
         Rent a car profile has been updated
         </v-snackbar>
-        </v-card>
-    </v-flex>
+
   </v-card>
 </template>
 

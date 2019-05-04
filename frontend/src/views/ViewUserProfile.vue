@@ -1,6 +1,6 @@
 <template>
     <div class="view-user-profile">
-        <v-container grid-list>
+
             <v-layout row justify-space-around>
                 <user-profile/>
                 <v-layout align-space-around justify-start column>
@@ -22,7 +22,7 @@
                     </v-tabs>
                 </v-layout>
             </v-layout>
-        </v-container>
+            
     </div>
 </template>
 

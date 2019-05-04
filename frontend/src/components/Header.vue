@@ -27,6 +27,12 @@
                     <v-icon left>directions_car</v-icon>
                     <span>Rent a cars</span>
                 </v-btn>
+                
+                <v-btn flat router to="/rentACar/1">
+                    <v-icon left>directions_boat</v-icon>
+                    <span>RentACar flow</span>
+                </v-btn>
+
                 <v-btn flat router v-bind:to = "route" @click = "log()">
                     <v-icon left>rowing</v-icon>
                     <span>{{this.title}}</span>
@@ -36,10 +42,7 @@
                     <span>Sign up</span>
                 </v-btn>
             
-                <v-btn flat router to="/rentACar/1">
-                    <v-icon left>directions_boat</v-icon>
-                    <span>RentACar flow</span>
-                </v-btn>
+                
             </v-toolbar-items>
         </v-toolbar>
     </nav>
