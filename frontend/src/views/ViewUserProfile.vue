@@ -58,8 +58,7 @@ export default {
     max-width: 600px;
 }
 
-.tabs__content
-    {
-        min-height: 100vh;
-    }
+.tabs__content {
+    min-height: 100vh;
+}
 </style>

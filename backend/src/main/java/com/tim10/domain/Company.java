@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
+import org.hibernate.validator.constraints.Length;
+
 @MappedSuperclass
 public abstract class Company implements Serializable {
 	 
@@ -24,6 +26,7 @@ public abstract class Company implements Serializable {
 	private String name;
 	
 	@Column(name = "description")
+	@Length(min = 0, max = 500)
 	private String description;
 	
 	@Column(name = "averageFeedback")	

@@ -13,7 +13,7 @@
                     <v-icon left>account_circle</v-icon>
                     <span>My profile</span>
                 </v-btn>
-                <v-btn flat router to="/editAirline">
+                <v-btn flat router to="/airlineProfile">
                     <v-icon left>flight</v-icon>
                     <span>Airlines</span>
                 </v-btn>

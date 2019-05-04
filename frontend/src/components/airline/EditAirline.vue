@@ -88,7 +88,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength } from 'vuelidate/lib/validators'
 
-var MOCK_ID = 5;                                // TODO: This is hardcoded. Change!
+var MOCK_ID = 1;                                // TODO: This is hardcoded. Change!
 
 export default {
     mixins: [validationMixin],
