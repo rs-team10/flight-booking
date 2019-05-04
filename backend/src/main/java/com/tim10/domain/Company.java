@@ -17,7 +17,6 @@ public abstract class Company implements Serializable {
 	 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "companyId")
 	private Long id;
 	
 	@Column(name = "name", nullable = false)
@@ -30,7 +29,7 @@ public abstract class Company implements Serializable {
 	private Double averageFeedback;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "location_id")//STA JE OVO!?
+	@JoinColumn(name = "location_id")
 	private Location location;
 
 	public Company() {

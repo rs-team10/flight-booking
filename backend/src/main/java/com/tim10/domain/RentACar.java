@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,7 +27,10 @@ public class RentACar extends Company {
 	public PriceList additionalServicesPriceList;
 
 	public RentACar() {
-		super();
+		branchOffices = new HashSet<BranchOffice>();
+		additionalServicesPriceList = new PriceList();
+		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
+		administrators = new HashSet<RentACarAdmin>();
 	}
 
 	public Set<BranchOffice> getBranchOffices() {
