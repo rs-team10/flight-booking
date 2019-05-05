@@ -2,9 +2,16 @@
     <v-flex class='d-flex'>
 
         <v-layout class="airline-data" column align-center ma-4>
+            <v-avatar
+                class="ma-2"
+                :tile="true"
+                :size="80"
+                >
+                <img src="https://www.airserbia.com/Data/Images/logo.png" alt="avatar">
+            </v-avatar>
             <h2 class="text-xs-center">{{ airline.name }}</h2>
-            <h3 class="text-xs-center mb-1">{{ formattedAddress }}</h3>
-            <h4 class="text-xs-center ma-1">{{ airline.description }}</h4>
+            <h3 class="text-xs-center mb-1">{{ airline.location.formattedAddress }}</h3>
+            <p class="text-xs-center ma-1">{{ airline.description }}</p>
             <div class="text-xs-center">
                 <v-btn @click="redirectToEdit()" round small flat color="primary" dark>Edit Airline Profile</v-btn>
             </div>
@@ -57,7 +64,6 @@ export default {
                 lat: 0.0,
                 lng: 0.0
             },
-            formattedAddress : ""
         }
     },
     methods: {
@@ -79,7 +85,6 @@ export default {
                 lat: this.airline.location.latitude,
                 lng: this.airline.location.longitude
             };
-            this.formattedAddress = this.airline.location.postalCode;
         }).catch(function(error) {
             this.$swal("Error", error.response.data.message, 'error');
         });

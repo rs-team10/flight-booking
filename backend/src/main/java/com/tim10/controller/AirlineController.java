@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
+import com.tim10.domain.Destination;
 import com.tim10.service.AirlineService;
 import com.tim10.service.UserService;
 
@@ -80,5 +81,49 @@ public class AirlineController {
 		
 		return new ResponseEntity<>("Wanted airline does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
+	
+	@RequestMapping(
+			value="/airlines/addBusinessLocation",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> addBusinessLocation(@RequestBody Destination destination) {
+		
+		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
+		
+		Airline existingAirline = airlineService.findOne(1L).get();
+		
+		if(existingAirline != null) {
+			boolean success = airlineService.addBusinessLocation(existingAirline, destination);
+			if(success) {
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+	
+	
+	@RequestMapping(
+			value="/airlines/removeBusinessLocation",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> removeBusinessLocation(@RequestBody Destination destination) {
+		
+		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
+		
+		Airline existingAirline = airlineService.findOne(1L).get();
+		
+		if(existingAirline != null) {
+			boolean success = airlineService.removeBusinessLocation(existingAirline, destination);
+			if(success) {
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
 }

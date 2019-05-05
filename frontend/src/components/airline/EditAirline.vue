@@ -153,34 +153,54 @@ export default {
                 };
 
                 this.$axios.put('http://localhost:8080/api/airlines/', this.airline, yourConfig).then((data) => {
-                    this.$swal('Success', 'Airline profile edited successfuly', 'success');
+                    this.$swal.fire({
+                        title: 'Success', 
+                        html: 'Airline profile edited successfuly',
+                        type: 'success',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then((result) => {
+                        if (result.dismiss === this.$swal.DismissReason.timer) {
+                            this.$router.go(-1);
+                        }
+                    });
+                
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
                 });
             }
         },
         getLocationData: function (place) {
             
             if(place) {
-                
-                this.airline.location.latitude = place.geometry.location.lat();
-                this.airline.location.longitude = place.geometry.location.lng();
-                this.airline.location.street = place.name;
-                this.airline.location.city = place.vicinity;
-                this.airline.location.country = "Unknown";
 
-                this.airline.location.postalCode = place.formatted_address;
-
-                place.address_components.forEach(element => {
-                    
-                    if(element.types.includes('country')) {
-                        this.airline.location.country = element.long_name;
-                    }
-                });
+                this.airline.location = this.extractLocationData(place);
 
                 this.currentMapCenter = {
                     lat: this.airline.location.latitude,
                     lng: this.airline.location.longitude
                 }
             }
+        },
+        extractLocationData(place) {
+            var locationToReturn = {};
+
+            locationToReturn.id = this.airline.location.id;
+            locationToReturn.latitude = place.geometry.location.lat();
+            locationToReturn.longitude = place.geometry.location.lng();
+            locationToReturn.street = place.name;
+            locationToReturn.formattedAddress = place.formatted_address;
+
+            place.address_components.forEach(element => {
+                
+                if(element.types.includes('country'))
+                    locationToReturn.country = element.long_name;
+                else if(element.types.includes('locality'))
+                    locationToReturn.city = element.long_name;
+                
+            });
+
+            return locationToReturn;
         }
     },
 
@@ -198,8 +218,8 @@ export default {
                 lat: this.airline.location.latitude,
                 lng: this.airline.location.longitude
             };
-            this.formattedAddress = this.airline.location.postalCode;
-        }).catch(function(error) {
+            this.formattedAddress = this.airline.location.formattedAddress;
+        }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');
         });
     }

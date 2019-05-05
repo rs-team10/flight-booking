@@ -9,13 +9,18 @@ import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
+import com.tim10.domain.Destination;
 import com.tim10.repository.AirlineRepository;
+import com.tim10.repository.DestinationRepository;
 
 @Service
 public class AirlineService {
 	
 	@Autowired
 	private AirlineRepository airlineRepository;
+	
+	@Autowired
+	private DestinationRepository destinationRepository;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -40,6 +45,28 @@ public class AirlineService {
 	
 	public Optional<Airline> findOne(Long id) {
 		return airlineRepository.findById(id);
+	}
+
+	public boolean addBusinessLocation(Airline existingAirline, Destination destination) {
+		
+		try {
+			existingAirline.getBusinessLocations().add(destination);
+			airlineRepository.save(existingAirline);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean removeBusinessLocation(Airline existingAirline, Destination destination) {
+		try {
+			Destination destinationToRemove = destinationRepository.findById(destination.getId()).get();
+			existingAirline.getBusinessLocations().remove(destinationToRemove);
+			airlineRepository.save(existingAirline);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }

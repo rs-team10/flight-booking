@@ -1,109 +1,98 @@
 <template>
     <div id="airline-business-locations" class="ma-3">
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex>
+            <v-toolbar>
+                <v-toolbar-title>Business Locations</v-toolbar-title>
+                <v-spacer></v-spacer>
 
-            <v-layout row justify-center>
                 <v-dialog v-model="showBusinessLocationDialog" persistent max-width="400px">
                     
                     <template v-slot:activator="{ on }">
-                        <v-btn block v-on="on">Add Business Location</v-btn>
+                        <v-btn v-on="on">New Business Location</v-btn>
                     </template>
 
-                    <v-form ref="businessLocationForm">
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">New Business Location</span>
-                            </v-card-title>
 
-                            <v-card-text>
-                                <v-container grid-list-md>
-                                    <v-layout wrap>
-                                        
-                                        <v-flex>
-                                            <v-text-field
-                                                label="Destination Name"
-                                                v-model="newBusinessLocation.name"
-                                                :error-messages="nameErrors">
-                                            </v-text-field>
-                                        </v-flex>
-
-                                        <v-flex>
-                                            <v-text-field
-                                                label="Airport Name"
-                                                v-model="newBusinessLocation.airportName"
-                                                :error-messages="airportNameErrors">
-                                            </v-text-field>
-                                        </v-flex>
-
-                                        <v-flex>
-                                            <v-text-field
-                                                label="Airport IATA Code"
-                                                mask="AAA"
-                                                v-model="newBusinessLocation.airportCode"
-                                                :error-messages="airportCodeErrors">
-                                            </v-text-field>
-                                        </v-flex>
-
-                                        <v-flex>
-                                            <GmapAutocomplete
-                                                class="custom-input-field"
-                                                @place_changed="getLocationData">
-                                            </GmapAutocomplete>
-                                        </v-flex>
-
-                                    </v-layout>
-                                </v-container>
-                            </v-card-text>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn flat @click="close">Close</v-btn>
-                                <v-btn flat @click="save">Save</v-btn>
-                            </v-card-actions>
-
-                        </v-card>
-                    </v-form>
-
-                </v-dialog>
-            </v-layout>
-
-
-            <v-layout row>
-                <v-flex>
                     <v-card>
-                        <v-toolbar>
-                            <v-toolbar-title class="text-xs-center">Business Locations</v-toolbar-title>
-                            <v-spacer></v-spacer>
-                        </v-toolbar>
+                        <v-card-title>
+                            <span class="headline">Add Business Location</span>
+                        </v-card-title>
 
-                        <v-list 
-                            three-line
-                            class="scroll-y" 
-                            style="height: 700px">
-                            <template v-for="businessLocation in this.businessLocations">
-                                <v-list-tile :key="businessLocation.id" class="ma-2">
-                                    <v-list-tile-content>
-                                        <v-list-tile-title class="font-weight-bold">{{ businessLocation.name }}</v-list-tile-title>
-                                        <v-list-tile-sub-title>{{ businessLocation.airportCode }}</v-list-tile-sub-title>
-                                        <v-list-tile-sub-title>{{ businessLocation.airportName }}</v-list-tile-sub-title>
-                                        <v-list-tile-sub-title>{{ businessLocation.location.postalCode }}</v-list-tile-sub-title>
-                                    </v-list-tile-content>
-                                    <v-icon
-                                        class="mr-1"
-                                        @click="deleteBusinessLocation(businessLocation)">
-                                        delete
-                                    </v-icon>
-                                    <v-icon
-                                        class="mr-1"
-                                        @click="editBusinessLocation(businessLocation)">
-                                        edit
-                                    </v-icon>
-                                </v-list-tile>
-                            </template>
-                        </v-list>
+                        <v-card-text>
+                            <v-container grid-list-md>
+                                <v-layout wrap>
+                                    
+                                    <v-flex>
+                                        <v-text-field
+                                            label="Destination Name"
+                                            v-model="newBusinessLocation.name"
+                                            :error-messages="nameErrors">
+                                        </v-text-field>
+                                    </v-flex>
+
+                                    <v-flex>
+                                        <v-text-field
+                                            label="Airport Name"
+                                            v-model="newBusinessLocation.airportName"
+                                            :error-messages="airportNameErrors">
+                                        </v-text-field>
+                                    </v-flex>
+
+                                    <v-flex>
+                                        <v-text-field
+                                            label="Airport IATA Code"
+                                            mask="AAA"
+                                            v-model="newBusinessLocation.airportCode"
+                                            :error-messages="airportCodeErrors">
+                                        </v-text-field>
+                                    </v-flex>
+
+                                    <v-flex>
+                                        <GmapAutocomplete
+                                            :value="newBusinessLocation.location.formattedAddress"
+                                            class="custom-input-field"
+                                            @place_changed="getLocationData">
+                                        </GmapAutocomplete>
+                                    </v-flex>
+
+                                </v-layout>
+                            </v-container>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn flat @click="close">Close</v-btn>
+                            <v-btn flat @click="save">Save</v-btn>
+                        </v-card-actions>
                     </v-card>
-                </v-flex>
-            </v-layout>
+                </v-dialog>
+            </v-toolbar>
+
+            <v-list 
+                three-line
+                class="scroll-y" 
+                style="height: 300px">
+                <template v-for="businessLocation in this.businessLocations">
+                    <v-list-tile :key="businessLocation.id" class="ma-2">
+                        <v-list-tile-content>
+                            <v-list-tile-title class="font-weight-bold">{{ businessLocation.name }}</v-list-tile-title>
+                            <v-list-tile-sub-title class="font-weight-bold">{{ "Code: " + businessLocation.airportCode }}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title class="font-weight-bold">{{ "Airport Name: " + businessLocation.airportName }}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title>{{ "Address: " + businessLocation.location.formattedAddress }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-icon
+                            class="mr-1"
+                            @click="deleteBusinessLocation(businessLocation)">
+                            delete
+                        </v-icon>
+                        <v-icon
+                            class="mr-1"
+                            @click="editBusinessLocation(businessLocation)">
+                            edit
+                        </v-icon>
+                    </v-list-tile>
+                </template>
+            </v-list>
+
         </v-flex>
     </div>
 </template>
@@ -115,6 +104,8 @@ import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 var yourConfig = {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") }
 }
+
+var MOCK_ID = 1;
 
 export default {
     mixins: [validationMixin],
@@ -167,25 +158,33 @@ export default {
             
             if(place) {
                 
-                this.newBusinessLocation.location.latitude = place.geometry.location.lat();
-                this.newBusinessLocation.location.longitude = place.geometry.location.lng();
-                this.newBusinessLocation.location.street = place.name;
-                this.newBusinessLocation.location.city = place.vicinity;
-                this.newBusinessLocation.location.country = "Unknown";
+                this.newBusinessLocation.location = this.extractLocationData(place);
 
-                this.newBusinessLocation.location.postalCode = place.formatted_address;
-
-                place.address_components.forEach(element => {
-                    
-                    if(element.types.includes('country')) {
-                        this.newBusinessLocation.location.country = element.long_name;
-                    }
-                });
             }
+        },
+        extractLocationData(place) {
+            var locationToReturn = {};
+
+            locationToReturn.latitude = place.geometry.location.lat();
+            locationToReturn.longitude = place.geometry.location.lng();
+            locationToReturn.street = place.name;
+            locationToReturn.formattedAddress = place.formatted_address;
+
+            place.address_components.forEach(element => {
+                
+                if(element.types.includes('country'))
+                    locationToReturn.country = element.long_name;
+                else if(element.types.includes('locality'))
+                    locationToReturn.city = element.long_name;
+                
+            });
+
+            return locationToReturn;
         },
         close() {
             this.$v.newBusinessLocation.$reset();
             this.showBusinessLocationDialog = false;
+            
             this.newBusinessLocation = {
                 location: {  
                 }
@@ -199,20 +198,57 @@ export default {
                 if(!this.newBusinessLocation.location.latitude) {
                     this.$swal("Error", "Location is required.", 'warning');
                 } else {
-                    
-                    // TODO POST kreirane business location na server
 
-                    this.businessLocations.push(this.newBusinessLocation);
-                    this.close();
+                    var yourConfig = {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    };
+
+                    this.$axios.put('http://localhost:8080/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig).then((data) => {
+                        this.$swal('Success', 'Business location added successfuly', 'success');
+                        this.businessLocations.push(this.newBusinessLocation);
+                        this.close();
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                        this.businessLocations.push(this.newBusinessLocation);
+                        this.close();
+                    });
                 }
             }
         },
-        deleteBusinessLocation(businessLocation) {
+        deleteBusinessLocation: function(businessLocation) {
 
-            const index = this.businessLocations.indexOf(businessLocation);
-            this.businessLocations.splice(index, 1);
+            this.$swal({
+                title: 'Are you sure?',
+                text: 'You can\'t revert your action',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                showCloseButton: true,
+            }).then((result) => {
 
-            // TODO DELETE izabrane business location sa servera
+                if(result.value) { 
+
+                    const index = this.businessLocations.indexOf(businessLocation);
+                    this.businessLocations.splice(index, 1);
+
+                    var yourConfig = {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                        }
+                    };
+
+                    this.$axios.put('http://localhost:8080/api/airlines/removeBusinessLocation/', businessLocation, yourConfig).then((data) => {
+                        this.$swal('Success', 'Business location removed successfuly', 'success');
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });
+                }
+            });
         },
         editBusinessLocation(businessLocation) {
 
@@ -222,7 +258,18 @@ export default {
     },
     
     created() {
-        // TODO GET svih business locations date aviokompanije sa servera
+
+        var yourConfig = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        };
+
+        this.$axios.get('http://localhost:8080/api/airlines/' + MOCK_ID, yourConfig).then((response) => {
+            this.businessLocations = response.data.businessLocations;
+        }).catch((error) => {
+            this.$swal("Error", error.response.data.message, 'error');
+        });
     }
     
 }

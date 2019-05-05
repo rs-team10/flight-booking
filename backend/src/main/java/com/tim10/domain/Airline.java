@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name="Airlines")
 public class Airline extends Company {
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Destination> businessLocations;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
