@@ -192,8 +192,8 @@ export default {
             component: "addVehicle",
             dialog: false,
 
-
-
+         vehicles: []
+/*
 
           vehicles: [
               {
@@ -220,7 +220,9 @@ export default {
                 airCondition        : 'True',
                 dailyRentalPrice    : 100000
           }]
+*/
       }
+
   },
   methods:{
       fetchVehicles: function(){

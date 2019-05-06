@@ -10,7 +10,7 @@
                     <v-toolbar-side-icon></v-toolbar-side-icon>
                     za ovo takodje
                     -->
-                    <v-toolbar-title><b>{{this.rentACarId}}</b></v-toolbar-title> <!-- Promeni u name kada preuzmes ceo sa backa-->
+                    <v-toolbar-title><b>{{this.realId}}</b></v-toolbar-title> <!-- Promeni u name kada preuzmes ceo sa backa-->
                     <!--
                         
                     
@@ -53,7 +53,7 @@
 
                             <component 
                                 v-bind:is="component1"
-                                :rentACarId="rentACarId"
+                                :rentACarId="this.realId"
                             > 
                             </component>
 
@@ -67,7 +67,7 @@
                             <!--Ovde takodje na ovaj template mogu samo komponente da se menjaju, a linkovi da ostaju isti-->
                             <component 
                                 v-bind:is="component2"
-                                :rentACarId="rentACarId"
+                                :rentACarId="this.realId"
                             > 
                             </component>
                     
@@ -109,8 +109,12 @@ export default {
         component1 : 'viewRentACar',
         component2 : 'viewBranchOffices',
         tabs: null,
-        text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu'
+        text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu',
+        realId : 0
       }
+    },
+    created(){
+        this.realId = this.rentACarId
     }
 }
 </script>

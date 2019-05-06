@@ -26,7 +26,7 @@ public class RentACarService {
 
 
 		
-	public RentACarDTO getRentACarById(@Param("rentACarId") Long rentACarId)throws ResourceNotFoundException {
+	public RentACarDTO getRentACarById(Long rentACarId)throws ResourceNotFoundException {
 		
 		RentACarDTO rac =  rentACarRepository.getRentACarById(rentACarId);
 		if(rac == null) 

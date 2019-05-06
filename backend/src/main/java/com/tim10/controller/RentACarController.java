@@ -124,7 +124,6 @@ public class RentACarController {
 		}
 		
 		RentACar rentACarReal = rentACarEx.get();
-		System.out.println(rentACarReal.getName());
 
 		//rentACarReal.setLocation(rentACar.getLocation());
 		//ako se menjaju jos neki parametri...
@@ -135,8 +134,7 @@ public class RentACarController {
 		
 		rentACarReal = rentACarService.save(rentACarReal);
 		
-		//GRESKA Rent-A-Car with id: 1 doesn't exist! - a ja uneo ga u bazu regularno (PITAJ ZA BAZU VISE)
-		return new ResponseEntity<RentACar>(rentACarReal, HttpStatus.OK);
+		return new ResponseEntity<>("Updated successfully!", HttpStatus.OK);
 	}
 	
 	@RequestMapping(

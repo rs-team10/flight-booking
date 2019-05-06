@@ -60,7 +60,7 @@ public class Vehicle {
 	private Set<VehicleReservation> reservations;
 	
 	@ManyToOne
-	@JoinColumn(name = "branch_office_id")//nullable false
+	@JoinColumn(name = "branchOfficeId")//nullable false
 	private BranchOffice branchOffice;
 
 	public Vehicle() {

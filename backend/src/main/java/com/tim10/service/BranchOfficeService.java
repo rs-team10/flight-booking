@@ -66,7 +66,7 @@ public class BranchOfficeService {
 		//boolean branchOfficeMyb = branchOfficeRepository.existsById(branchOffice.getId()); provera na osnovu lokacije
 		
 		if(!rentACarMyb.isPresent())
-			throw new ResourceNotFoundException("Rent=A=Car with id: "+rentACarId+" doesn't exist!"); 
+			throw new ResourceNotFoundException("Rent-A-Car with id: "+rentACarId+" doesn't exist!"); 
 		
 		/*
 		if(branchOfficeMyb)
@@ -79,7 +79,6 @@ public class BranchOfficeService {
 		branchOffice.setMainOffice(rentACar);
 		
 		rentACarRepository.save(rentACar);
-		branchOfficeRepository.save(branchOffice);
 		
 		
 		return branchOffice;

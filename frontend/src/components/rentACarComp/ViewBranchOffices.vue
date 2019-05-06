@@ -48,9 +48,31 @@
           > 
         </component>
 
-
     </v-expansion-panel-content>
+    
+
+    <v-layout column  align-center>
+      <v-dialog v-model="dialog" max-width="500px">
+        <template v-slot:activator="{ on }">
+          <v-btn fab small dark color="primary" @click="addItem"><v-icon dark>add</v-icon></v-btn>
+        </template>
+        <v-card>
+          <v-card-text>
+
+                 <component 
+                  v-bind:is="component1"
+                  :rentACarId="rentACarId"
+                 > 
+                 </component>
+  
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      
+    </v-layout>
+
   </v-expansion-panel>
+
 </template>
 
 
@@ -58,12 +80,13 @@
 
 <script>
 import ViewVehicles from "@/components/rentACarComp/ViewVehicles.vue"
-
+import AddBranchOffice from "@/components/rentACarComp/AddBranchOffice.vue"
 
 export default {
   props: ['rentACarId'],
   components: {
-      'viewVehicles' :  ViewVehicles
+      'viewVehicles' :  ViewVehicles,
+      'addBranchOffice' : AddBranchOffice
   },
   name: 'branches',
   data(){
@@ -71,9 +94,10 @@ export default {
 
           
           component: 'viewVehicles',
+          component1: 'addBranchOffice',
 
-          branches: [
-                    
+          branches: [],
+/*
                       {
                         id : 1,
                         city : 'Smederevo',
@@ -86,8 +110,9 @@ export default {
                         country: 'Srbija'
                
                       }
-            ],
-          selectedBranch: ''
+*/
+          selectedBranch: '',
+          dialog: false
       }
   },
   methods:{
@@ -102,6 +127,9 @@ export default {
       },
       removeOne:function(item){
          this.branches = this.branches.filter(i=>i !== item)
+      },
+      addItem(){
+         this.dialog = true;
       }
   },
   mounted(){
