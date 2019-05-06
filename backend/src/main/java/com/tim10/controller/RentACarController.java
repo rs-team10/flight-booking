@@ -111,19 +111,27 @@ public class RentACarController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RentACar> updateRentACar(
+	public ResponseEntity<?> updateRentACar(
 			@RequestBody RentACar rentACar){
 		
 		Optional<RentACar> rentACarEx = rentACarService.findById(rentACar.getId());
 		
+		System.out.println(rentACar.getId());
+		
+		
 		if(!rentACarEx.isPresent()) {
-			return new ResponseEntity<RentACar>(rentACar, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("Rent-a-car not found", HttpStatus.NOT_FOUND);
 		}
 		
 		RentACar rentACarReal = rentACarEx.get();
+		System.out.println(rentACarReal.getName());
 
 		//rentACarReal.setLocation(rentACar.getLocation());
 		//ako se menjaju jos neki parametri...
+		
+		rentACarReal.setName(rentACar.getName());
+		rentACarReal.setDescription(rentACar.getDescription());
+		
 		
 		rentACarReal = rentACarService.save(rentACarReal);
 		

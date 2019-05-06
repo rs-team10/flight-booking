@@ -21,17 +21,17 @@ public class BranchOffice {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name = "branchOfficeId")
 	private Long id;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name = "locationId")
 	private Location location;
 
 	@OneToMany(mappedBy="branchOffice", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Vehicle> vehicle;
 	
 	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name = "company_id")
+	@JoinColumn(name = "mainOfficeId")
 	private RentACar mainOffice;
 
 	public BranchOffice() {
