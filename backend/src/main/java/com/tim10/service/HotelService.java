@@ -11,13 +11,18 @@ import org.springframework.stereotype.Service;
 
 import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.Room;
 import com.tim10.repository.HotelRepository;
+import com.tim10.repository.RoomRepository;
 
 @Service
 public class HotelService {
 	
 	@Autowired
 	private HotelRepository hotelRepository;
+	
+	@Autowired
+	private RoomRepository roomRepository;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -57,6 +62,10 @@ public class HotelService {
 	
 	public List<Hotel> findByParameter(String parameter){
 		return hotelRepository.findByParameter(parameter);
+	}
+	
+	public List<Room> getRooms(Long id){
+		return roomRepository.findByRoomTypeId(id);
 	}
 
 }

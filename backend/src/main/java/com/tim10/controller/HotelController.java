@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.Room;
 import com.tim10.dto.HotelDTO;
+import com.tim10.dto.HotelReservationDTO;
+import com.tim10.dto.RoomDTO;
+import com.tim10.dto.RoomsDTO;
 import com.tim10.service.HotelService;
 import com.tim10.service.UserService;
 
@@ -49,16 +52,23 @@ public class HotelController {
 		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 	
+	/*IZMENITI - njaverovatnije nece biti potrebno dobavljanje ovakvog DTO-a zbog konkretnih soba, njih naknadno uzimati pri dodavanju kod admina*/
 	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<HotelDTO>> getHotelsPage(Pageable page) {
-		//page object holds data about pagination and sorting
-		//the object is created based on the url parameters "page", "size" and "sort"
 		Page<Hotel> pageHotels = hotelService.findAll(page);
-		
 		List<HotelDTO> hotelsDTO = new ArrayList<>();
-		for(Hotel h : pageHotels) {
+		for(Hotel h : pageHotels) 
 			hotelsDTO.add(new HotelDTO(h));
-		}
+		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
+	}
+	
+	/*Kod prikaza hotela registrovanom korisniku pri rezervaciji (ne salju se konkretne sobe u DTO)*/
+	@RequestMapping(value = "/resHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelReservationDTO>> getResHotelsPage(Pageable page) {
+		Page<Hotel> pageHotels = hotelService.findAll(page);
+		List<HotelReservationDTO> hotelsDTO = new ArrayList<>();
+		for(Hotel h : pageHotels) 
+			hotelsDTO.add(new HotelReservationDTO(h));
 		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
 	}
 	
@@ -89,5 +99,45 @@ public class HotelController {
 		}
 		
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	/*Metoda za proveravanje da li su dostupne trazene sobe, i vracanje liste konkretnih soba koje su za rezervaciju
+	 * MOZE LI NEKAKO - da se te sobe sklone dok se rezervacija ne zavrsi skroz????*/
+	@RequestMapping(value="/getRooms/{roomTypeId}/{numberOfRooms}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getRooms(@PathVariable("roomTypeId") Long roomTypeId,
+										@PathVariable("numberOfRooms") int numberOfRooms){
+		
+		//trenutno samo proveravamo da li ima dovoljno soba za rezervaciju
+		//mozda bi trebalo vratiti te sobe koje cemo da rezervisemo da ih 
+		//stavimo na time out
+		List<Room> allRooms = hotelService.getRooms(roomTypeId);
+		if(allRooms.size() < numberOfRooms) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		
+		List<Room> responseRooms = new ArrayList<>();
+		for(int i = 0; i < numberOfRooms; i++) 
+			responseRooms.add(allRooms.get(i));
+		
+		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value="/getRooms", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getRooms(@RequestBody List<RoomDTO> lista){
+		
+		List<Room> rooms;
+		List<Room> responseRooms = new ArrayList<>();
+		
+		for(RoomDTO roomDTO : lista) {
+			rooms = hotelService.getRooms(roomDTO.getRoomType().getId());
+			if(rooms.size() < roomDTO.getNumberOfRooms()) 
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			
+			for(int i = 0; i < roomDTO.getNumberOfRooms(); i++)
+				responseRooms.add(rooms.get(i));
+		}
+		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
+
 	}
 }

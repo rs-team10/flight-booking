@@ -15,7 +15,6 @@ Vue.config.productionTip = false
 Vue.use(Vuetify)
 Vue.use(Vuelidate)
 Vue.use(VueSweetalert2);
-
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyCoYMbcCf9ot8Dyoy5oxEFDaT5cVitKME4',
 });

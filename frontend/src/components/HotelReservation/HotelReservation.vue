@@ -16,7 +16,6 @@
         Close
         </v-btn>
     </v-snackbar>
-
     <v-stepper v-model="e6" vertical>
         <v-stepper-step :complete="e6 > 1" step="1">Pick a hotel</v-stepper-step>
 
@@ -26,17 +25,13 @@
                     <div id="form">
                         <form>
                             <v-flex>
-                            <v-layout column>
-                                <v-text-field
-                                append-icon="search"
-                                label="Hotel name or destination"
-                                single-line
-                                class="mx-3">
-                                </v-text-field>
-
+                            <v-layout column >
+                                <div class="ml-3 title font-weight-light indigo--text">Please select your check-in and check-out date</div>
+                                <br>
                                 <!-- datum od -->
                                 <v-layout row>
                                 <v-menu
+                                v-model="checkInMenu"
                                 :close-on-content-click="true"
                                 :nudge-right="40"
                                 lazy
@@ -48,20 +43,21 @@
                                 <template v-slot:activator="{ on }">
                                 <v-flex xs6 md6>
                                     <v-text-field
+                                        v-model="checkInDate"
                                         append-icon="event"
-                                        label="Check-in"
-                                        single-line
+                                        label="Check-in*"
                                         class="mx-3"
                                         max-width="30px"
                                         v-on="on">
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker></v-date-picker>
+                                <v-date-picker v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 
                                 <!-- datum do -->
                                 <v-menu
+                                v-model="checkOutMenu"
                                 :close-on-content-click="true"
                                 :nudge-right="40"
                                 lazy
@@ -73,38 +69,37 @@
                                 <template v-slot:activator="{ on }">
                                 <v-flex xs6 md6>
                                     <v-text-field
+                                        v-model="checkOutDate"
                                         append-icon="event"
-                                        label="Check-out"
-                                        single-line
+                                        label="Check-out*"
                                         class="mx-3"
                                         v-on="on">
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker></v-date-picker>
+                                <v-date-picker v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 </v-layout>
-
+                                <v-divider></v-divider><br>
                                 <v-layout row>
-                                <v-flex xs6 md6>
-                                <v-text-field
-                                    append-icon="hotel"
-                                    label="Rooms"
-                                    single-line
+                                    <v-flex xs6 md6>
+                                    <v-text-field
+                                    append-icon="search"
+                                    label="Hotel name or destination"
                                     class="mx-3">
-                                </v-text-field>
-                                </v-flex>
-
-                                <v-flex xs6 md6>
-                                <v-text-field
-                                    append-icon="person"
-                                    label="Guests"
-                                    single-line
-                                    class="mx-3">
-                                </v-text-field>
-                                </v-flex>
+                                    </v-text-field>
+                                    </v-flex>
+                                    <v-flex xs6 md6>
+                                    <v-text-field
+                                        append-icon="person"
+                                        label="Guests"
+                                        class="mx-3"
+                                        type="number">
+                                    </v-text-field>
+                                    </v-flex>
                                 </v-layout>
                                 
+
                                 <v-flex>
                                 <v-card-text>
                                     <v-range-slider
@@ -116,16 +111,17 @@
                                 <v-btn outline color="indigo">
                                     <span>Search hotels</span>
                                 </v-btn>
+
+                                <small>* indicates a required field</small>
                             </v-layout>
                             </v-flex>
-
                         </form>
                     </div>
                 </v-flex>
 
                 <div id="hotelList">
                     <v-item-group>
-                        <v-layout column >
+                        <v-layout column>
                             <v-list class="scroll-y" style="height: 700px">
                             <v-flex
                                 v-for="hotel in this.hotels"
@@ -172,7 +168,7 @@
                                                 <v-flex xs3>
                                                     <v-card-actions>
                                                         <v-spacer></v-spacer>
-                                                        <v-btn flat @click="e6 = 2">
+                                                        <v-btn flat @click="hotelSelected(hotel)">
                                                             Reserve
                                                             <v-icon right>input</v-icon>
                                                         </v-btn>
@@ -185,7 +181,6 @@
                                     </v-container>
                                     </v-card>
                                 </div>
-
                             </v-item>
                             </v-flex>
                             
@@ -195,10 +190,7 @@
 
                                 <v-btn block flat @click="nextPage"><v-icon>arrow_forward</v-icon></v-btn>
                             </v-layout>
-
                             </v-list>
-                            
-
                         </v-layout>  
  
                     </v-item-group>
@@ -212,72 +204,92 @@
         <v-stepper-step :complete="e6 > 2" step="2">Pick a room</v-stepper-step>
 
             <v-stepper-content step="2">
-                <component :is="component2  "></component>
+                <component 
+                    :is="component2"
+                    :selectedHotel="selectedHotel"
+                    :days="days"
+                    @continueReservation="finishReservation($event)"
+                ></component>
 
-                <v-btn color="primary" @click="e6 = 3">Continue</v-btn>
+                <v-btn flat @click="e6 = 3">Next</v-btn>
                 <v-btn flat @click="e6 -= 1">Back</v-btn>
             </v-stepper-content>
 
         <v-stepper-step :complete="e6 > 3" step="3">Additional services</v-stepper-step>
 
         <v-stepper-content step="3">
-            <v-btn color="primary" @click="e6 = 1">Continue</v-btn>
+            <component 
+                    :is="component3"
+                    :days="days"
+                    :reservation="reservation"
+            ></component>
+
             <v-btn flat>Cancel</v-btn>
         </v-stepper-content>
 
         
     </v-stepper>
 
-
   </div>
 </template>
 
 <script>
 import Rooms from "./Rooms.vue"
+import AdditionalServices from "./AdditionalServices.vue"
 
 export default {
     components: {
-       'rooms' : Rooms
+       'rooms' : Rooms,
+       'additionalServices' : AdditionalServices
     },
     data(){
         return{
             component2 : 'rooms',
+            component3: 'additionalServices',
+            selectedHotel: {},
+            reservation: {},
+            listOfRooms: [],
             e6: 1,
-            temp: [
-                { name: "Hotel1", rating: 3.46, image: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_380,c_fill,g_auto,h_214,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F160726150143-us-beautiful-hotels-17-bellagio-2.jpg"},
-                { name: "Hotel2", rating: 3.46, image: "https://d27k8xmh3cuzik.cloudfront.net/wp-content/uploads/2018/04/FotoJetkb6592covernuwara.jpg"},
-                { name: "Hotel3", rating: 3.46, image: "https://i.dailymail.co.uk/i/pix/2014/11/14/1415989082721_wps_4_The_Jade_Hotel_exterior_j.jpg"},
-                { name: "Hotel4", rating: 3.46, image: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fcdn-image.travelandleisure.com%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F1600x1000%2Fpublic%2F1546553575%2Fritz-carlton-bal-harbour-miami-florida-HOTELBATHS0119.jpg%3Fitok%3DBoGkpR6S&q=85"},
-                { name: "Hotel5", rating: 3.46, image: "https://3.bp.blogspot.com/--2G5-blY_NE/U8LBLJLDwDI/AAAAAAAAIrQ/wQtHbEhbzNI/s1600/luxury-hotel-HD-Wallpapers.jpg"},
-                { name: "Hotel6", rating: 3.46, image: "https://media.cntraveler.com/photos/53da828b6dec627b149eeee6/4:3/w_420,c_limit/fairmont-kea-lani-hawaii-maui.jpg"}
-            ],
+            
             page: 0,
             size: 5,
             hotels: [],
             //Snackbar------------------------
             empty: false,
-            timeout: 3000,
             //Temporary-----------------------
             rating: 3.46,
-            image: "https://media.cntraveler.com/photos/53da828b6dec627b149eeee6/4:3/w_420,c_limit/fairmont-kea-lani-hawaii-maui.jpg"
+            image: "https://media.cntraveler.com/photos/53da828b6dec627b149eeee6/4:3/w_420,c_limit/fairmont-kea-lani-hawaii-maui.jpg",
+            //--------------------------------
+            
+            //Search params-------------------
+            hotelNameDest: '',
+            guests: '',
+
+            checkInMenu: false,
+            checkInDate: new Date().toISOString().substr(0, 10),
+            checkOutMenu: false,
+            checkOutDate: new Date().toISOString().substr(0, 10),
+
+            days : '',
+            totalRoomPrice: ''
+
+
             //--------------------------------
         }
     },
     methods:{
         fetchHotels(){
             this.$axios
-            .get('http://localhost:8080/api/hotels/pageHotels?page='+this.page+'&size='+this.size)
+            .get('http://localhost:8080/api/hotels/resHotels?page='+this.page+'&size='+this.size)
             .then(response => {
-                console.log(response.data)
                 this.hotels = response.data;  
             })
         },
         nextPage(){
             this.page += 1;
             this.$axios
-            .get('http://localhost:8080/api/hotels/pageHotels?page='+this.page+'&size='+this.size)
+            .get('http://localhost:8080/api/hotels/resHotels?page='+this.page+'&size='+this.size)
             .then(response => {
-                console.log(response.data)
                 if(response.data.length > 0){
                     this.hotels = response.data;  
                 }else{
@@ -285,7 +297,7 @@ export default {
                     this.empty = true; 
                     setTimeout(() => {
                         this.empty = false;
-                    }, this.timeout)      
+                    }, 3000)      
                 }
             })
         },
@@ -293,8 +305,28 @@ export default {
             this.page -= 1;
             this.fetchHotels();
         },
-        isHotelsEmpty(){
+        hotelSelected(hotel){
+            this.selectedHotel = hotel;
+            //Object.assign(this.selectedHotel, hotel)
+            if(this.validateDates())
+                this.e6 = 2;
+            
+        },
+        validateDates(){
+            if((this.checkOutDate == this.checkInDate) || (this.checkOutDate < this.checkInDate)){
+                this.$swal("Invalid check-in/check-out dates", "", "error");
+                return false;
+            }
+            var days = (new Date(this.checkOutDate) - new Date(this.checkInDate)) / (1000*60*60*24);
+            this.days = days;
+            return true;
 
+        },
+        finishReservation(reservation){
+            this.reservation = reservation;
+            console.log(this.reservation);
+
+            this.e6 = 3;
         }
     },
     mounted(){

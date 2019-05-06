@@ -4,7 +4,7 @@
             <v-layout column >
                 <v-list class="scroll-y" style="height: 700px">
                 <v-flex
-                    v-for="room in this.temp"
+                    v-for="room in this.selectedHotel.roomTypes"
                     :key="room.type"
                     class="d-inline align-center">
                 <v-item width="100%">
@@ -17,7 +17,7 @@
                                 <v-layout>
                                     <v-flex xs3 md3>
                                     <v-img
-                                        :src="room.image"
+                                        :src="image"
                                         height="100%"
                                         max-height="216px"
                                         max-width="372px"
@@ -26,12 +26,52 @@
                                     <v-flex xs4 md4 >
                                         <v-card-text>
                                             <v-flex id="description">
-                                                {{ lorem }} <!--650 karaktera opis da ima max -->
+                                                {{ room.description }} <!--650 karaktera opis da ima max -->
                                             </v-flex>
                                         </v-card-text>
                                     </v-flex>
                                     <v-divider light vertical></v-divider>      
-                                    <v-flex xs3 md3>
+                                    <v-flex xs5 md5>
+                                        <v-layout row >
+                                            <v-flex xs5>
+                                            <v-layout column align left>
+                                                Ovde ce biti sta sve ima u sobi, TV, kupatilo, zabranjeno pusenje,
+                                                kapacitet, cena po nocenju, single, double beds...sta god
+                                            </v-layout>
+                                            </v-flex>
+
+                                            <v-layout column align right>
+                                                <v-card height="216px" color="indigo lighten-2" class="white--text">
+                                                    <v-card-title primary-title>
+                                                        <div>
+                                                            <div class="headline">Price for {{ days }} nights: <br> {{ totalPrice(room.pricePerNight) }}</div>
+                                                        </div>
+                                                    </v-card-title>
+                                                    <v-card-actions>
+                                                        <v-layout row align right class="mt-3">
+                                                            <v-text-field 
+                                                                v-model.lazy="room.numberOfRooms"
+                                                                label="Number of rooms"
+                                                                solo
+                                                                flat
+                                                                type="number"
+                                                                background-color="indigo lighten-3"
+                                                                min="0"
+
+                                                            ></v-text-field>
+                                                            <!-- <v-checkbox 
+                                                                color="white" 
+                                                                v-model="room.active" 
+                                                                label="Reserve"
+                                                                class=" ml-2">
+                                                            </v-checkbox>  -->
+                                                        </v-layout>
+                                                    </v-card-actions>
+                                                    </v-card>
+                                                
+                                        </v-layout>
+                                        </v-layout>
+                                        
                                     </v-flex>                           
                                 </v-layout>
                                 <v-divider light></v-divider>
@@ -39,7 +79,7 @@
                                         <span class="headline">{{ room.type }}</span>
                                         <v-spacer></v-spacer>
                                         <v-rating
-                                            :value="room.averageFeedback"
+                                            :value="averageFeedback"
                                             color="indigo"
                                             dense
                                             half-increments
@@ -58,23 +98,70 @@
                 </v-list>
             </v-layout>   
         </v-item-group>
+        <v-btn color="primary" @click="reserve">Reserve</v-btn>
+
     </div>
 </template>
 
 <script>
 export default {
+    props: ['selectedHotel', 'days'],
+
     data(){
         return {
-            temp: [
-                { type: "Room1", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_380,c_fill,g_auto,h_214,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F160726150143-us-beautiful-hotels-17-bellagio-2.jpg"},
-                { type: "Room2", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://d27k8xmh3cuzik.cloudfront.net/wp-content/uploads/2018/04/FotoJetkb6592covernuwara.jpg"},
-                { type: "Room3", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://i.dailymail.co.uk/i/pix/2014/11/14/1415989082721_wps_4_The_Jade_Hotel_exterior_j.jpg"},
-                { type: "Room4", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fcdn-image.travelandleisure.com%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F1600x1000%2Fpublic%2F1546553575%2Fritz-carlton-bal-harbour-miami-florida-HOTELBATHS0119.jpg%3Fitok%3DBoGkpR6S&q=85"},
-                { type: "Room5", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://3.bp.blogspot.com/--2G5-blY_NE/U8LBLJLDwDI/AAAAAAAAIrQ/wQtHbEhbzNI/s1600/luxury-hotel-HD-Wallpapers.jpg"},
-                { type: "Room6", singleBedCount: 1, pricePerNight: 10, capacity: 2, averageFeedback: 3.46, image: "https://media.cntraveler.com/photos/53da828b6dec627b149eeee6/4:3/w_420,c_limit/fairmont-kea-lani-hawaii-maui.jpg"}
-            ],
-            lorem: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."       
+            enabled: false,
+            averageFeedback: 3.46,
+            image: "https://i.pinimg.com/originals/1b/c3/5f/1bc35faccb8be639c3326ec41fb20506.jpg",
+
+            error: false,
+            reservation: {
+                listOfRooms: [],
+                totalPrice: 0
+            },
+            listOfRooms: []
         }
+    },
+    methods: {
+        reserve(){
+            var lista = [];
+
+            for(var i = 0; i < this.selectedHotel.roomTypes.length; i++){
+                var roomType = this.selectedHotel.roomTypes[i];
+                if(roomType.numberOfRooms != 0 && roomType.numberOfRooms != undefined){
+                    var objekat = { "roomType" : roomType, "numberOfRooms" : roomType.numberOfRooms};
+                    lista.push(objekat);
+                }
+            }
+            this.$axios
+                .post('http://localhost:8080/api/hotels/getRooms', lista)
+                .then(response => {
+                    // for(var i = 0; i < response.data.length; i++){
+                    //     this.listOfRooms.push(response.data[i]);
+                    //     totalRoomPrice += response.data[i].roomType.pricePerNight * this.days;
+                    // }
+                    // this.error = false;
+                    this.reservation.listOfRooms = response.data;
+                    this.reservation.totalPrice = this.calculateTotalPrice(this.reservation.listOfRooms);
+                    this.$emit('continueReservation', this.reservation);
+                }).catch(error => {
+                    //nema dovoljno soba tog tipa   
+                    //this.$swal("", "Unfortunately, " + roomType.numberOfRooms.bold() + " " + roomType.type.bold().toUpperCase() + " rooms are not currently available.", "info");
+                    this.error = true;
+                })
+            //Treba proveriti da li broj gostiju prevazilazi broj kreveta, da li su dostupne sobe
+        },
+        totalPrice(price){
+            return this.days * price;
+        },
+        calculateTotalPrice(listOfRooms){
+            var total = 0;
+            for(var i = 0; i < listOfRooms.length; i++)
+                total += this.totalPrice(listOfRooms[i].roomType.pricePerNight);
+            return total;
+        }
+    },
+    mounted(){
+        console.log(this.selectedHotel)
     }
 }
 </script>
