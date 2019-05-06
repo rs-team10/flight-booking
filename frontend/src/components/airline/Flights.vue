@@ -25,6 +25,18 @@
                                     </v-flex>
 
                                     <v-flex>
+                                        <v-text-field
+                                            v-model="flightNumber"
+                                            label="Flight Number"
+                                            prepend-icon="public"
+                                            :error-messages="flightNumberErrors"
+                                            @input="$v.flightNumber.$touch()"
+                                            @blur="$v.flightNumber.$touch()"
+                                            >
+                                        </v-text-field>
+                                    </v-flex>
+
+                                    <v-flex>
                                         <v-autocomplete
                                             v-model="newFlight.departure"
                                             :items="businessLocations"
@@ -318,7 +330,14 @@
                 class="elevation-1">
 
                 <template v-slot:items="props">
-                    <td></td>
+                    <td>{{ props.item.flightNumber }}</td>
+                    <td>{{ props.item.departure.name }}</td>
+                    <td>{{ props.item.destination.name }}</td>
+                    <td>{{ props.item.transitDestinations.length }}</td>
+                    <td>{{ props.item.departureDate }}</td>
+                    <td>{{ props.item.arrivalDate }}</td>
+                    <td>{{ props.item.distance }}</td>
+                    <td>{{ props.item.duration }}</td>
 
                     <td class="justify-center layout px-0">
                         <v-icon small class="mr-2" @click="editFlight(props.item)">
@@ -343,7 +362,10 @@
 
 import { validationMixin } from 'vuelidate'
 import { required, numeric, between } from 'vuelidate/lib/validators'
-
+const flightNumberFormat = (value, vm) => {
+    var regex = /^[A-Z]{2}\d{3,4}$/g;
+    return regex.test(value);
+}
 
 const haversine = require('haversine');
 
@@ -364,6 +386,11 @@ export default {
                 { text: 'Flight Number', align: 'left', sortable: true, value: 'flightNumber'},
                 { text: 'From', align: 'left', sortable: true, value: 'departure'},
                 { text: 'To', align: 'left', sortable: true, value: 'destination'},
+                { text: 'Transit count', align: 'left', sortable: true, value: 'transitCount'},
+                { text: 'Departure Date & Time', align: 'left', sortable: true, value: 'departureDateTime'},
+                { text: 'Arrival Date & Time', align: 'left', sortable: true, value: 'arrivalDateTime'},
+                { text: 'Distance (km)', align: 'left', sortable: true, value: 'distance'},
+                { text: 'Duration (min)', align: 'left', sortable: true, value: 'duration'},
             ],
             flightsPagination: {},
 
@@ -375,7 +402,7 @@ export default {
 
             transitDestinations: [],
             
-            
+            flightNumber: null,
 
             showDepartureDateDialog: false,
             departureDate: null,
@@ -399,6 +426,7 @@ export default {
         newFlight: {
             ticketPrice: { required, numeric, between: between(5, 99999) }
         },
+        flightNumber: { required, flightNumberFormat },
         rowsCount: { required, numeric, between: between(1, 40) },
         columnsCount: { required, numeric, between: between(2, 10) },
         firstClassSeatsCount: { required, numeric, between: between(0, 400) },
@@ -408,7 +436,13 @@ export default {
     computed: {
 
         // ============= validation ===================
-
+        flightNumberErrors () {
+            const errors = []
+            if (!this.$v.flightNumber.$dirty) return errors
+            !this.$v.flightNumber.required && errors.push('Flight Number is required.')
+            !this.$v.flightNumber.flightNumberFormat && errors.push('Flight Number invalid')
+            return errors
+        },
         ticketPriceErrors () {
             const errors = []
             if (!this.$v.newFlight.ticketPrice.$dirty) return errors
@@ -628,9 +662,45 @@ export default {
                     return;
                 }
 
-
                 // TODO : POST NA SERVER
-                
+
+                var newFlightToSend = {
+                    flightNumber : this.flightNumber,
+                    departure : this.newFlight.departure.name,
+                    destination : this.newFlight.destination.name,
+                    transitDestinations : [],
+                    departureDate : this.departureDate + ' ' + this.departureTime,
+                    arrivalDate : this.arrivalDate + ' ' + this.arrivalTime,
+                    ticketPrice : this.newFlight.ticketPrice,
+                    duration : this.duration,
+                    distance : this.distance,
+                    rowsCount : this.rowsCount,
+                    columnsCount : this.columnsCount,
+                    firstClassSeatsCount : this.firstClassSeatsCount,
+                    businessClassSeatsCount : this.businessClassSeatsCount,
+                    ecoClassSeatsCount : this.ecoClassSeatsCount
+                };
+
+                for (var i = 0; i < this.transitDestinations.length; i++) { 
+                    newFlightToSend.transitDestinations.push(this.transitDestinations[i].name);
+                }
+
+                this.$axios.post('http://localhost:8080/api/addFlight/', newFlightToSend, yourConfig).then((response) => {
+                    this.$swal('Successfull', 'New flight created successfully.', 'success');
+                    this.newFlight.flightNumber = this.flightNumber;
+                    this.newFlight.transitDestinations = this.transitDestinations;
+                    this.newFlight.distance = this.distance;
+                    this.newFlight.duration = this.duration;
+                    this.newFlight.departureDate = this.departureDate + ' ' + this.departureTime;
+                    this.newFlight.arrivalDate = this.arrivalDate + ' ' + this.arrivalTime;
+
+                    this.flights.push(this.newFlight);
+
+                    this.close();
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
+                });
+
             }
         },
         editFlight(flight) {

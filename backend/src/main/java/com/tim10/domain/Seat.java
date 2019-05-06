@@ -35,6 +35,13 @@ public class Seat {
 	public Seat() {
 		super();
 	}
+	
+	public Seat(Flight flight, Integer red, Integer kolona, SegmentClass segmentClass) {
+		this.flight = flight;
+		this.red = red;
+		this.kolona = kolona;
+		this.segmentClass = segmentClass;
+	}
 
 	public Long getId() {
 		return id;

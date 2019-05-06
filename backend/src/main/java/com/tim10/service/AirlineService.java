@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
+import com.tim10.domain.Flight;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.DestinationRepository;
+import com.tim10.repository.FlightRepository;
 
 @Service
 public class AirlineService {
@@ -21,6 +23,9 @@ public class AirlineService {
 	
 	@Autowired
 	private DestinationRepository destinationRepository;
+	
+	@Autowired
+	private FlightRepository flightRepository; 
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -67,6 +72,11 @@ public class AirlineService {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	public boolean addFlight(Airline existingAirline, Flight flight) {
+		
+		return true;
 	}
 
 }

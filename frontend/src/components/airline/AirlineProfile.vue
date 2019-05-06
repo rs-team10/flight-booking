@@ -10,6 +10,18 @@
                 <img src="https://www.airserbia.com/Data/Images/logo.png" alt="avatar">
             </v-avatar>
             <h2 class="text-xs-center">{{ airline.name }}</h2>
+            <span class="black--text text--lighten-2 caption mr-2">
+                ({{ airline.averageFeedback }})
+            </span>
+            <v-rating
+                v-model="airline.averageFeedback"
+                background-color="white"
+                color="yellow accent-4"
+                dense
+                half-increments
+                hover
+                size="18"
+            ></v-rating>
             <h3 class="text-xs-center mb-1">{{ airline.location.formattedAddress }}</h3>
             <p class="text-xs-center ma-1">{{ airline.description }}</p>
             <div class="text-xs-center">

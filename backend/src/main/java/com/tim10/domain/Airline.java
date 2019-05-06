@@ -14,6 +14,8 @@ import javax.persistence.Table;
 @Table(name="Airlines")
 public class Airline extends Company {
 	
+	private static final long serialVersionUID = 1L;
+
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Destination> businessLocations;
 	

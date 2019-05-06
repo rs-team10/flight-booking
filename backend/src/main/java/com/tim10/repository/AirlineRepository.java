@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tim10.domain.Airline;
 
-public interface AirlineRepository extends JpaRepository<Airline, Long>{
+public interface AirlineRepository extends JpaRepository<Airline, Long> {
 	
 	List<Airline> findAll();
 	
