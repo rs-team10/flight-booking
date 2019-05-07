@@ -1,5 +1,4 @@
 <template>
-  <div id="view-vehicles">
 
     <v-layout row>
         <v-flex xs12 sm10 offset-sm1>
@@ -97,7 +96,6 @@
             </template>
         </v-flex>
     </v-layout>
-  </div>
 </template>
 
 
@@ -231,6 +229,7 @@ export default {
           .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId)
           .then(response => this.vehicles = response.data)
           .catch(error => {
+                alert(error.resposne.data)
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)

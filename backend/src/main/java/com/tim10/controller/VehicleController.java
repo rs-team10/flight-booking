@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Vehicle;
-import com.tim10.dto.VehicleDTO;
 import com.tim10.service.VehicleService;
 
 @RestController
@@ -31,11 +30,11 @@ public class VehicleController {
 			value = "api/vehicles/{branchId}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Collection<VehicleDTO>> getVehiclesFromBracnh( 
+	public ResponseEntity<Collection<Vehicle>> getVehiclesFromBracnh( 
 			@PathVariable("branchId") Long branchId) {
 		
-		Collection<VehicleDTO> vehicles= vehicleService.getVehiclesFromBranch(branchId);
-		return new ResponseEntity<Collection<VehicleDTO>>(vehicles, HttpStatus.OK);
+		Collection<Vehicle> vehicles= vehicleService.getVehiclesFromBranch(branchId);
+		return new ResponseEntity<Collection<Vehicle>>(vehicles, HttpStatus.OK);
 		
 	}
 	

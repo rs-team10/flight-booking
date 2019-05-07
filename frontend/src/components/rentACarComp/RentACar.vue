@@ -1,9 +1,9 @@
 <!-- Rent a car homepage -->
 <template>
-    <div id="view-rentacar">
+ 
            
             
-                
+     <v-flex>           
                 
                     <v-toolbar tabs flat>
                     <!--
@@ -43,46 +43,43 @@
                     </v-toolbar>
 
 
-                    <v-container>
+                <v-container>
+
                     <v-tabs-items v-model="tabs" class="white elevation-1">
                         <v-tab-item :value="'mobile-tabs-5-1'">
                  
                                 <!-- Ovde ce da ide komponenta sa informacijama u zavisnosti od toga ko pristupa (ako je admin
                                 ovog rent a cara prikazace se adminska komponenta)-->
             
-
-                            <component 
-                                v-bind:is="component1"
-                                :rentACarId="this.realId"
-                            > 
-                            </component>
-
+                            <v-card>
+                                <component 
+                                    v-bind:is="component1"
+                                    :rentACarId="this.realId"
+                                > 
+                                </component>
+                            </v-card>
                
                         </v-tab-item>
                         
                         <v-tab-item :value="'mobile-tabs-5-2'">
 
                             
-                            
-                            <!--Ovde takodje na ovaj template mogu samo komponente da se menjaju, a linkovi da ostaju isti-->
-                            <component 
-                                v-bind:is="component2"
-                                :rentACarId="this.realId"
-                            > 
-                            </component>
+                            <v-card>
+                                <component 
+                                    v-bind:is="component2"
+                                    :rentACarId="this.realId"
+                                > 
+                                </component>
+                            </v-card>
                     
 
 
                         </v-tab-item>
                     </v-tabs-items>
 
-          
-    </v-container>
-            
-             
+                </v-container> 
 
-    </div>
-
+    </v-flex >
 
 </template>
 

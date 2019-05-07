@@ -1,7 +1,6 @@
 package com.tim10.service;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,28 +49,11 @@ public class VehicleService {
 	}
 */	
 	
-	public Collection<VehicleDTO> getVehiclesFromBranch(Long branchId){
+	public Collection<Vehicle> getVehiclesFromBranch(Long branchId){
 		
 		Collection<Vehicle> vehicles = branchOfficeRepository.findById(branchId).get().getVehicle();
-		Collection<VehicleDTO> dtoCol = new HashSet<VehicleDTO>();
-		
-		for(Vehicle v : vehicles) {
-			dtoCol.add(new VehicleDTO(
-					v.getId(), 
-					v.getManufacturer(),
-					v.getModel(),
-					v.getYear(),
-					v.getFuel(),
-					v.getEngine(),
-					v.getTransmission(),
-					v.getSeatsCount(),
-					v.getAirCondition(),
-					v.getDailyRentalPrice(),
-					v.getAverageFeedback(),
-					v.getImage()
-			));
-		}
-		return dtoCol; 
+
+		return vehicles; 
 	}
 	
 	

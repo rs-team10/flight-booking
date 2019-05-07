@@ -14,13 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 //a kako tip vozila!?
 @Entity
 @Table(name="Vehicles")
 public class Vehicle {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="manufacturer")
@@ -59,6 +61,7 @@ public class Vehicle {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<VehicleReservation> reservations;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "branchOfficeId")//nullable false
 	private BranchOffice branchOffice;
