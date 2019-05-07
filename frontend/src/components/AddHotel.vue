@@ -242,7 +242,6 @@ export default {
                 }else{
                     this.error = "At least one administrator must be added!";
                 }
-                
             }
         },
         addHotel: function(){

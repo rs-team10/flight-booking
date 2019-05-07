@@ -25,7 +25,7 @@
                     <div id="form">
                         <form>
                             <v-flex>
-                            <v-layout column >
+                            <v-layout column>
                                 <div class="ml-3 title font-weight-light indigo--text">Please select your check-in and check-out date</div>
                                 <br>
                                 <!-- datum od -->
@@ -208,6 +208,8 @@
                     :is="component2"
                     :selectedHotel="selectedHotel"
                     :days="days"
+                    :checkInDate="checkInDate"
+                    :checkOutDate="checkOutDate"
                     @continueReservation="finishReservation($event)"
                 ></component>
 
@@ -222,6 +224,7 @@
                     :is="component3"
                     :days="days"
                     :reservation="reservation"
+                    :priceListItems="priceListItems"
             ></component>
 
             <v-btn flat>Cancel</v-btn>
@@ -271,7 +274,8 @@ export default {
             checkOutDate: new Date().toISOString().substr(0, 10),
 
             days : '',
-            totalRoomPrice: ''
+            totalRoomPrice: '',
+            priceListItems: []
 
 
             //--------------------------------
@@ -324,7 +328,10 @@ export default {
         },
         finishReservation(reservation){
             this.reservation = reservation;
-            console.log(this.reservation);
+            this.reservation.selectedHotel = this.selectedHotel
+            this.reservation.dateFrom = this.checkInDate
+            this.reservation.dateTo = this.checkOutDate
+            this.priceListItems = this.selectedHotel.additionalServicesPriceList.priceListItems
 
             this.e6 = 3;
         }

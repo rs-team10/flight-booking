@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -38,12 +40,28 @@ public class Room {
 		
 	//mappedBy room znaci da ce se foreign key nalaziti u tabeli u kojoj 
 	//je deklarisan atribut koji se zove room (znaci bice u tabeli room reservations
-	//@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
-	@OneToMany(fetch=FetchType.LAZY)
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@OneToMany(mappedBy="room", fetch=FetchType.EAGER)
+	//@OneToMany(fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
+	
+	public boolean isReserved(Date checkInDate, Date checkOutDate) {
+		for(RoomReservation roomReservation: this.roomReservations) {
+			if( (roomReservation.getDateFrom().compareTo(checkInDate) <= 0)
+					&& (roomReservation.getDateTo().compareTo(checkInDate) > 0) ) {
+				return true;
+			}
+			else if( (roomReservation.getDateFrom().compareTo(checkOutDate) < 0)
+					&& (roomReservation.getDateTo().compareTo(checkOutDate) >= 0) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public Room() {
 		super();
+		this.roomReservations = new HashSet<>();
 	}
 
 	public Long getId() {

@@ -105,7 +105,7 @@
 
 <script>
 export default {
-    props: ['selectedHotel', 'days'],
+    props: ['selectedHotel', 'days', 'checkInDate', 'checkOutDate'],
 
     data(){
         return {
@@ -133,7 +133,7 @@ export default {
                 }
             }
             this.$axios
-                .post('http://localhost:8080/api/hotels/getRooms', lista)
+                .post('http://localhost:8080/api/rooms/getRooms/' + this.checkInDate + '/' + this.checkOutDate, lista)
                 .then(response => {
                     // for(var i = 0; i < response.data.length; i++){
                     //     this.listOfRooms.push(response.data[i]);
@@ -147,6 +147,7 @@ export default {
                     //nema dovoljno soba tog tipa   
                     //this.$swal("", "Unfortunately, " + roomType.numberOfRooms.bold() + " " + roomType.type.bold().toUpperCase() + " rooms are not currently available.", "info");
                     this.error = true;
+                    console.log(error.response.data)
                 })
             //Treba proveriti da li broj gostiju prevazilazi broj kreveta, da li su dostupne sobe
         },

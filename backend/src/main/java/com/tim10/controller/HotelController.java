@@ -1,6 +1,9 @@
 package com.tim10.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +24,7 @@ import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.Room;
 import com.tim10.dto.HotelDTO;
 import com.tim10.dto.HotelReservationDTO;
-import com.tim10.dto.RoomDTO;
-import com.tim10.dto.RoomsDTO;
+import com.tim10.dto.RoomTypesDTO;
 import com.tim10.service.HotelService;
 import com.tim10.service.UserService;
 
@@ -86,6 +88,7 @@ public class HotelController {
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
+	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
 		Hotel existingHotel = hotelService.findOneByName(hotel.getName());
@@ -101,43 +104,5 @@ public class HotelController {
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	/*Metoda za proveravanje da li su dostupne trazene sobe, i vracanje liste konkretnih soba koje su za rezervaciju
-	 * MOZE LI NEKAKO - da se te sobe sklone dok se rezervacija ne zavrsi skroz????*/
-	@RequestMapping(value="/getRooms/{roomTypeId}/{numberOfRooms}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getRooms(@PathVariable("roomTypeId") Long roomTypeId,
-										@PathVariable("numberOfRooms") int numberOfRooms){
-		
-		//trenutno samo proveravamo da li ima dovoljno soba za rezervaciju
-		//mozda bi trebalo vratiti te sobe koje cemo da rezervisemo da ih 
-		//stavimo na time out
-		List<Room> allRooms = hotelService.getRooms(roomTypeId);
-		if(allRooms.size() < numberOfRooms) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-		
-		List<Room> responseRooms = new ArrayList<>();
-		for(int i = 0; i < numberOfRooms; i++) 
-			responseRooms.add(allRooms.get(i));
-		
-		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
-
-	}
 	
-	@RequestMapping(value="/getRooms", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getRooms(@RequestBody List<RoomDTO> lista){
-		
-		List<Room> rooms;
-		List<Room> responseRooms = new ArrayList<>();
-		
-		for(RoomDTO roomDTO : lista) {
-			rooms = hotelService.getRooms(roomDTO.getRoomType().getId());
-			if(rooms.size() < roomDTO.getNumberOfRooms()) 
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			
-			for(int i = 0; i < roomDTO.getNumberOfRooms(); i++)
-				responseRooms.add(rooms.get(i));
-		}
-		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
-
-	}
 }

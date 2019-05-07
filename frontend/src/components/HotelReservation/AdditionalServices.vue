@@ -4,15 +4,15 @@
         <v-flex xs4 sm4 md4>    
             <v-card>
                 <v-toolbar color="indigo" class="elevation-10">
-                    <v-toolbar-title class="text--white">Additional services</v-toolbar-title>
+                    <v-toolbar-title class="text-uppercase white--text font-weight-light">Additional services</v-toolbar-title>
                 </v-toolbar>
             </v-card>
             <v-layout column style="height: 500px">
                 <v-flex style="overflow: auto">
                     <v-data-table
                         v-model="selected"
-                        :items="temp"
-                        class="elevation-3 mytable"
+                        :items="this.priceListItems"
+                        class="elevation-3"
                         item-key="name"
                         hide-actions
                         hide-headers
@@ -27,8 +27,8 @@
                                     color="indigo"
                                 ></v-checkbox>
                                 </td>
-                                <td class="text-xs-left font-weight-bold">{{ props.item.name }}</td>
-                                <td class="text-xs-left font-weight-bold">{{ props.item.pricePerNight }}€</td>
+                                <td class="text-xs-left font-weight-bold indigo--text">{{ props.item.name }}</td>
+                                <td class="text-xs-left font-weight-bold indigo--text">{{ props.item.price }}€</td>
                             </tr>
                         </template>
                         <template v-slot:expand="props">
@@ -75,17 +75,22 @@
                             </v-layout>
                         </v-card-text>
                     </v-card>
+                <v-layout row align right>
+                    <v-btn outline color="success" flat @click="reserveRooms">
+                        Confirm reservation 
+                        <v-icon right>done_outline</v-icon>
+                    </v-btn>
+                </v-layout>
             </v-flex>
             </v-layout>
 
-        <v-btn color="primary" >Continue</v-btn>
 
     </div>
 </template>
 
 <script>
 export default {
-    props: ['days', 'reservation'],
+    props: ['days', 'reservation', 'priceListItems'],
 
     data(){
         return{
@@ -108,15 +113,28 @@ export default {
         additionalServicesPrice(){
             var total = 0;
             for(var i = 0; i < this.selected.length; i++){  
-                total += this.selected[i].pricePerNight * this.days;
+                total += this.selected[i].price * this.days;
             }
             return total;
         },
         totalPrice(){
             return this.additionalServicesPrice + this.reservation.totalPrice;
         }
+        
+    },
+    methods: {
+        reserveRooms(){
+            this.reservation.additionalServices = this.selected
+            console.log(this.reservation)
+            this.$axios
+            .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation)
+            .then(response => {
+                console.log(response.data)
+            }).catch(error => {
+                console.log(error)
+            });
+        }
     }
-    
 }
 </script>
 

@@ -22,9 +22,6 @@ public class HotelService {
 	private HotelRepository hotelRepository;
 	
 	@Autowired
-	private RoomRepository roomRepository;
-	
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	public List<Hotel> findAll(){
@@ -64,8 +61,6 @@ public class HotelService {
 		return hotelRepository.findByParameter(parameter);
 	}
 	
-	public List<Room> getRooms(Long id){
-		return roomRepository.findByRoomTypeId(id);
-	}
+
 
 }

@@ -2,6 +2,7 @@ package com.tim10.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,10 +14,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -28,14 +33,17 @@ public class RoomReservation {
 	private Long id;
 	
 	@Column(name="dateFrom", nullable=false)
+	@Type(type="date")
 	private Date dateFrom;
 	
 	@Column(name="dateTo", nullable=false)
+	@Type(type="date")
 	private Date dateTo;
 	
 	@Column(name="totalPrice", nullable=false)
 	private BigDecimal totalPrice;
 	
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@OneToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
@@ -45,12 +53,28 @@ public class RoomReservation {
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="room_id")
 	private Room room;
-
+	
 	public RoomReservation() {
 		super();
+		this.dateFrom = new Date();
+		this.dateTo = new Date();
+		this.additionalServices = new HashSet<>();
 	}
+	
+	public RoomReservation(Date dateFrom, Date dateTo, BigDecimal totalPrice,
+			Set<PriceListItem> additionalServices, Room room) {
+		super();
+		this.dateFrom = dateFrom;
+		this.dateTo = dateTo;
+		this.totalPrice = totalPrice;
+		this.additionalServices = additionalServices;
+		this.room = room;
+	}
+
 
 	public Long getId() {
 		return id;
