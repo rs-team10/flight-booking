@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,8 +26,8 @@ import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.Room;
 import com.tim10.dto.HotelDTO;
-import com.tim10.dto.HotelReservationDTO;
-import com.tim10.dto.RoomTypesDTO;
+import com.tim10.dto.HotelRoomsDTO;
+import com.tim10.dto.RoomDTO;
 import com.tim10.service.HotelService;
 import com.tim10.service.UserService;
 
@@ -38,6 +41,10 @@ public class HotelController {
 	@Autowired 
 	private UserService userService;
 	
+	/*
+	 * ZA IZMENU (DODATI PAGINACIJU)
+	 * za sad sluzi za prikaz svih hotela u ViewHotels
+	 */
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<HotelDTO>> getHotels() {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
@@ -46,31 +53,28 @@ public class HotelController {
 		return new ResponseEntity<List<HotelDTO>>(dtos, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/{parameter}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelDTO>> searchHotels(@PathVariable("parameter") String param) {
+	/*
+	 * Pretraga hotela po nazivu i lokaciji. Vraca stranice
+	 */
+	@RequestMapping(value="/searchHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> searchHotels(Pageable page,
+														@PathParam("hotelName") String hotelName,
+														@PathParam("hotelLocation") String hotelLocation) {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
-		for(Hotel h : hotelService.findByParameter(param))
+		for(Hotel h : hotelService.findByParameter(page, hotelName, hotelLocation))
 			dtos.add(new HotelDTO(h));
 		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 	
-	/*IZMENITI - njaverovatnije nece biti potrebno dobavljanje ovakvog DTO-a zbog konkretnih soba, njih naknadno uzimati pri dodavanju kod admina*/
+	/*
+	 * Za sad se koristi samo pri rezervaciji hotela, fetchuje sve hotele (po stranicama) 
+	 */
 	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelDTO>> getHotelsPage(Pageable page) {
+	public ResponseEntity<List<HotelDTO>> getResHotelsPage(Pageable page) {
 		Page<Hotel> pageHotels = hotelService.findAll(page);
 		List<HotelDTO> hotelsDTO = new ArrayList<>();
 		for(Hotel h : pageHotels) 
 			hotelsDTO.add(new HotelDTO(h));
-		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
-	}
-	
-	/*Kod prikaza hotela registrovanom korisniku pri rezervaciji (ne salju se konkretne sobe u DTO)*/
-	@RequestMapping(value = "/resHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelReservationDTO>> getResHotelsPage(Pageable page) {
-		Page<Hotel> pageHotels = hotelService.findAll(page);
-		List<HotelReservationDTO> hotelsDTO = new ArrayList<>();
-		for(Hotel h : pageHotels) 
-			hotelsDTO.add(new HotelReservationDTO(h));
 		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
 	}
 	
@@ -88,10 +92,9 @@ public class HotelController {
 		return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
-	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
-		Hotel existingHotel = hotelService.findOneByName(hotel.getName());
+		Hotel existingHotel = hotelService.findOneByName(hotel.getName()).get();
 		if(existingHotel != null && existingHotel.getId() != hotel.getId())
 			return new ResponseEntity<>("Hotel with that name already exists!", HttpStatus.FORBIDDEN);
 		
@@ -100,9 +103,35 @@ public class HotelController {
 			hotel.setAdministrators(h.get().getAdministrators());
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
-		
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	
+	/* 
+	 * Vracanje svih soba iz hotela (koristi se kod editHotel)
+	 */
+	@RequestMapping(value="/getHotelRooms/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<HotelRoomsDTO> getHotelRooms(@PathVariable("id") Long id){
+		Hotel hotel = hotelService.findOne(id).get();
+		return new ResponseEntity<>(new HotelRoomsDTO(hotel), HttpStatus.OK);
+	}
+
+	/*
+	 * Vracanje svih soba iz hotela koje nisu rezervisane u odredjenom periodu
+	 * (koristi se kod rezervisanja soba)
+	 */
+	@RequestMapping(value="/getHotelRooms/{id}/{checkInDate}/{checkOutDate}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<RoomDTO>> getHotelRooms(@PathVariable("id") Long id,
+														@PathVariable("checkInDate") String checkInDate,
+														@PathVariable("checkOutDate") String checkOutDate) throws ParseException{
+		Set<Room> rooms = hotelService.findOne(id).get().getRooms();
+		List<RoomDTO> responseRooms = new ArrayList<>();
+		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(checkInDate);
+		Date dateTo = new SimpleDateFormat("yyyy-MM-dd").parse(checkOutDate);
+		
+		for(Room r : rooms) {
+			if(!r.isReserved(dateFrom, dateTo))
+				responseRooms.add(new RoomDTO(r));
+		}
+		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
+	}
 }

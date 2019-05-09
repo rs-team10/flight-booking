@@ -38,11 +38,8 @@ public class Room {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private RoomType roomType;
 		
-	//mappedBy room znaci da ce se foreign key nalaziti u tabeli u kojoj 
-	//je deklarisan atribut koji se zove room (znaci bice u tabeli room reservations
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@OneToMany(mappedBy="room", fetch=FetchType.EAGER)
-	//@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
 	
 	public boolean isReserved(Date checkInDate, Date checkOutDate) {

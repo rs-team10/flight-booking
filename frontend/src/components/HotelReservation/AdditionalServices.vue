@@ -16,6 +16,7 @@
                         item-key="name"
                         hide-actions
                         hide-headers
+                        :headers-length="headersLength"
                         >
                         <template v-slot:items="props">
                             <tr @click="props.expanded = !props.expanded">
@@ -76,6 +77,7 @@
                         </v-card-text>
                     </v-card>
                 <v-layout row align right>
+                    <v-btn flat>Cancel</v-btn>
                     <v-btn outline color="success" flat @click="reserveRooms">
                         Confirm reservation 
                         <v-icon right>done_outline</v-icon>
@@ -83,8 +85,6 @@
                 </v-layout>
             </v-flex>
             </v-layout>
-
-
     </div>
 </template>
 
@@ -106,7 +106,8 @@ export default {
                 { name: "Dry cleaning",  pricePerNight: 10, description: "OPIS"},
                 { name: "Laundry service",  pricePerNight: 10, description: "OPIS"}
             ],
-            selected: []
+            selected: [],
+            headersLength: 3
         }
     },
     computed: {
@@ -129,6 +130,7 @@ export default {
             this.$axios
             .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation)
             .then(response => {
+                this.$swal("Reservation successful", "", "success");
                 console.log(response.data)
             }).catch(error => {
                 console.log(error)

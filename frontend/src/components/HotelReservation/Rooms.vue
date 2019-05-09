@@ -1,13 +1,13 @@
 <template>
     <div id="rooms">
         <v-item-group>
-            <v-layout column >
+            <v-layout column>
                 <v-list class="scroll-y" style="height: 700px">
                 <v-flex
                     v-for="room in this.selectedHotel.roomTypes"
                     :key="room.type"
                     class="d-inline align-center">
-                <v-item width="100%">
+                <v-item v-if="proveraSoba(room)" width="100%">
                     <div style="margin: auto;">
                         <v-card flat>
                         <v-container fluid>
@@ -49,29 +49,22 @@
                                                     </v-card-title>
                                                     <v-card-actions>
                                                         <v-layout row align right class="mt-3">
-                                                            <v-text-field 
-                                                                v-model.lazy="room.numberOfRooms"
-                                                                label="Number of rooms"
-                                                                solo
-                                                                flat
-                                                                type="number"
-                                                                background-color="indigo lighten-3"
-                                                                min="0"
 
-                                                            ></v-text-field>
-                                                            <!-- <v-checkbox 
-                                                                color="white" 
-                                                                v-model="room.active" 
-                                                                label="Reserve"
-                                                                class=" ml-2">
-                                                            </v-checkbox>  -->
+                                                            <v-autocomplete
+                                                                v-model.lazy="room.numberOfRooms"
+                                                                :items="Array.from(rooms.filter(x => x.roomType.type == room.type), (x, index) => index+1 )"                                                                label="Number of rooms"
+                                                                flat
+                                                                solo
+                                                                hide-details
+                                                                background-color="indigo lighten-3"
+                                                            >
+                                                            </v-autocomplete>   
+
                                                         </v-layout>
                                                     </v-card-actions>
-                                                    </v-card>
-                                                
+                                                    </v-card>    
                                         </v-layout>
                                         </v-layout>
-                                        
                                     </v-flex>                           
                                 </v-layout>
                                 <v-divider light></v-divider>
@@ -92,20 +85,23 @@
                         </v-container>
                         </v-card>
                     </div>
-
                 </v-item>
                 </v-flex>
                 </v-list>
             </v-layout>   
         </v-item-group>
-        <v-btn color="primary" @click="reserve">Reserve</v-btn>
 
+        <v-layout row class="mr-5">
+            <v-spacer></v-spacer>
+            <v-btn  flat outline color="indigo" @click="reserve">Reserve</v-btn>
+            <v-btn flat @click="goBack">Back</v-btn>
+        </v-layout>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['selectedHotel', 'days', 'checkInDate', 'checkOutDate'],
+    props: ['selectedHotel', 'days', 'checkInDate', 'checkOutDate', 'rooms', 'priceRange'],
 
     data(){
         return {
@@ -117,8 +113,7 @@ export default {
             reservation: {
                 listOfRooms: [],
                 totalPrice: 0
-            },
-            listOfRooms: []
+            }
         }
     },
     methods: {
@@ -135,19 +130,16 @@ export default {
             this.$axios
                 .post('http://localhost:8080/api/rooms/getRooms/' + this.checkInDate + '/' + this.checkOutDate, lista)
                 .then(response => {
-                    // for(var i = 0; i < response.data.length; i++){
-                    //     this.listOfRooms.push(response.data[i]);
-                    //     totalRoomPrice += response.data[i].roomType.pricePerNight * this.days;
-                    // }
-                    // this.error = false;
+                    if(response.data.length == 0){
+                        this.$swal("At least one room must be chosen.", "", "info");
+                        return;
+                    }
                     this.reservation.listOfRooms = response.data;
                     this.reservation.totalPrice = this.calculateTotalPrice(this.reservation.listOfRooms);
                     this.$emit('continueReservation', this.reservation);
                 }).catch(error => {
                     //nema dovoljno soba tog tipa   
-                    //this.$swal("", "Unfortunately, " + roomType.numberOfRooms.bold() + " " + roomType.type.bold().toUpperCase() + " rooms are not currently available.", "info");
-                    this.error = true;
-                    console.log(error.response.data)
+                    this.$swal(error.response.data, "", "info");
                 })
             //Treba proveriti da li broj gostiju prevazilazi broj kreveta, da li su dostupne sobe
         },
@@ -159,10 +151,15 @@ export default {
             for(var i = 0; i < listOfRooms.length; i++)
                 total += this.totalPrice(listOfRooms[i].roomType.pricePerNight);
             return total;
+        },
+        proveraSoba(room){
+            if(room.pricePerNight > this.priceRange[0] && room.pricePerNight < this.priceRange[1])
+                return true;
+            return false;
+        },
+        goBack(){
+            this.$emit('goBack');
         }
-    },
-    mounted(){
-        console.log(this.selectedHotel)
     }
 }
 </script>

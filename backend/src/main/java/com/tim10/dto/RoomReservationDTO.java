@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.tim10.domain.PriceListItem;
-import com.tim10.domain.Room;
 
 public class RoomReservationDTO {
 	
@@ -15,14 +14,14 @@ public class RoomReservationDTO {
 	private BigDecimal totalPrice;
 	private Set<PriceListItem> additionalServices;
 	private List<RoomDTO> listOfRooms;
-	private HotelReservationDTO hotelReservationDTO;
+	private HotelDTO hotelReservationDTO;
 	
 	public RoomReservationDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public RoomReservationDTO(Date dateFrom, Date dateTo, BigDecimal totalPrice, Set<PriceListItem> additionalServices, List<RoomDTO> listOfRooms, HotelReservationDTO hotelReservationDTO) {
+	public RoomReservationDTO(Date dateFrom, Date dateTo, BigDecimal totalPrice, Set<PriceListItem> additionalServices, List<RoomDTO> listOfRooms, HotelDTO hotelReservationDTO) {
 		super();
 		this.dateFrom = dateFrom;
 		this.dateTo = dateTo;
@@ -64,11 +63,11 @@ public class RoomReservationDTO {
 		this.listOfRooms = listOfRooms;
 	}
 
-	public HotelReservationDTO getHotelReservationDTO() {
+	public HotelDTO getHotelReservationDTO() {
 		return hotelReservationDTO;
 	}
 
-	public void setHotelReservationDTO(HotelReservationDTO hotelReservationDTO) {
+	public void setHotelReservationDTO(HotelDTO hotelReservationDTO) {
 		this.hotelReservationDTO = hotelReservationDTO;
 	}
 

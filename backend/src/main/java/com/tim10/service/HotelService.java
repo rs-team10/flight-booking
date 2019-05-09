@@ -43,13 +43,12 @@ public class HotelService {
 	}
 	
 	public boolean hotelExists(Hotel hotel){
-		if(findOneByName(hotel.getName()) == null) {
+		if(findOneByName(hotel.getName()).isPresent()) 
 			return true;
-		}
 		return false;
 	}
 	
-	public Hotel findOneByName(String name) {
+	public Optional<Hotel> findOneByName(String name) {
 		return hotelRepository.findOneByName(name);
 	}
 	
@@ -57,8 +56,8 @@ public class HotelService {
 		return hotelRepository.findById(id);
 	}
 	
-	public List<Hotel> findByParameter(String parameter){
-		return hotelRepository.findByParameter(parameter);
+	public Page<Hotel> findByParameter(Pageable pageable, String hotelName, String hotelLocation){
+		return hotelRepository.findByParameter(pageable, hotelName, hotelLocation);
 	}
 	
 

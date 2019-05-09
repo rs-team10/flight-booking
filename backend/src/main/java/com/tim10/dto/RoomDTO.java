@@ -10,13 +10,16 @@ public class RoomDTO {
 	private Integer squareFootage;
 	private boolean hasBalcony;
 	private RoomType roomType;
+	
+	private boolean isReserved;
 
 	public RoomDTO(Room room) {
 		this.id = room.getId();
 		this.floor = room.getFloor();
 		this.squareFootage = room.getSquareFootage();
-		this.hasBalcony = room.getHasBalcony();
+		this.hasBalcony = room.getHasBalcony() == null ? false : true;
 		this.roomType = room.getRoomType();
+		this.isReserved = room.getRoomReservations().isEmpty() ? false : true;
 	}
 
 	public RoomDTO(Long id, Integer floor, Integer squareFootage, boolean hasBalcony, RoomType roomType) {
@@ -71,6 +74,10 @@ public class RoomDTO {
 
 	public RoomType getRoomType() {
 		return roomType;
+	}
+
+	public boolean isReserved() {
+		return isReserved;
 	}
 
 }

@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <v-toolbar flat app>
+        <v-toolbar flat app dense>
             <v-toolbar-title class="text-uppercase grey--text">
                 <router-link to="/">
                     <span class="font-weight-light">Flight</span>

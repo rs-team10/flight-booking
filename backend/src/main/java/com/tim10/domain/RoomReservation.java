@@ -15,8 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -44,7 +44,7 @@ public class RoomReservation {
 	private BigDecimal totalPrice;
 	
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@OneToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????

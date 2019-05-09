@@ -113,6 +113,7 @@
                                     v-bind:is="editRoomsComp"
                                     v-bind:selectedRoomType="selectedRoomType"
                                     v-bind:hotelRooms="selectedHotel.rooms"
+                                    v-bind:selectedHotel="selectedHotel"
                                 ></component>
                             </v-dialog>
 
@@ -435,6 +436,7 @@ export default {
                 //ako nijedan item nije selektovan znaci da dodajemo novi
                 this.selectedHotel.additionalServicesPriceList.priceListItems.push(this.serviceEditedItem)
             }
+            console.log(this.selectedHotel)
             this.serviceClose()
         },
         //=========================================================================================

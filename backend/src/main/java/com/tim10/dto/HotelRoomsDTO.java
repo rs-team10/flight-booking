@@ -1,28 +1,30 @@
 package com.tim10.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.tim10.domain.Hotel;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceList;
+import com.tim10.domain.Room;
 import com.tim10.domain.RoomType;
 
-public class HotelReservationDTO {
-	
+public class HotelRoomsDTO {
+
 	private Long id;
 	private String name;
 	private String description;
 	private Double averageFeedback;
 	private Location location;
 	private Set<RoomType> roomTypes;
+	private Set<RoomDTO> rooms = new HashSet<RoomDTO>();
 	private PriceList additionalServicesPriceList;
-	
-	public HotelReservationDTO() {
+
+	public HotelRoomsDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
-	public HotelReservationDTO(Hotel hotel) {
+	public HotelRoomsDTO(Hotel hotel) {
 		this.id = hotel.getId();
 		this.name = hotel.getName();
 		this.description = hotel.getDescription();
@@ -30,18 +32,8 @@ public class HotelReservationDTO {
 		this.location = hotel.getLocation();
 		this.roomTypes = hotel.getRoomTypes();
 		this.additionalServicesPriceList = hotel.getAdditionalServicesPriceList();
-	}
-	
-	public HotelReservationDTO(Long id, String name, String description, Double averageFeedback, Location location,
-			Set<RoomType> roomTypes, PriceList additionalServicesPriceList) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.averageFeedback = averageFeedback;
-		this.location = location;
-		this.roomTypes = roomTypes;
-		this.additionalServicesPriceList = additionalServicesPriceList;
+		for(Room room : hotel.getRooms())
+			this.rooms.add(new RoomDTO(room));
 	}
 
 	public Long getId() {
@@ -66,6 +58,10 @@ public class HotelReservationDTO {
 
 	public Set<RoomType> getRoomTypes() {
 		return roomTypes;
+	}
+
+	public Set<RoomDTO> getRooms() {
+		return rooms;
 	}
 
 	public PriceList getAdditionalServicesPriceList() {
@@ -96,10 +92,12 @@ public class HotelReservationDTO {
 		this.roomTypes = roomTypes;
 	}
 
+	public void setRooms(Set<RoomDTO> rooms) {
+		this.rooms = rooms;
+	}
+
 	public void setAdditionalServicesPriceList(PriceList additionalServicesPriceList) {
 		this.additionalServicesPriceList = additionalServicesPriceList;
 	}
-	
-	
-	
+
 }

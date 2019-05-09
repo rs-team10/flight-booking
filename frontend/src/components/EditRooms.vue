@@ -54,7 +54,7 @@
         </v-toolbar>
 
         <v-data-table
-            :items="hotelRooms"
+            :items="selectedHotel.rooms"
             :headers="headers"
             class="elevation-1"
             hide-actions>
@@ -116,7 +116,7 @@
 
 <script>
 export default {
-    props: ['selectedRoomType', 'hotelRooms'],
+    props: ['selectedRoomType', 'hotelRooms', 'selectedHotel'],
 
     data(){
         return{
@@ -126,20 +126,20 @@ export default {
                 { text: "Square ft.", align: "left", sortable: false, value: "squareFt" },
                 { text: "Has Balcony", align: "left", sortable: false, value: "hasBalcony" },
                 { text: "", align: "right", sortable: false, value: "actions" }
-
             ],
-            newRoom: {}
+            newRoom: {},
+            lista: []
         }
     },
     methods: {
         closeAddDialog(){
+            console.log(this.selectedHotel)
             this.addDialog = false;
             this.newRoom = {}
         },
         saveRoom(){
             this.newRoom.roomType = Object.assign({}, this.selectedRoomType);
-            console.log(this.newRoom);
-            this.hotelRooms.push(this.newRoom);
+            this.selectedHotel.rooms.push(this.newRoom);
             this.closeAddDialog();
         }
     }
