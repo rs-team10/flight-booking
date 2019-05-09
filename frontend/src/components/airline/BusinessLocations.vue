@@ -211,8 +211,8 @@ export default {
                         this.close();
                     }).catch((error) => {
                         this.$swal("Error", error.response.data.message, 'error');
-                        this.businessLocations.push(this.newBusinessLocation);
-                        this.close();
+                        //this.businessLocations.push(this.newBusinessLocation);
+                        //this.close();
                     });
                 }
             }

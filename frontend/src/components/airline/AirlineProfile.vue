@@ -6,7 +6,7 @@
                 class="ma-2"
                 :tile="true"
                 :size="80"
-                >
+            >
                 <img src="https://www.airserbia.com/Data/Images/logo.png" alt="avatar">
             </v-avatar>
             <h2 class="text-xs-center">{{ airline.name }}</h2>
@@ -63,19 +63,16 @@
 
 var MOCK_ID = 1;                                // TODO: This is hardcoded. Change!
 
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
 export default {
     data() {
         return {
-            airline: {
-                id: MOCK_ID,                            
-                name: '',
-                description: '',
-                location: {}
-            },
+            airline: {},
             currentMapCenter : {
                 lat: 0.0,
                 lng: 0.0
-            },
+            }
         }
     },
     methods: {
@@ -85,13 +82,7 @@ export default {
     },
     created() {
 
-        var yourConfig = {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        };
-
-        this.$axios.get('http://localhost:8080/api/airlines/' + this.airline.id, yourConfig).then((response) => {
+        this.$axios.get('http://localhost:8080/api/airlines/getAirline', yourConfig).then((response) => {
             this.airline = response.data;
             this.currentMapCenter = {
                 lat: this.airline.location.latitude,
@@ -103,7 +94,6 @@ export default {
     }
 }
 </script>
-
 
 <style scoped>
 

@@ -18,13 +18,13 @@ public class Destination {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="name", unique=true, nullable=false)
+	@Column(name="name", nullable=false)
 	private String name;
 	
 	@Column(name="airportName")
 	private String airportName;
 	
-	@Column(name="airportCode", unique=true, nullable=false)
+	@Column(name="airportCode", nullable=false)
 	private String airportCode;
 	
 	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)

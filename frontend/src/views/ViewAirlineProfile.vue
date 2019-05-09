@@ -4,6 +4,8 @@
             <airline-profile/>
             <business-locations/>
             <flights/>
+            <price-list/>
+            <seats/>
         </v-container>
     </div>
 </template>
@@ -12,12 +14,17 @@
 import AirlineProfile from "@/components/airline/AirlineProfile.vue"
 import BusinessLocations from "@/components/airline/BusinessLocations.vue"
 import Flights from "@/components/airline/Flights.vue"
+import PriceList from "@/components/airline/PriceList.vue"
+
+import EditSeatsLayout from "@/components/airline/EditSeatsLayout.vue"
 
 export default {
     components: {
         'airline-profile': AirlineProfile,
         'business-locations': BusinessLocations,
-        'flights': Flights
+        'flights': Flights,
+        'price-list': PriceList,
+        'seats': EditSeatsLayout
     },
     data() {
         return {

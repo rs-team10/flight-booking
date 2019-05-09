@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -28,13 +29,15 @@ public class Flight {
 	@ManyToOne(fetch=FetchType.LAZY)
 	private Airline airline;
 	
-	@Column(name="flightNumber", unique=true, nullable=false)
+	@Column(name="flightNumber", nullable=false)
 	private String flightNumber;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name = "departure")
 	private Destination departure;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name = "destination")
 	private Destination destination;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

@@ -31,6 +31,9 @@ public class Seat {
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	private Flight flight;
+	
+	@Column(name="isReserved")
+	private Boolean isReserved;
 
 	public Seat() {
 		super();
@@ -41,6 +44,7 @@ public class Seat {
 		this.red = red;
 		this.kolona = kolona;
 		this.segmentClass = segmentClass;
+		this.isReserved = false;
 	}
 
 	public Long getId() {
@@ -61,6 +65,10 @@ public class Seat {
 
 	public Flight getFlight() {
 		return flight;
+	}
+	
+	public Boolean getIsReserved() {
+		return isReserved;
 	}
 
 	public void setId(Long id) {
@@ -83,4 +91,8 @@ public class Seat {
 		this.flight = flight;
 	}
 
+	public void setIsReserved(Boolean isReserved) {
+		this.isReserved = isReserved;
+	}
+	
 }

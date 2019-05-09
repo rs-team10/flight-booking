@@ -708,6 +708,8 @@ export default {
         },
         deleteFlight(flight) {
             // TODO : DELETE
+
+            
         },
 
     },

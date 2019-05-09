@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.Airline;
 import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
+import com.tim10.domain.PriceListItem;
 import com.tim10.domain.Seat;
 import com.tim10.domain.SegmentClass;
 import com.tim10.dto.FlightDTO;
+import com.tim10.dto.PriceListItemDTO;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.DestinationRepository;
+import com.tim10.repository.FlightRepository;
 
 @Service
 public class FlightService {
@@ -26,6 +29,9 @@ public class FlightService {
 	
 	@Autowired
 	DestinationRepository destinationRepository;
+	
+	@Autowired
+	FlightRepository flightRepository;
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -106,5 +112,59 @@ public class FlightService {
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	
+	public ResponseEntity<?> deleteFlight(FlightDTO flightDTO) {
+		
+		// TODO: HARDCODED
+		//Airline existingAirline = airlineRepository.findOneByName(flightDTO.getAirline());
+		Airline existingAirline = airlineRepository.findById(1L).get();
+		
+		if(existingAirline == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		Flight existingFlight = flightRepository.findOneByFlightNumber(flightDTO.getFlightNumber());
+		
+		if(existingFlight == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		// TODO: Proveriti da li za let postoji bar jedna rezervacija!
+		
+		flightRepository.delete(existingFlight);
+		
+		return new ResponseEntity<>(HttpStatus.OK); 
+	}
 
+
+	public ResponseEntity<?> addPriceListItem(PriceListItemDTO priceListItemDTO) {
+		
+		Airline existingAirline = airlineRepository.findById(1L).get();
+		
+		if(existingAirline == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		PriceListItem newItem = new PriceListItem();
+		
+		// TODO: Popuniti item
+		
+		existingAirline.getLuggagePriceList().getPriceListItems().add(newItem);
+		airlineRepository.save(existingAirline);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+
+	public ResponseEntity<?> deletePriceListItem(PriceListItemDTO priceListItemDTO) {
+		
+		// TODO: HARDCODED
+		//Airline existingAirline = airlineRepository.findOneByName(flightDTO.getAirline());
+		Airline existingAirline = airlineRepository.findById(1L).get();
+		
+		if(existingAirline == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		// TODO: Dovrsiti
+
+		return new ResponseEntity<>(HttpStatus.OK); 
+	}
 }

@@ -11,6 +11,7 @@ import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
+import com.tim10.domain.PriceListItem;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.DestinationRepository;
 import com.tim10.repository.FlightRepository;
@@ -74,8 +75,14 @@ public class AirlineService {
 		}
 	}
 	
-	public boolean addFlight(Airline existingAirline, Flight flight) {
-		
+
+	public boolean addPriceListItem(Airline existingAirline, PriceListItem item) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	public boolean removePriceListItem(Airline existingAirline, PriceListItem item) {
+		// TODO Auto-generated method stub
 		return true;
 	}
 
