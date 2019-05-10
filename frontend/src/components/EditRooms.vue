@@ -23,23 +23,13 @@
                                         type="number">
                                     </v-text-field>
                                 </v-flex>
-
                                 <v-flex xs4>
                                     <v-text-field 
-                                        v-model="newRoom.squareFootage" 
-                                        label="Square footage" 
+                                        v-model="newRoom.roomNumber" 
+                                        label="Room" 
                                         type="number">
                                     </v-text-field>
                                 </v-flex>
-
-                                <v-flex xs4>
-                                    <v-checkbox
-                                        v-model="newRoom.hasBalcony"
-                                        color="indigo"
-                                        label="Balcony"
-                                    ></v-checkbox>
-                                </v-flex>
-
                             </v-layout>
                         </v-container>
                     </v-card-text>
@@ -54,7 +44,7 @@
         </v-toolbar>
 
         <v-data-table
-            :items="selectedHotel.rooms"
+            :items="selectedHotel.rooms.filter(x => x.roomType.type == selectedRoomType.type)"
             :headers="headers"
             class="elevation-1"
             hide-actions>
@@ -64,49 +54,39 @@
                         :return-value.sync="props.item.floor"
                         large
                         lazy
-                        persistent
-                        >
+                        persistent>
                     {{ props.item.floor }}
                     <template v-slot:input>
                         <v-text-field
                         v-model="props.item.floor"
                         label="Edit"
                         single-line
-                        type="number"
-                        ></v-text-field>
+                        type="number">
+                        </v-text-field>
                     </template>
                     </v-edit-dialog>
                 </td>
 
                 <td>
                     <v-edit-dialog
-                        :return-value.sync="props.item.squareFootage"
+                        :return-value.sync="props.item.roomNumber"
                         large
                         lazy
-                        persistent
-                        >
-                    {{ props.item.squareFootage }}
+                        persistent>
+                    {{ props.item.roomNumber }}
                     <template v-slot:input>
                         <v-text-field
-                        v-model="props.item.squareFootage"
+                        v-model="props.item.roomNumber"
                         label="Edit"
                         single-line
-                        type="number"
-                        ></v-text-field>
+                        type="number">
+                        </v-text-field>
                     </template>
                     </v-edit-dialog>
                 </td>
 
-                <td>
-                    <v-checkbox
-                    v-model="props.item.hasBalcony"
-                    color="indigo"
-                    hide-details
-                ></v-checkbox>
-                </td>
-
                 <td class="justify-center layout px-0">
-                    <v-icon size="20px" @click="deletePrice(props.item)">delete</v-icon>
+                    <v-icon :disabled="props.item.reserved" size="20px" @click="deletePrice(props.item)">delete</v-icon>
                 </td>
             </template>
 
@@ -116,26 +96,24 @@
 
 <script>
 export default {
-    props: ['selectedRoomType', 'hotelRooms', 'selectedHotel'],
+    props: ['selectedRoomType', 'selectedHotel'],
 
     data(){
         return{
             addDialog: false,
             headers:[
                 { text: "Floor", align: "left", sortable: false, value: "floor" },
-                { text: "Square ft.", align: "left", sortable: false, value: "squareFt" },
-                { text: "Has Balcony", align: "left", sortable: false, value: "hasBalcony" },
+                { text: "Room number", align: "left", sortable: false, value: "roomNumber" },
                 { text: "", align: "right", sortable: false, value: "actions" }
             ],
-            newRoom: {},
-            lista: []
+            newRoom: {}
         }
     },
     methods: {
         closeAddDialog(){
-            console.log(this.selectedHotel)
             this.addDialog = false;
             this.newRoom = {}
+            console.log(this.selectedHotel.rooms)
         },
         saveRoom(){
             this.newRoom.roomType = Object.assign({}, this.selectedRoomType);

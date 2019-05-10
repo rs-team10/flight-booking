@@ -65,27 +65,31 @@
                                         <v-container grid-list-md>
                                             <v-layout wrap>
                                                 <v-flex xs12>
-                                                <v-text-field v-model="roomEditedItem.type" label="Type"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.type" label="Type"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.pricePerNight" label="Price per night"  type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.pricePerNight" label="Price per night"  type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.capacity" label="Capacity" type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.capacity" label="Capacity" type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.singleBedCount" label="Single beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.singleBedCount" label="Single beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.doubleBedCount" label="Double beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.doubleBedCount" label="Double beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
-
                                                 <v-flex xs12>
-                                                <v-textarea v-model="roomEditedItem.description" label="Description"></v-textarea>
+                                                    <v-textarea v-model="roomEditedItem.description" label="Description"></v-textarea>
                                                 </v-flex>
-
                                                 <v-flex>
-                                                    <v-checkbox v-model="roomEditedItem.hasTV" label="Has TV"></v-checkbox>
+                                                    <v-text-field v-model="roomEditedItem.squareFootage" label="Square footage" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                </v-flex>
+                                                <v-flex>
+                                                    <v-checkbox v-model="roomEditedItem.hasTV" label="TV"></v-checkbox>
+                                                </v-flex>
+                                                <v-flex>
+                                                    <v-checkbox v-model="roomEditedItem.hasBalcony" label="Balcony"></v-checkbox>
                                                 </v-flex>
         
                                             </v-layout>
@@ -129,26 +133,35 @@
 
                             <template v-slot:items="props">
                                 <td>{{ props.item.type }}</td>
-                                <td >{{ props.item.pricePerNight }}</td>
-                                <td >{{ props.item.capacity }}</td>
-                                <td >{{ props.item.singleBedCount }}</td>
-                                <td >{{ props.item.doubleBedCount }}</td>
-                                <td >{{ props.item.hasTV }}</td>
-                                <td >{{ props.item.averageFeedback }}</td>
+                                <td>{{ props.item.pricePerNight }}</td>
+                                <td>{{ props.item.capacity }}</td>
+                                <td>{{ props.item.singleBedCount }}</td>
+                                <td>{{ props.item.doubleBedCount }}</td>
+                                <td>{{ props.item.hasTV }}</td>
+                                <td>{{ props.item.hasBalcony }}</td>
+                                <td>{{ props.item.squareFootage }}</td>
+                                <td>{{ props.item.averageFeedback }}</td>
 
                                 <td class="justify-center layout px-0">
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                    @click="roomEditItem(props.item)">
-                                edit
-                                </v-icon>
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                    @click="roomDeleteItem(props.item)">
-                                delete
-                                </v-icon>
+                                
+                                <v-layout row v-if="isReserved(props.item.type)">
+                                    <v-icon disabled small class="mr-2" @click="roomEditItem(props.item)">
+                                        edit
+                                    </v-icon>
+                                    <v-icon disabled small class="mr-2" @click="roomDeleteItem(props.item)">
+                                        delete
+                                    </v-icon>
+                                </v-layout>
+                                
+                                <v-layout row v-else>
+                                    <v-icon small class="mr-2" @click="roomEditItem(props.item)">
+                                        edit
+                                    </v-icon>
+                                    <v-icon small class="mr-2" @click="roomDeleteItem(props.item)">
+                                        delete
+                                    </v-icon>
+                                </v-layout>
+
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on }">
                                         <v-icon
@@ -337,6 +350,8 @@ export default {
                 { text: 'Single beds', value: 'singleBeds', sortable: false },
                 { text: 'Double beds', value: 'doubleBeds', sortable: false },
                 { text: 'Has TV', value: 'hasTV', sortable: false },
+                { text: 'Has Balcony', value: 'hasBalcony', sortable: false },
+                { text: 'Square ft.', value: 'squareFootage', sortable: true },
                 { text: 'Average Feedback', value: 'avgFdbk'},
                 { text: '', value: 'name', sortable: false }
             ],
@@ -442,11 +457,19 @@ export default {
         //=========================================================================================
         //====================ROOMS================================================================
         roomEditItem(item){
+            if(this.isReserved(item.type)){
+                this.$swal("Editing disabled", "Room type can not be edited while it has pending reservations", "info");
+                return;
+            }
             this.roomEditedIndex = this.selectedHotel.roomTypes.indexOf(item)
             this.roomEditedItem = Object.assign({}, item)
             this.roomDialog = true
         },
         roomDeleteItem(item){
+            if(this.isReserved(item.type)){
+                this.$swal("Deleting disabled", "Room type can not be deleted while it has pending reservations", "info");
+                return;
+            }
             const index = this.selectedHotel.roomTypes.indexOf(item)
             this.selectedHotel.roomTypes.splice(index, 1)
         },
@@ -477,7 +500,15 @@ export default {
         editRooms(roomType){
             this.selectedRoomType = roomType
             this.editRoomsDialog = true
-        }
+        },
+        isReserved(type){
+            var resultArray = this.selectedHotel.rooms.filter(x => x.roomType.type == type)
+            for(var i = 0; i <  resultArray.length; i++){
+                if(resultArray[i].reserved)
+                    return true;
+            }
+            return false;
+        },
     },
     created(){
         console.log(this.selectedHotel);

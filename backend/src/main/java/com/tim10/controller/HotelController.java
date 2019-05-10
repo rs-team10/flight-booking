@@ -80,7 +80,7 @@ public class HotelController {
 	
 	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
-		if(hotelService.hotelExists(hotel)) {
+		if(!hotelService.findOneByName(hotel.getName()).isPresent()) {
 			for(HotelAdmin admin : hotel.getAdministrators()) {
 				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
 					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);

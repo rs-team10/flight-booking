@@ -7,8 +7,7 @@ public class RoomDTO {
 
 	private Long id;
 	private Integer floor;
-	private Integer squareFootage;
-	private boolean hasBalcony;
+	private Integer roomNumber;
 	private RoomType roomType;
 	
 	private boolean isReserved;
@@ -16,19 +15,9 @@ public class RoomDTO {
 	public RoomDTO(Room room) {
 		this.id = room.getId();
 		this.floor = room.getFloor();
-		this.squareFootage = room.getSquareFootage();
-		this.hasBalcony = room.getHasBalcony() == null ? false : true;
+		this.roomNumber = room.getRoomNumber();
 		this.roomType = room.getRoomType();
 		this.isReserved = room.getRoomReservations().isEmpty() ? false : true;
-	}
-
-	public RoomDTO(Long id, Integer floor, Integer squareFootage, boolean hasBalcony, RoomType roomType) {
-		super();
-		this.id = id;
-		this.floor = floor;
-		this.squareFootage = squareFootage;
-		this.hasBalcony = hasBalcony;
-		this.roomType = roomType;
 	}
 
 	public RoomDTO() {
@@ -44,14 +33,6 @@ public class RoomDTO {
 		this.floor = floor;
 	}
 
-	public void setSquareFootage(Integer squareFootage) {
-		this.squareFootage = squareFootage;
-	}
-
-	public void setHasBalcony(boolean hasBalcony) {
-		this.hasBalcony = hasBalcony;
-	}
-
 	public void setRoomType(RoomType roomType) {
 		this.roomType = roomType;
 	}
@@ -64,12 +45,16 @@ public class RoomDTO {
 		return floor;
 	}
 
-	public Integer getSquareFootage() {
-		return squareFootage;
+	public Integer getRoomNumber() {
+		return roomNumber;
 	}
 
-	public boolean isHasBalcony() {
-		return hasBalcony;
+	public void setRoomNumber(Integer roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+
+	public void setReserved(boolean isReserved) {
+		this.isReserved = isReserved;
 	}
 
 	public RoomType getRoomType() {

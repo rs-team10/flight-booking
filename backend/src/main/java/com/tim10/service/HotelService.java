@@ -42,12 +42,6 @@ public class HotelService {
 		return hotelRepository.save(hotel);
 	}
 	
-	public boolean hotelExists(Hotel hotel){
-		if(findOneByName(hotel.getName()).isPresent()) 
-			return true;
-		return false;
-	}
-	
 	public Optional<Hotel> findOneByName(String name) {
 		return hotelRepository.findOneByName(name);
 	}
