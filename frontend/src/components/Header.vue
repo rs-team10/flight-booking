@@ -64,11 +64,9 @@ export default {
             if(localStorage.getItem("token") == undefined){
                 this.title = 'login';
                 this.route = '/login';
-                console.log("LOGIN TREBA DA PISE!")
             }else{
                 this.title = 'logout';
                 this.route = '/logout';
-                console.log("LOGOUT TREBA DA PISE!")
             }
             
 
