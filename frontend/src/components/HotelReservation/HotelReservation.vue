@@ -223,7 +223,7 @@
                                                 <v-img
                                                     :src="image"
                                                     height="100%"
-                                                    max-height="150px"
+                                                    max-height="170px"
                                                     max-width="372px"
                                                 ></v-img>
                                                 </v-flex>
@@ -231,7 +231,7 @@
                                                     <v-card-title primary-title>
                                                         <div>
                                                             <div class="headline">{{hotel.name}}</div>
-                                                            <div>
+                                                            <div class="pl-0">
                                                                 <v-icon small class="mr-1">location_on</v-icon>
                                                                 <span class="grey--text text--darken-2 ">{{hotel.location.street}}</span>
                                                             </div>
@@ -244,7 +244,11 @@
                                                                     half-increments
                                                                     readonly
                                                                 ></v-rating>
-                                                            </div>   
+                                                            </div>  
+
+                                                            <div>
+                                                                <v-btn flat href>Discounted rooms</v-btn>
+                                                            </div> 
                                                         </div>
                                                     </v-card-title>
                                                 </v-flex>

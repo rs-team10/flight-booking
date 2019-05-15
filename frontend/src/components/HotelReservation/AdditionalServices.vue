@@ -140,12 +140,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-/* .mytable table tr {
-    background-color: #E8EAF6;
-    border-bottom: none;
-} */
-</style>
-
 

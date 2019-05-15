@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,9 +25,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name="RoomReservations")
-public class RoomReservation {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class RoomReservation implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -74,7 +75,14 @@ public class RoomReservation {
 		this.additionalServices = additionalServices;
 		this.room = room;
 	}
-
+	
+//	public RoomReservation(RoomReservationDTO dto) {
+//		this.dateFrom = dto.getDateFrom();
+//		this.dateTo = dto.getDateTo();
+//		this.totalPrice = dto.getTotalPrice();
+//		this.additionalServices = dto.getAdditionalServices();
+//		this.room = room;
+//	}
 
 	public Long getId() {
 		return id;

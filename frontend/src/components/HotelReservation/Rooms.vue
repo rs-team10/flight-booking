@@ -59,7 +59,16 @@
                                                                 background-color="indigo lighten-3"
                                                             >
                                                             </v-autocomplete>   
-
+                                                            
+                                                            <!-- <v-overflow-btn
+                                                                v-model.lazy="room.numberOfRooms"
+                                                                :items="Array.from(rooms.filter(x => x.roomType.type == room.type), (x, index) => index+1 )"   
+                                                                editable
+                                                                flat
+                                                                solo
+                                                                hide-details
+                                                                background-color="indigo lighten-3"
+                                                            ></v-overflow-btn> -->
                                                         </v-layout>
                                                     </v-card-actions>
                                                     </v-card>    

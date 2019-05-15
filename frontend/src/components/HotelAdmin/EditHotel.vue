@@ -20,8 +20,14 @@
         </div>  
 
         <div id="edit-form" class="mt-3">
-            <v-flex xs12 sm6 offset-sm3> 
-                <h1 class="text-xs-center indigo--text">Edit {{selectedHotel.name}}</h1>
+            <v-flex xs12 sm10 md10 offset-sm1> 
+                <v-layout row align right>
+                    <v-btn color="indigo" outline flat @click="goToQuickReservations">
+                        Quick Room Reservations
+                        <v-icon right>arrow_forward</v-icon> 
+                    </v-btn>
+                </v-layout>
+                
                 <form>
                     <v-text-field
                         v-model.lazy="selectedHotel.name"
@@ -288,8 +294,8 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
-import SpecialRoomPrices from "@/components/SpecialRoomPrices.vue"
-import EditRooms from "@/components/EditRooms.vue"
+import SpecialRoomPrices from "./SpecialRoomPrices.vue"
+import EditRooms from "./EditRooms.vue"
 
 var yourConfig = {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") }
@@ -353,7 +359,7 @@ export default {
                 { text: 'Has Balcony', value: 'hasBalcony', sortable: false },
                 { text: 'Square ft.', value: 'squareFootage', sortable: true },
                 { text: 'Average Feedback', value: 'avgFdbk'},
-                { text: '', value: 'name', sortable: false }
+                { text: '', value: 'actions', sortable: false }
             ],
             roomEditedIndex: -1,
             roomEditedItem: {},
@@ -457,19 +463,11 @@ export default {
         //=========================================================================================
         //====================ROOMS================================================================
         roomEditItem(item){
-            if(this.isReserved(item.type)){
-                this.$swal("Editing disabled", "Room type can not be edited while it has pending reservations", "info");
-                return;
-            }
             this.roomEditedIndex = this.selectedHotel.roomTypes.indexOf(item)
             this.roomEditedItem = Object.assign({}, item)
             this.roomDialog = true
         },
         roomDeleteItem(item){
-            if(this.isReserved(item.type)){
-                this.$swal("Deleting disabled", "Room type can not be deleted while it has pending reservations", "info");
-                return;
-            }
             const index = this.selectedHotel.roomTypes.indexOf(item)
             this.selectedHotel.roomTypes.splice(index, 1)
         },
@@ -509,6 +507,9 @@ export default {
             }
             return false;
         },
+        goToQuickReservations(){
+            this.$emit('goToQuickReservations')
+        }
     },
     created(){
         console.log(this.selectedHotel);

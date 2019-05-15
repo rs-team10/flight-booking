@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.QuickRoomReservation;
 import com.tim10.domain.Room;
 import com.tim10.dto.HotelDTO;
 import com.tim10.dto.HotelRoomsDTO;
+import com.tim10.dto.QuickRoomResDTO;
 import com.tim10.dto.RoomDTO;
 import com.tim10.service.HotelService;
 import com.tim10.service.UserService;
@@ -134,4 +136,32 @@ public class HotelController {
 		}
 		return new ResponseEntity<>(responseRooms, HttpStatus.OK);
 	}
+	
+	/*
+	 * Vracanje brzih rezervacija hotela
+	 */
+	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathVariable("hotelId") Long hotelId){
+		List<QuickRoomResDTO> responseList = new ArrayList<>();
+		Set<QuickRoomReservation> quickRoomReservations = hotelService.findOne(hotelId).get().getQuickRoomReservations();
+		
+		for(QuickRoomReservation res : quickRoomReservations) {
+			responseList.add(new QuickRoomResDTO(res));
+		}
+		return new ResponseEntity<>(responseList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> setQuickRoomReservations(@RequestBody Set<QuickRoomReservation> quickRoomReservations, @PathVariable("hotelId") Long hotelId){
+		Hotel hotel = hotelService.findOne(hotelId).get();
+		hotel.setQuickRoomReservations(quickRoomReservations);
+		hotelService.save(hotel);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
 }

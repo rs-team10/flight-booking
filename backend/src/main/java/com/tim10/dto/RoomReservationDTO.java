@@ -14,7 +14,11 @@ public class RoomReservationDTO {
 	private BigDecimal totalPrice;
 	private Set<PriceListItem> additionalServices;
 	private List<RoomDTO> listOfRooms;
+	
+	/*Mislim da je nepotrebno al ajde da ne brisem za sad, mozda zatreba*/
 	private HotelDTO hotelReservationDTO;
+	
+	
 	
 	public RoomReservationDTO() {
 		super();
@@ -30,6 +34,7 @@ public class RoomReservationDTO {
 		this.hotelReservationDTO = hotelReservationDTO;
 		this.additionalServices = additionalServices;
 	}
+	
 
 	public Date getDateFrom() {
 		return dateFrom;
@@ -78,8 +83,4 @@ public class RoomReservationDTO {
 	public void setAdditionalServices(Set<PriceListItem> additionalServices) {
 		this.additionalServices = additionalServices;
 	}
-
-	
-	
-	
 }

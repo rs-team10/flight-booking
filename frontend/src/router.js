@@ -3,8 +3,8 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import EditAirline from './components/EditAirline.vue'
 import Hotels from './views/Hotels.vue'
-import AddAirline from './components/AddAirline.vue'
-import AddRentACar from './components/AddRentACar.vue'
+import AddAirline from './components/SysAdmin/AddAirline.vue'
+import AddRentACar from './components/SysAdmin/AddRentACar.vue'
 import RentACars from './views/RentACars.vue'
 
 import RentACar from './components/rentACarComp/RentACar.vue'
@@ -19,7 +19,7 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import HotelReservation from './components/HotelReservation/HotelReservation.vue'
-
+import QuickRoomReservations from './components/HotelAdmin/QuickRoomReservations'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
