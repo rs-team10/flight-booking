@@ -7,7 +7,8 @@
                 :tile="true"
                 :size="80"
             >
-                <img src="https://www.airserbia.com/Data/Images/logo.png" alt="avatar">
+                <!-- TODO: CHANGE PLACEHOLDER IMAGE -->
+                <img src="https://www.airserbia.com/Data/Images/logo.png" alt="avatar">     
             </v-avatar>
             <h2 class="text-xs-center">{{ airline.name }}</h2>
             <span class="black--text text--lighten-2 caption mr-2">
@@ -61,17 +62,24 @@
 
 <script>
 
-var MOCK_ID = 1;                                // TODO: This is hardcoded. Change!
-
 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 export default {
     data() {
         return {
-            airline: {},
+            airline: {
+                name: '',
+                description: '',
+                location: {
+                    lat: 21.0,
+                    lng: 42.0,
+                    formattedAddress: '',
+                },
+                averageFeedback: 0
+            },
             currentMapCenter : {
-                lat: 0.0,
-                lng: 0.0
+                lat: 21.0,
+                lng: 42.0
             }
         }
     },
@@ -82,15 +90,14 @@ export default {
     },
     created() {
 
-        this.$axios.get('http://localhost:8080/api/airlines/getAirline', yourConfig).then((response) => {
-            this.airline = response.data;
-            this.currentMapCenter = {
-                lat: this.airline.location.latitude,
-                lng: this.airline.location.longitude
-            };
-        }).catch(function(error) {
-            this.$swal("Error", error.response.data.message, 'error');
-        });
+        this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
+            .then((response) => {
+                this.airline = response.data;
+                this.currentMapCenter.lat = this.airline.location.latitude;
+                this.currentMapCenter.lng = this.airline.location.longitude;
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
     }
 }
 </script>

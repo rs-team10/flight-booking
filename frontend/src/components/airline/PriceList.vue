@@ -62,7 +62,7 @@
                 three-line
                 class="scroll-y"
                 style="height: 200px">
-                <template v-for="priceListItem in this.priceList">
+                <template v-for="priceListItem in this.priceListItems">
                     <v-list-tile :key="priceListItem.id" class="ma-2">
                         <v-list-tile-content>
                             <v-list-tile-title class="font-weight-bold">{{ priceListItem.name }}</v-list-tile-title>
@@ -90,11 +90,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-}
-
-var MOCK_ID = 1;
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 export default {
 
@@ -111,7 +107,7 @@ export default {
     data() {
         return {
             showDialog: false,
-            priceList: [],
+            priceListItems: [],
             newPriceListItem: {}
         }
     },
@@ -145,18 +141,16 @@ export default {
         },
         save() {
             this.$v.newPriceListItem.$touch();
-
             if(!this.$v.newPriceListItem.$invalid) {
 
-                this.$axios.put('http://localhost:8080/api/airlines/addPriceListItem/', this.newPriceListItem, yourConfig).then((data) => {
-                    this.$swal('Success', 'Item added successfuly', 'success');
-                    this.priceList.push(this.newPriceListItem);
-                    this.close();
-                }).catch((error) => {
-                    //this.$swal("Error", error.response.data.message, 'error');
-                    //this.businessLocations.push(this.newBusinessLocation);
-                    //this.close();
-                });
+                this.$axios.put('http://localhost:8080/api/airlines/addPriceListItem/', this.newPriceListItem, yourConfig)
+                    .then((data) => {
+                        this.$swal('Success', 'Item added successfuly', 'success');
+                        this.priceListItems.push(this.newPriceListItem);
+                        this.close();
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });
             }
         },
         deletePriceListItem: function(priceListItem) {
@@ -174,31 +168,30 @@ export default {
             }).then((result) => {
 
                 if(result.value) { 
+                    const index = this.priceListItems.indexOf(priceListItem);
+                    this.priceListItems.splice(index, 1);
 
-                    const index = this.priceList.indexOf(priceListItem);
-                    this.priceList.splice(index, 1);
-
-                    this.$axios.put('http://localhost:8080/api/airlines/removePriceListItem/', priceListItem, yourConfig).then((data) => {
-                        this.$swal('Success', 'Item removed successfuly', 'success');
-                    }).catch((error) => {
-                        this.$swal("Error", error.response.data.message, 'error');
-                    });
+                    this.$axios.put('http://localhost:8080/api/airlines/removePriceListItem/', priceListItem, yourConfig)
+                        .then((data) => {
+                            this.$swal('Success', 'Item removed successfuly', 'success');
+                        }).catch((error) => {
+                            this.$swal("Error", error.response.data.message, 'error');
+                        });
                 }
             });
         },
         editPriceListItem(priceListItem) {
-            // TODO izmena
+            // TODO: Izmena izabranog item-a i cuvanje na serveru [OPCIONA FUNKCIONALNOST]
         }
     },
-
     created() {
-        this.$axios.get('http://localhost:8080/api/airlines/' + MOCK_ID, yourConfig).then((response) => {
-            //this.priceList = response.data.priceList.priceListItems;
+        this.$axios.get('http://localhost:8080/api/airlines/getPriceListItems', yourConfig)
+        .then((response) => {
+            this.priceListItems = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');
         });
     }
-    
 }
 
 </script>

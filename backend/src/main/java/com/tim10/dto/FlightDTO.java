@@ -2,18 +2,22 @@ package com.tim10.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
 
 public class FlightDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private Long id;
 	private String airline;
 	private String flightNumber;
 	private String departure;
 	private String destination;
-	private String[] transitDestinations;
+	private List<String> transitDestinations;
 	private String departureDate;
 	private String arrivalDate;
 	private BigDecimal ticketPrice;
@@ -29,9 +33,29 @@ public class FlightDTO implements Serializable {
 	}
 	
 	public FlightDTO(Flight flight) {
+		this.id = flight.getId();
 		this.airline = flight.getAirline().getName();
+		this.flightNumber = flight.getFlightNumber();
+		this.departure = flight.getDeparture().getName();
+		this.destination = flight.getDestination().getName();
+		
+		this.transitDestinations = new ArrayList<String>();
+		
+		for (Destination d : flight.getTransitDestinations()) {
+			this.transitDestinations.add(d.getName());
+		}
+		
+		this.ticketPrice = flight.getTicketPrice();
+		this.duration = flight.getDuration();
+		this.distance = flight.getDistance();
+		
+		// todo seats
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
 	public String getAirline() {
 		return airline;
 	}
@@ -48,7 +72,7 @@ public class FlightDTO implements Serializable {
 		return destination;
 	}
 
-	public String[] getTransitDestinations() {
+	public List<String> getTransitDestinations() {
 		return transitDestinations;
 	}
 
@@ -92,6 +116,10 @@ public class FlightDTO implements Serializable {
 		return ecoClassSeatsCount;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public void setAirline(String airline) {
 		this.airline = airline;
 	}
@@ -108,7 +136,7 @@ public class FlightDTO implements Serializable {
 		this.destination = destination;
 	}
 
-	public void setTransitDestinations(String[] transitDestinations) {
+	public void setTransitDestinations(List<String> transitDestinations) {
 		this.transitDestinations = transitDestinations;
 	}
 

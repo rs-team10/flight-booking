@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.PriceListItem;
+import com.tim10.dto.AirlineProfileDTO;
+import com.tim10.dto.DestinationDTO;
+import com.tim10.dto.PriceListItemDTO;
 import com.tim10.service.AirlineService;
 import com.tim10.service.UserService;
 
@@ -50,14 +54,6 @@ public class AirlineController {
 	}
 	
 	@RequestMapping(
-			value = "/airlines/getCurrentAirline",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<AirlineProfileDTO> getCurrentAirline() {
-		return airlineService.getCurrentAirline();
-	}
-	
-	@RequestMapping(
 			value="/airlines",
 			method=RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -75,20 +71,35 @@ public class AirlineController {
 		return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
+	
+	// ===========================================================================
+	
+	// ===========================================================================
+	
 	@RequestMapping(
-			value="/airlines",
+			value = "/airlines/getCurrentAdminAirline",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AirlineProfileDTO> getCurrentAdminAirline() {
+		return airlineService.getCurrentAdminAirline();
+	}
+	
+	@RequestMapping(
+			value="/airlines/updateAirline",
 			method=RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateAirline(@RequestBody Airline airline) {
-		
-		Airline existingAirline = airlineService.findOneByName(airline.getName());
-		if(existingAirline != null && existingAirline.getId() != airline.getId())
-			return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
-		if(airlineService.findOne(airline.getId()) != null)
-			return new ResponseEntity<>(airlineService.save(airline), HttpStatus.OK);
-		
-		return new ResponseEntity<>("Wanted airline does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
+	public ResponseEntity<?> updateAirline(@RequestBody Airline editedAirline, 
+			@RequestParam(value = "previousAirlineName", required = true) String previousAirlineName) {
+		return airlineService.updateAirline(editedAirline, previousAirlineName);
+	}
+	
+	@RequestMapping(
+			value = "/airlines/getBusinessLocations",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<DestinationDTO>> getBusinessLocations() {
+		return airlineService.getBusinessLocations();
 	}
 	
 	@RequestMapping(
@@ -97,43 +108,24 @@ public class AirlineController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> addBusinessLocation(@RequestBody Destination destination) {
-		
-		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
-		
-		Airline existingAirline = airlineService.findOne(1L).get();
-		
-		if(existingAirline != null) {
-			boolean success = airlineService.addBusinessLocation(existingAirline, destination);
-			if(success) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return airlineService.addBusinessLocation(destination);
 	}
-	
 	
 	@RequestMapping(
 			value="/airlines/removeBusinessLocation",
 			method=RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> removeBusinessLocation(@RequestBody Destination destination) {
-		
-		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
-		
-		Airline existingAirline = airlineService.findOne(1L).get();
-		
-		if(existingAirline != null) {
-			boolean success = airlineService.removeBusinessLocation(existingAirline, destination);
-			if(success) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	public ResponseEntity<?> removeBusinessLocation(@RequestBody DestinationDTO destinationDTO) {
+		return airlineService.removeBusinessLocation(destinationDTO);
+	}
+	
+	@RequestMapping(
+			value = "/airlines/getPriceListItems",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<PriceListItemDTO>> getPriceListItems() {
+		return airlineService.getPriceListItems();
 	}
 	
 	@RequestMapping(
@@ -142,20 +134,7 @@ public class AirlineController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> addPriceListItem(@RequestBody PriceListItem item) {
-		
-		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
-		
-		Airline existingAirline = airlineService.findOne(1L).get();
-		
-		if(existingAirline != null) {
-			boolean success = airlineService.addPriceListItem(existingAirline, item);
-			if(success) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return airlineService.addPriceListItem(item);
 	}
 	
 	@RequestMapping(
@@ -163,20 +142,7 @@ public class AirlineController {
 			method=RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> removePriceListItem(@RequestBody PriceListItem item) {
-		
-		// TODO: Proveriti da li je trenutni korisnik AirlineAdmin i na osnovu toga raditi dalje
-		
-		Airline existingAirline = airlineService.findOne(1L).get();
-		
-		if(existingAirline != null) {
-			boolean success = airlineService.removePriceListItem(existingAirline, item);
-			if(success) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	public ResponseEntity<?> removePriceListItem(@RequestBody PriceListItemDTO itemDTO) {
+		return airlineService.removePriceListItem(itemDTO);
 	}
 }

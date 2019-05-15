@@ -11,7 +11,6 @@
                         <v-btn v-on="on">New Business Location</v-btn>
                     </template>
 
-
                     <v-card>
                         <v-card-title>
                             <span class="headline">Add Business Location</span>
@@ -72,7 +71,7 @@
                 class="scroll-y" 
                 style="height: 300px">
                 <template v-for="businessLocation in this.businessLocations">
-                    <v-list-tile :key="businessLocation.id" class="ma-2">
+                    <v-list-tile :key="businessLocation.airportCode" class="ma-2">
                         <v-list-tile-content>
                             <v-list-tile-title class="font-weight-bold">{{ businessLocation.name }}</v-list-tile-title>
                             <v-list-tile-sub-title class="font-weight-bold">{{ "Code: " + businessLocation.airportCode }}</v-list-tile-sub-title>
@@ -101,11 +100,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-}
-
-var MOCK_ID = 1;
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 export default {
     mixins: [validationMixin],
@@ -124,7 +119,6 @@ export default {
             businessLocations: [],
             newBusinessLocation: {
                 location: {
-
                 }
             }
         }
@@ -155,12 +149,8 @@ export default {
 
     methods: {
         getLocationData: function (place) {
-            
-            if(place) {
-                
+            if(place)
                 this.newBusinessLocation.location = this.extractLocationData(place);
-
-            }
         },
         extractLocationData(place) {
             var locationToReturn = {};
@@ -171,12 +161,10 @@ export default {
             locationToReturn.formattedAddress = place.formatted_address;
 
             place.address_components.forEach(element => {
-                
                 if(element.types.includes('country'))
                     locationToReturn.country = element.long_name;
                 else if(element.types.includes('locality'))
                     locationToReturn.city = element.long_name;
-                
             });
 
             return locationToReturn;
@@ -191,29 +179,20 @@ export default {
             }
         },
         save() {
-
             this.$v.newBusinessLocation.$touch();
             if(!this.$v.newBusinessLocation.$invalid) {
 
                 if(!this.newBusinessLocation.location.latitude) {
                     this.$swal("Error", "Location is required.", 'warning');
                 } else {
-
-                    var yourConfig = {
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        }
-                    };
-
-                    this.$axios.put('http://localhost:8080/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig).then((data) => {
-                        this.$swal('Success', 'Business location added successfuly', 'success');
-                        this.businessLocations.push(this.newBusinessLocation);
-                        this.close();
-                    }).catch((error) => {
-                        this.$swal("Error", error.response.data.message, 'error');
-                        //this.businessLocations.push(this.newBusinessLocation);
-                        //this.close();
-                    });
+                    this.$axios.put('http://localhost:8080/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig)
+                        .then((data) => {
+                            this.$swal('Success', 'Business location added successfuly', 'success');
+                            this.businessLocations.push(this.newBusinessLocation);
+                            this.close();
+                        }).catch((error) => {
+                            this.$swal("Error", error.response.data.message, 'error');
+                        });
                 }
             }
         },
@@ -232,46 +211,31 @@ export default {
             }).then((result) => {
 
                 if(result.value) { 
-
                     const index = this.businessLocations.indexOf(businessLocation);
                     this.businessLocations.splice(index, 1);
 
-                    var yourConfig = {
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem("token")
-                        }
-                    };
-
-                    this.$axios.put('http://localhost:8080/api/airlines/removeBusinessLocation/', businessLocation, yourConfig).then((data) => {
-                        this.$swal('Success', 'Business location removed successfuly', 'success');
-                    }).catch((error) => {
-                        this.$swal("Error", error.response.data.message, 'error');
-                    });
+                    this.$axios.put('http://localhost:8080/api/airlines/removeBusinessLocation/', businessLocation, yourConfig)
+                        .then((data) => {
+                            this.$swal('Success', 'Business location removed successfuly', 'success');
+                        }).catch((error) => {
+                            this.$swal("Error", error.response.data.message, 'error');
+                        });
                 }
             });
         },
         editBusinessLocation(businessLocation) {
-
-            // TODO izmena izabrane business location i cuvanje na serveru
+            // TODO: Izmena izabrane business location i cuvanje na serveru [OPCIONA FUNKCIONALNOST]
         }
 
     },
-    
     created() {
-
-        var yourConfig = {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        };
-
-        this.$axios.get('http://localhost:8080/api/airlines/' + MOCK_ID, yourConfig).then((response) => {
-            this.businessLocations = response.data.businessLocations;
-        }).catch((error) => {
-            this.$swal("Error", error.response.data.message, 'error');
-        });
+        this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)
+            .then((response) => {
+                this.businessLocations = response.data;
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
     }
-    
 }
 </script>
 

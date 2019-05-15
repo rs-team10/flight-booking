@@ -4,7 +4,8 @@
             <v-toolbar>
                 <v-toolbar-title>Flights</v-toolbar-title>
                 <v-spacer></v-spacer>
-
+                <!-- DIJALOG ZA UNOS LETA -->
+                <!-- BEGIN -->
                 <v-dialog v-model="showFlightDialog" max-width="500px">
                     
                     <template v-slot:activator="{on}">
@@ -38,7 +39,7 @@
 
                                     <v-flex>
                                         <v-autocomplete
-                                            v-model="newFlight.departure"
+                                            v-model="departure"
                                             :items="businessLocations"
                                             label="From"
                                             return-object
@@ -51,7 +52,7 @@
 
                                     <v-flex>
                                         <v-autocomplete
-                                            v-model="newFlight.destination"
+                                            v-model="destination"
                                             :items="businessLocations"
                                             label="To"
                                             return-object
@@ -214,9 +215,9 @@
                                             type="number"
                                             required
                                             :error-messages="ticketPriceErrors"
-                                            v-model="newFlight.ticketPrice"
-                                            @input="$v.newFlight.ticketPrice.$touch()"
-                                            @blur="$v.newFlight.ticketPrice.$touch()">
+                                            v-model="ticketPrice"
+                                            @input="$v.ticketPrice.$touch()"
+                                            @blur="$v.ticketPrice.$touch()">
                                         </v-text-field>
                                     </v-flex>
 
@@ -321,7 +322,22 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <!-- DIJALOG ZA UNOS LETA -->
+                <!-- END -->
             </v-toolbar>
+
+
+
+
+            <edit-seats 
+                :showDialog="showEditSeatsLayoutDialog"
+                :receivedSeats="seats"
+                :flight="idToEditSeats"
+            />
+
+
+
+
 
             <v-data-table
                 :headers="headers"
@@ -331,15 +347,19 @@
 
                 <template v-slot:items="props">
                     <td>{{ props.item.flightNumber }}</td>
-                    <td>{{ props.item.departure.name }}</td>
-                    <td>{{ props.item.destination.name }}</td>
+                    <td>{{ props.item.departure }}</td>
+                    <td>{{ props.item.destination }}</td>
                     <td>{{ props.item.transitDestinations.length }}</td>
                     <td>{{ props.item.departureDate }}</td>
                     <td>{{ props.item.arrivalDate }}</td>
+                    <td>{{ props.item.ticketPrice }}</td>
                     <td>{{ props.item.distance }}</td>
                     <td>{{ props.item.duration }}</td>
 
                     <td class="justify-center layout px-0">
+                        <v-icon small class="mr-2" @click="editSeatsLayout(props.item)">
+                            airline_seat_legroom_normal
+                        </v-icon> 
                         <v-icon small class="mr-2" @click="editFlight(props.item)">
                             edit
                         </v-icon>
@@ -359,27 +379,27 @@
 </template>
 
 <script>
-
 import { validationMixin } from 'vuelidate'
 import { required, numeric, between } from 'vuelidate/lib/validators'
+
+import EditSeatsLayout from "@/components/airline/EditSeatsLayout.vue"
+
+const haversine = require('haversine');
+
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
 const flightNumberFormat = (value, vm) => {
     var regex = /^[A-Z]{2}\d{3,4}$/g;
     return regex.test(value);
 }
 
-const haversine = require('haversine');
-
-const MOCK_ID = 1;
-
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-};
-
 export default {
 
     name: "flights",
     mixins: [validationMixin],
-
+    components: {
+        'edit-seats': EditSeatsLayout,
+    },
     data() {
         return {
             headers : [
@@ -389,44 +409,52 @@ export default {
                 { text: 'Transit count', align: 'left', sortable: true, value: 'transitCount'},
                 { text: 'Departure Date & Time', align: 'left', sortable: true, value: 'departureDateTime'},
                 { text: 'Arrival Date & Time', align: 'left', sortable: true, value: 'arrivalDateTime'},
+                { text: 'Ticket Price', align: 'left', sortable: true, value: 'ticketPrice'},
                 { text: 'Distance (km)', align: 'left', sortable: true, value: 'distance'},
                 { text: 'Duration (min)', align: 'left', sortable: true, value: 'duration'},
             ],
             flightsPagination: {},
+            flightForSeats: undefined,
 
-            showFlightDialog: false,
             flights: [],
             businessLocations: [],
 
-            newFlight: {},
+            // show/hide dialog
+            showFlightDialog: false,
+            showEditSeatsLayoutDialog: false,
+            seats: [],
+            idToEditSeats: undefined,
 
-            transitDestinations: [],
-            
+            // flight data
             flightNumber: null,
+            departure: null,
+            destination: null,
+            transitDestinations: [],
+            ticketPrice: null,
 
+            // departure dialog
             showDepartureDateDialog: false,
             departureDate: null,
             showDepartureTimeMenu: false,
             departureTime: null,
 
+            // arrival dialog
             showArrivalDateDialog: false,
             arrivalDate: null,
             showArrivalTimeMenu: false,
             arrivalTime: null,
 
+            // seats
             rowsCount: 0,
             columnsCount: 0,
             firstClassSeatsCount: 0,
             businessClassSeatsCount: 0,
             ecoClassSeatsCount: 0
-
         }
     },
     validations: {
-        newFlight: {
-            ticketPrice: { required, numeric, between: between(5, 99999) }
-        },
         flightNumber: { required, flightNumberFormat },
+        ticketPrice: { required, numeric, between: between(5, 99999) },
         rowsCount: { required, numeric, between: between(1, 40) },
         columnsCount: { required, numeric, between: between(2, 10) },
         firstClassSeatsCount: { required, numeric, between: between(0, 400) },
@@ -445,10 +473,10 @@ export default {
         },
         ticketPriceErrors () {
             const errors = []
-            if (!this.$v.newFlight.ticketPrice.$dirty) return errors
-            !this.$v.newFlight.ticketPrice.numeric && errors.push('Ticket price value invalid.')
-            !this.$v.newFlight.ticketPrice.required && errors.push('Ticket price is required.')
-            !this.$v.newFlight.ticketPrice.between && errors.push('Ticket price value out of specified range.')
+            if (!this.$v.ticketPrice.$dirty) return errors
+            !this.$v.ticketPrice.numeric && errors.push('Ticket price value invalid.')
+            !this.$v.ticketPrice.required && errors.push('Ticket price is required.')
+            !this.$v.ticketPrice.between && errors.push('Ticket price value out of specified range.')
             return errors
         },
         rowsCountErrors () {
@@ -492,21 +520,17 @@ export default {
             return errors
         },
 
-
-        // ============================================
+        // ================ properties ================
 
         flightsPages() {
 
         },
         computedBusinessLocations: function() {
-
             var result = this.businessLocations;
-
-            if(this.newFlight.departure)
-                result = result.filter(element => element.id != this.newFlight.departure.id);
-            
-            if(this.newFlight.destination)
-                result = result.filter(element => element.id != this.newFlight.destination.id);
+            if(this.departure)
+                result = result.filter(element => element.airportCode != this.departure.airportCode);
+            if(this.destination)
+                result = result.filter(element => element.airportCode != this.destination.airportCode);
 
             return result;
         },
@@ -522,16 +546,16 @@ export default {
         },
         distance: function() {
             
-            if(this.newFlight.departure && this.newFlight.destination) {
+            if(this.departure && this.destination) {
 
                 var departureLatLng = {
-                    latitude: this.newFlight.departure.location.latitude,
-                    longitude: this.newFlight.departure.location.longitude
+                    latitude: this.departure.location.latitude,
+                    longitude: this.departure.location.longitude
                 };
 
                 var destinationLatLng = {
-                    latitude: this.newFlight.destination.location.latitude,
-                    longitude: this.newFlight.destination.location.longitude
+                    latitude: this.destination.location.latitude,
+                    longitude: this.destination.location.longitude
                 };
 
                 if(this.transitDestinations.length == 0) {
@@ -593,8 +617,11 @@ export default {
             this.$v.$reset();
             this.showFlightDialog = false;
 
-            this.newFlight = {},
+            this.flightNumber = null,
+            this.departure = null,
+            this.destination = null,
             this.transitDestinations = [],
+            this.ticketPrice = null,
 
             this.showDepartureDateDialog = false,
             this.departureDate = null,
@@ -613,45 +640,43 @@ export default {
             this.ecoClassSeatsCount = 0
         },
         save() {
-
             this.$v.$touch();
-
             if(!this.$v.$invalid) {
 
-                // ===== Provera FROM, TO i VIA
+                // ========================================================== Provera FROM, TO i VIA
 
-                var idArray = [];
+                var codeArray = [];
 
-                if(this.newFlight.departure) {
-                    idArray.push(this.newFlight.departure.id);
+                if(this.departure) {
+                    codeArray.push(this.departure.airportCode);
                 } else {
                     this.$swal("Error", "Invalid departure", 'warning');
                     return;
                 }
 
-                if(this.newFlight.destination) {
-                    idArray.push(this.newFlight.destination.id);
+                if(this.destination) {
+                    codeArray.push(this.destination.airportCode);
                 } else {
                     this.$swal("Error", "Invalid destination", 'warning');
                     return;
                 }
 
                 for (var i = 0; i <= this.transitDestinations.length - 1; i++)
-                    idArray.push(this.transitDestinations[i].id);
+                    codeArray.push(this.transitDestinations[i].airportCode);
 
-                if(idArray.length !== new Set(idArray).size) {
+                if(codeArray.length !== new Set(codeArray).size) {
                     this.$swal("Error", "Invalid transit data", 'warning');
                     return;
                 }
 
-                // ===== Provera polaznog i krajnjeg datuma i vremena
+                // ========================================================== Provera polaznog i krajnjeg datuma i vremena
 
                 if(this.duration <= 0) {
                     this.$swal("Error", "Invalid dates and times", 'warning');
                     return;
                 }
 
-                // ===== Provera broja sedista
+                // ========================================================== Provera broja sedista
                 if(this.totalSeatsCount > this.actualSeatsCount) {
                     this.$swal("Error", "Invalid number of seats: not all seats have a class", 'warning');
                     return;
@@ -662,16 +687,14 @@ export default {
                     return;
                 }
 
-                // TODO : POST NA SERVER
-
                 var newFlightToSend = {
                     flightNumber : this.flightNumber,
-                    departure : this.newFlight.departure.name,
-                    destination : this.newFlight.destination.name,
+                    departure : this.departure.name,
+                    destination : this.destination.name,
                     transitDestinations : [],
+                    ticketPrice : this.ticketPrice,
                     departureDate : this.departureDate + ' ' + this.departureTime,
                     arrivalDate : this.arrivalDate + ' ' + this.arrivalTime,
-                    ticketPrice : this.newFlight.ticketPrice,
                     duration : this.duration,
                     distance : this.distance,
                     rowsCount : this.rowsCount,
@@ -685,42 +708,53 @@ export default {
                     newFlightToSend.transitDestinations.push(this.transitDestinations[i].name);
                 }
 
-                this.$axios.post('http://localhost:8080/api/addFlight/', newFlightToSend, yourConfig).then((response) => {
-                    this.$swal('Successfull', 'New flight created successfully.', 'success');
-                    this.newFlight.flightNumber = this.flightNumber;
-                    this.newFlight.transitDestinations = this.transitDestinations;
-                    this.newFlight.distance = this.distance;
-                    this.newFlight.duration = this.duration;
-                    this.newFlight.departureDate = this.departureDate + ' ' + this.departureTime;
-                    this.newFlight.arrivalDate = this.arrivalDate + ' ' + this.arrivalTime;
-
-                    this.flights.push(this.newFlight);
-
-                    this.close();
-                }).catch((error) => {
-                    this.$swal("Error", error.response.data.message, 'error');
-                });
-
+                this.$axios.post('http://localhost:8080/api/flights/addFlight/', newFlightToSend, yourConfig)
+                    .then((response) => {
+                        this.$swal('Successfull', 'New flight created successfully.', 'success');
+                        this.flights.push(newFlightToSend);
+                        this.close();
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });
             }
         },
         editFlight(flight) {
-            // TODO : PUT
+           // TODO: Izmena izabranog leta i cuvanje na serveru [OPCIONA FUNKCIONALNOST]
+        
         },
         deleteFlight(flight) {
-            // TODO : DELETE
-
-            
+            // TODO : Logicko brisanje leta (deaktivacija)
         },
+        editSeatsLayout(flight) {
 
+            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
+                .then((response) => {
+                    this.seats = response.data;
+                    this.idToEditSeats = flight.id;
+                    this.showEditSeatsLayoutDialog = true;
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
+                });
+        }
     },
     created() {
 
-        this.$axios.get('http://localhost:8080/api/airlines/' + MOCK_ID, yourConfig).then((response) => {
-            this.businessLocations = response.data.businessLocations;
-        }).catch((error) => {
-            this.$swal("Error", error.response.data.message, 'error');
-        });
+        this.$axios.get('http://localhost:8080/api/flights/getFlights', yourConfig)
+            .then((response) => {
+
+                this.flights = response.data;
+
+                // TODO: PREMESTITI OVO KAD SE OTVORI DIJALOG
+                this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)
+                    .then((response) => {
+                        this.businessLocations = response.data;
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });
+
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
     }
-    
 }
 </script>

@@ -34,6 +34,9 @@ public class Seat {
 	
 	@Column(name="isReserved")
 	private Boolean isReserved;
+	
+	@Column(name="isActive")
+	private Boolean isActive;
 
 	public Seat() {
 		super();
@@ -45,6 +48,7 @@ public class Seat {
 		this.kolona = kolona;
 		this.segmentClass = segmentClass;
 		this.isReserved = false;
+		this.isActive = true;
 	}
 
 	public Long getId() {
@@ -66,9 +70,13 @@ public class Seat {
 	public Flight getFlight() {
 		return flight;
 	}
-	
+
 	public Boolean getIsReserved() {
 		return isReserved;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
 	}
 
 	public void setId(Long id) {
@@ -94,5 +102,8 @@ public class Seat {
 	public void setIsReserved(Boolean isReserved) {
 		this.isReserved = isReserved;
 	}
-	
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 }

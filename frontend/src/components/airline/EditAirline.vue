@@ -22,28 +22,9 @@
                 @input="$v.airline.description.$touch()"
                 @blur="$v.airline.description.$touch()"
             ></v-textarea>
-            <!--
-            <v-text-field
-                v-model="airline.address"
-                :error-messages="addressErrors"
-                label="Headquarters"
-                required
-                @input="$v.airline.address.$touch()"
-                @blur="$v.airline.address.$touch()"
-            ></v-text-field>
-            
-            <vuetify-google-autocomplete
-                id="location"
-                classname="form-control"
-                label="Headquarters Location"
-                v-on:placechanged="getLocationData"
-                required
-            >
-            </vuetify-google-autocomplete>
-           -->
 
             <v-text-field
-                v-model="formattedAddress"
+                v-model="currentAddress"
                 label="Current headquarters address"
                 disabled
             ></v-text-field>
@@ -88,24 +69,24 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength } from 'vuelidate/lib/validators'
 
-var MOCK_ID = 1;                                // TODO: This is hardcoded. Change!
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 export default {
     mixins: [validationMixin],
 
     data () {
         return {
-            airline: {
-                id: MOCK_ID,                            
+            airline: {                        
                 name: '',
                 description: '',
-                location: {}
+                location: {
+                }
             },
             currentMapCenter : {
-                lat: 0.0,
-                lng: 0.0
+                lat: 21.0,
+                lng: 42.0
             },
-            formattedAddress : ""
+            currentAddress : ''
         }
     },
 
@@ -142,32 +123,27 @@ export default {
 
     methods: {
         editAirline: function() {
+            
             this.$v.$touch()
-
             if(!this.$v.$invalid) {
-
-                var yourConfig = {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token")
-                    }
-                };
-
-                this.$axios.put('http://localhost:8080/api/airlines/', this.airline, yourConfig).then((data) => {
-                    this.$swal.fire({
-                        title: 'Success', 
-                        html: 'Airline profile edited successfuly',
-                        type: 'success',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then((result) => {
-                        if (result.dismiss === this.$swal.DismissReason.timer) {
-                            this.$router.go(-1);
-                        }
+                yourConfig.params = { previousAirlineName: this.previousAirlineName };
+                this.$axios.put('http://localhost:8080/api/airlines/updateAirline', this.airline, yourConfig)
+                    .then((response) => {
+                        this.$swal.fire({
+                            title: 'Success', 
+                            html: 'Airline profile edited successfuly',
+                            type: 'success',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.dismiss === this.$swal.DismissReason.timer) {
+                                this.$router.go(-1);
+                            }
+                        });
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
                     });
-                
-                }).catch((error) => {
-                    this.$swal("Error", error.response.data.message, 'error');
-                });
             }
         },
         getLocationData: function (place) {
@@ -175,7 +151,6 @@ export default {
             if(place) {
 
                 this.airline.location = this.extractLocationData(place);
-
                 this.currentMapCenter = {
                     lat: this.airline.location.latitude,
                     lng: this.airline.location.longitude
@@ -185,43 +160,32 @@ export default {
         extractLocationData(place) {
             var locationToReturn = {};
 
-            locationToReturn.id = this.airline.location.id;
             locationToReturn.latitude = place.geometry.location.lat();
             locationToReturn.longitude = place.geometry.location.lng();
             locationToReturn.street = place.name;
             locationToReturn.formattedAddress = place.formatted_address;
 
             place.address_components.forEach(element => {
-                
                 if(element.types.includes('country'))
                     locationToReturn.country = element.long_name;
                 else if(element.types.includes('locality'))
                     locationToReturn.city = element.long_name;
-                
             });
 
             return locationToReturn;
         }
     },
-
     created() {
-
-        var yourConfig = {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        };
-
-        this.$axios.get('http://localhost:8080/api/airlines/' + this.airline.id, yourConfig).then((response) => {
-            this.airline = response.data;
-            this.currentMapCenter = {
-                lat: this.airline.location.latitude,
-                lng: this.airline.location.longitude
-            };
-            this.formattedAddress = this.airline.location.formattedAddress;
-        }).catch((error) => {
-            this.$swal("Error", error.response.data.message, 'error');
-        });
+        this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
+            .then((response) => {
+                this.airline = response.data;
+                this.currentMapCenter.lat = this.airline.location.latitude;
+                this.currentMapCenter.lng = this.airline.location.longitude;
+                this.currentAddress = this.airline.location.formattedAddress;
+                this.previousAirlineName = this.airline.name;
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
     }
 }
 </script>
