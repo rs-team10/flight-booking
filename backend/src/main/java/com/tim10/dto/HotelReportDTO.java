@@ -13,12 +13,14 @@ import com.tim10.domain.RoomType;
 public class HotelReportDTO {
 	
 	//Prosecna ocena hotela
-	public Double averageFeedback;
-	public Integer numberOfFeedbacks;
+	private Double averageFeedback;
+	private Integer numberOfFeedbacks;
 	
 	//Prosecna ocena soba
-	public Set<RoomType> roomTypes;
+	private  Set<RoomType> roomTypes;
 	
+	//daily report
+	private Map<Date, Integer> dailyReports = new HashMap<Date, Integer>();
 	
 	public HotelReportDTO() {
 		super();
@@ -36,7 +38,39 @@ public class HotelReportDTO {
 			}
 		} 
 		this.roomTypes = hotel.getRoomTypes();
-		
 	}
+
+	public Double getAverageFeedback() {
+		return averageFeedback;
+	}
+
+	public Integer getNumberOfFeedbacks() {
+		return numberOfFeedbacks;
+	}
+
+	public Set<RoomType> getRoomTypes() {
+		return roomTypes;
+	}
+
+	public Map<Date, Integer> getDailyReports() {
+		return dailyReports;
+	}
+
+	public void setAverageFeedback(Double averageFeedback) {
+		this.averageFeedback = averageFeedback;
+	}
+
+	public void setNumberOfFeedbacks(Integer numberOfFeedbacks) {
+		this.numberOfFeedbacks = numberOfFeedbacks;
+	}
+
+	public void setRoomTypes(Set<RoomType> roomTypes) {
+		this.roomTypes = roomTypes;
+	}
+
+	public void setDailyReports(Map<Date, Integer> dailyReports) {
+		this.dailyReports = dailyReports;
+	}
+	
 	
 }

@@ -12,8 +12,8 @@
                         <v-card flat>
                         <v-container fluid>
                             <v-layout row wrap justify-center>
-                            <v-flex xs10>
-                                <v-card>
+                            <v-flex xs8>
+                                <v-card color="grey lighten-4">
                                 <v-layout>
                                     <v-flex xs3 md3>
                                     <v-img
@@ -21,54 +21,56 @@
                                         height="100%"
                                         max-height="216px"
                                         max-width="372px"
+                                        class="elevation-4"
                                     ></v-img>
                                     </v-flex>
-                                    <v-flex xs4 md4 >
-                                        <v-card-text>
+                                    <v-flex xs5 md5 >
+                                        <v-card-text class="indigo--text font-weight-light subheading">
                                             <v-flex id="description">
                                                 {{ room.description }} <!--650 karaktera opis da ima max -->
                                             </v-flex>
                                         </v-card-text>
                                     </v-flex>
-                                    <v-divider light vertical></v-divider>      
-                                    <v-flex xs5 md5>
+                                    <v-flex xs4 md4>
                                         <v-layout row >
                                             <v-flex xs5>
-                                            <v-layout column align left>
-                                                Ovde ce biti sta sve ima u sobi, TV, kupatilo, zabranjeno pusenje,
-                                                kapacitet, cena po nocenju, single, double beds...sta god
+                                            <v-layout column align left class="mt-1 ml-2 indigo--text font-weight-regular subheading">
+                                                <div class="my-2"><v-icon color="indigo">person</v-icon> {{room.capacity}}</div>
+                                                <v-divider></v-divider>
+                                                <div class="my-2">Single beds: {{room.singleBedCount}}</div>
+                                                <v-divider></v-divider>
+                                                <div class="my-2">Double beds: {{room.doubleBedCount}}</div>
+                                                <v-divider></v-divider>
+                                                <div class="my-2">Balcony: 
+                                                    <v-icon v-if="room.hasBalcony" color="indigo">done</v-icon>
+                                                    <v-icon v-else color="indigo">clear</v-icon>
+                                                </div>
+                                                <v-divider></v-divider>
+                                                <div class="my-2"><v-icon color="indigo" v-if="room.hasTV">tv</v-icon></div>
                                             </v-layout>
                                             </v-flex>
 
                                             <v-layout column align right>
-                                                <v-card height="216px" color="indigo lighten-2" class="white--text">
+                                                <v-card height="216px" color="indigo lighten-3" class="white--text">
                                                     <v-card-title primary-title>
                                                         <div>
-                                                            <div class="headline">Price for {{ days }} nights: <br> {{ totalPrice(room.pricePerNight) }}</div>
+                                                            <div class="text-xs-center headline font-weight-light">Price for {{ days }} nights:</div> 
+                                                            <div class="mt-1 text-xs-center display-1">{{ totalPrice(room.pricePerNight) }}€</div>
                                                         </div>
                                                     </v-card-title>
                                                     <v-card-actions>
                                                         <v-layout row align right class="mt-3">
 
-                                                            <v-autocomplete
+                                                            <v-select
                                                                 v-model.lazy="room.numberOfRooms"
-                                                                :items="Array.from(rooms.filter(x => x.roomType.type == room.type), (x, index) => index+1 )"                                                                label="Number of rooms"
+                                                                :items="Array.from(rooms.filter(x => x.roomType.type == room.type), (x, index) => index+1)"                                                                
+                                                                label="Number of rooms"
                                                                 flat
                                                                 solo
                                                                 hide-details
-                                                                background-color="indigo lighten-3"
+                                                                background-color="indigo lighten-4"
                                                             >
-                                                            </v-autocomplete>   
-                                                            
-                                                            <!-- <v-overflow-btn
-                                                                v-model.lazy="room.numberOfRooms"
-                                                                :items="Array.from(rooms.filter(x => x.roomType.type == room.type), (x, index) => index+1 )"   
-                                                                editable
-                                                                flat
-                                                                solo
-                                                                hide-details
-                                                                background-color="indigo lighten-3"
-                                                            ></v-overflow-btn> -->
+                                                            </v-select>   
                                                         </v-layout>
                                                     </v-card-actions>
                                                     </v-card>    
@@ -76,9 +78,8 @@
                                         </v-layout>
                                     </v-flex>                           
                                 </v-layout>
-                                <v-divider light></v-divider>
                                     <v-card-actions class="pa-3">
-                                        <span class="headline">{{ room.type }}</span>
+                                        <span class="headline indigo--text">{{ room.type }}</span>
                                         <v-spacer></v-spacer>
                                         <v-rating
                                             :value="averageFeedback"

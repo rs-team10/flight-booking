@@ -5,7 +5,8 @@
             :hotelId="hotelId"
             :checkInDate="checkInDate"
             :checkOutDate="checkOutDate"
-            @goToQuickReservations="changeComp($event)">
+            @goToQuickReservations="changeComp($event)"
+            @goBackToRegularReservation="component = 'hotelReservation'">
         </component>
     </div>
 </template>

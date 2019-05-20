@@ -43,39 +43,39 @@
             </v-flex>
 
             <v-flex xs6 sm6 md6>
-                    <v-card>
-                        <v-toolbar>
-                            <v-toolbar-title class="text-uppercase grey--text">
-                                <span class="font-weight-light">Flight</span>
-                                <span>Booking</span>
-                            </v-toolbar-title>
-                                <v-spacer></v-spacer>   
-                                <span class="title text-uppercase grey--text font-weight-light">Reservation</span>
-                        </v-toolbar>
-                        <v-card-text>
-                            <v-layout column>
-                                <v-layout row class="title font-weight-light indigo--text">
-                                    <span>Room price:</span>
-                                    <v-spacer></v-spacer>
-                                    <span>{{ reservation.totalPrice }}€</span>
-                                </v-layout><br>
+                <v-card>
+                    <v-toolbar>
+                        <v-toolbar-title class="text-uppercase grey--text">
+                            <span class="font-weight-light">Flight</span>
+                            <span>Booking</span>
+                        </v-toolbar-title>
+                            <v-spacer></v-spacer>   
+                            <span class="title text-uppercase grey--text font-weight-light">Reservation</span>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-layout column>
+                            <v-layout row class="title font-weight-light indigo--text">
+                                <span>Room price:</span>
+                                <v-spacer></v-spacer>
+                                <span>{{ reservation.totalPrice }}€</span>
+                            </v-layout><br>
 
-                                <v-layout row class="title font-weight-light indigo--text">
-                                    <span>Additional services:</span>
-                                    <v-spacer></v-spacer>
-                                    <span>{{ additionalServicesPrice }}€</span>
-                                </v-layout><br>
+                            <v-layout row class="title font-weight-light indigo--text">
+                                <span>Additional services:</span>
+                                <v-spacer></v-spacer>
+                                <span>{{ additionalServicesPrice }}€</span>
+                            </v-layout><br>
 
-                                <v-divider light></v-divider><br>
+                            <v-divider light></v-divider><br>
 
-                                <v-layout row class="headline font-weight-medium indigo--text text-uppercase">
-                                    <span>Total</span>
-                                    <v-spacer></v-spacer>
-                                    <span>{{ totalPrice }}€</span>
-                                </v-layout>
+                            <v-layout row class="headline font-weight-medium indigo--text text-uppercase">
+                                <span>Total</span>
+                                <v-spacer></v-spacer>
+                                <span>{{ totalPrice }}€</span>
                             </v-layout>
-                        </v-card-text>
-                    </v-card>
+                        </v-layout>
+                    </v-card-text>
+                </v-card>
                 <v-layout row align right>
                     <v-btn flat>Cancel</v-btn>
                     <v-btn outline color="success" flat @click="reserveRooms">

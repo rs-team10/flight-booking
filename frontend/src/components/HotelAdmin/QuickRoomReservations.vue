@@ -258,7 +258,7 @@ export default {
             if(!this.validateData()){
                 return;
             }
-            //POTREBNO DODATI PROVERU DA LI BRZA REZERVACIJA VEC POSTOJI ZA SOBU
+            //TODO: POTREBNO DODATI PROVERU DA LI BRZA REZERVACIJA VEC POSTOJI ZA SOBU
             var quickRoomReservation =  {    
                                         dateFrom : this.dateFrom,
                                         dateTo : this.dateTo,

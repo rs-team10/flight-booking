@@ -79,6 +79,7 @@ public class HotelController {
 		Optional<Hotel> h = hotelService.findOne(hotel.getId());
 		if(h.isPresent()){
 			hotel.setAdministrators(h.get().getAdministrators());
+			hotel.setQuickRoomReservations(h.get().getQuickRoomReservations());
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -177,7 +178,7 @@ public class HotelController {
 	 * Dobavljanje svih izvestaja za hotel sa prosledjenim id-jem
 	 */
 	@RequestMapping(value="/getReport/{hotelId}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<HotelReportDTO> getReport(@PathVariable("hotelId") Long hotelId){
+	public ResponseEntity<HotelReportDTO> getReport(@PathVariable("hotelId") Long hotelId) throws ParseException{
 		return new ResponseEntity<>(hotelService.getReports(hotelId), HttpStatus.OK);
 	}
 	

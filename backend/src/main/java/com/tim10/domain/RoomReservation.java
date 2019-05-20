@@ -49,7 +49,8 @@ public class RoomReservation implements Serializable{
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
-	//private Reservation reservation;
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private Reservation reservation;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
@@ -98,9 +99,9 @@ public class RoomReservation implements Serializable{
 		return additionalServices;
 	}
 
-//	public Reservation getReservation() {
-//		return reservation;
-//	}
+	public Reservation getReservation() {
+		return reservation;
+	}
 
 	public Review getReview() {
 		return review;
@@ -130,9 +131,9 @@ public class RoomReservation implements Serializable{
 		this.additionalServices = additionalServices;
 	}
 
-//	public void setReservation(Reservation reservation) {
-//		this.reservation = reservation;
-//	}
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
 
 	public void setReview(Review review) {
 		this.review = review;
