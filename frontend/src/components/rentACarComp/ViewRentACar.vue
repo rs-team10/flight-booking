@@ -146,7 +146,7 @@
             
 
         },
-        customFilter (item, queryText, itemText) {
+        customFilter (item, queryText) {
             const textOne = item.name.toLowerCase()
             const textTwo = item.abbr.toLowerCase()
             const searchText = queryText.toLowerCase()
@@ -164,9 +164,9 @@
         editOnBackend: function(){
             this.$axios
             .put('http://localhost:8080/api/rentACars/',this.rentACar)
-            .then(response => {
+            .then(() => {
                 this.beforeChange.name = this.rentACar.name;
-            this.beforeChange.description = this.rentACar.description;
+                this.beforeChange.description = this.rentACar.description;
                 this.hasSaved=true; 
                 })
             .catch(error => {

@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -45,7 +46,9 @@ public class VehicleReservation {
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
+	
 	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name = "vehicleId")
 	private Vehicle reservedVehicle;
 
 	public VehicleReservation() {

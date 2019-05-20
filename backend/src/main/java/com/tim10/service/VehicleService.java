@@ -1,8 +1,12 @@
 package com.tim10.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.Vehicle;
 import com.tim10.dto.VehicleDTO;
+import com.tim10.dto.VehicleSearchDTO;
 import com.tim10.repository.BranchOfficeRepository;
 import com.tim10.repository.VehicleRepository;
 
@@ -196,10 +201,53 @@ public class VehicleService {
 
 		vehicleRepository.deleteById(VehicleId);
 		
-		
-
-		
 	}
+	
+	 public Collection<Vehicle> vehiclesFromCountry(String from, String to, String country) throws ParseException {
+		 
+		 Collection<Vehicle> inCountry = vehicleRepository.vehiclesFromCountry(country);
+		 
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		 
+		 Date fromD = format.parse(from);
+		 Date toD = format.parse(to);
 
+
+		 return inCountry.stream().filter(v -> !v.isReserved(fromD, toD)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 public Collection<Vehicle> vehiclesFilter(String country, VehicleSearchDTO params) throws ParseException {
+		 
+		 String city = params.getCity();
+		 Collection<Vehicle> inCountry = null;
+		 
+		 if(city!="")
+			 inCountry = vehicleRepository.vehiclesFromCity(country, city);
+		 else
+			 inCountry = vehicleRepository.vehiclesFromCountry(country);
+			 
+		 return inCountry.stream().filter(v -> v.filter(params)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	
 }

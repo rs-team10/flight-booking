@@ -33,7 +33,7 @@ public class BranchOffice {
 	private Set<Vehicle> vehicle;
 	
 	@JsonIgnore
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "mainOfficeId")
 	private RentACar mainOffice;
 

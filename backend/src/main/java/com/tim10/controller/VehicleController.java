@@ -1,5 +1,6 @@
 package com.tim10.controller;
 
+import java.text.ParseException;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Vehicle;
+import com.tim10.dto.VehicleSearchDTO;
 import com.tim10.service.VehicleService;
 
 @RestController
@@ -103,14 +105,81 @@ public class VehicleController {
 	
 	
 	@RequestMapping(
-			value = "api/testV/{id}",
+			value = "api/availableVehicles/{from}/{to}/{country}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> test(@PathVariable("id") Long id){
+	public ResponseEntity<?> availableVehicles(
+									@PathVariable("from") String from, 
+									@PathVariable("to") String to,
+									@PathVariable("country") String country 
+	){
 		
 		
-		return new ResponseEntity<Vehicle>(vehicleService.findById(id), HttpStatus.OK);
+		try {
+			return new ResponseEntity<Collection<Vehicle>>(vehicleService.vehiclesFromCountry(from, to, country), HttpStatus.OK);
+		} catch (ParseException e) {
+			return new ResponseEntity<>("izmeni", HttpStatus.NOT_FOUND);
+		}
 		
+		
+	}
+	
+	@RequestMapping(
+			value = "api/vehicleSearch/{country}",
+			method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public  ResponseEntity<?> searchParams(
+			@PathVariable("country") String country, 
+			@RequestBody VehicleSearchDTO vehicleSearchDTO
+		){
+		
+		
+		
+		try {
+			return new ResponseEntity<Collection<Vehicle>>(vehicleService.vehiclesFilter(country, vehicleSearchDTO), HttpStatus.OK);
+		} catch (ParseException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
+		}
+		
+	}
+	
+	
+	@RequestMapping(
+			value = "api/testV/{country}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public  ResponseEntity<?> test(
+			@PathVariable("country") String country, 
+			@RequestBody VehicleSearchDTO vehicleSearchDTO){
+		
+		
+		/*
+		System.out.println(vehicleSearchDTO.getManufacturer()); 
+		System.out.println(vehicleSearchDTO.getModel()); 
+		System.out.println(vehicleSearchDTO.getYear()[0]); 
+		System.out.println(vehicleSearchDTO.getYear()[1]); 
+		System.out.println(vehicleSearchDTO.getFuel()); 
+		System.out.println(vehicleSearchDTO.getEngine()[0]); 
+		System.out.println(vehicleSearchDTO.getEngine()[1]);
+		System.out.println(vehicleSearchDTO.getTransmission()); 
+		System.out.println(vehicleSearchDTO.getSeatsCount()); 
+		System.out.println(vehicleSearchDTO.getAirCondition()); 
+		System.out.println(vehicleSearchDTO.getDailyRentalPrice()[0]); 
+		System.out.println(vehicleSearchDTO.getDailyRentalPrice()[1]); 
+		System.out.println(vehicleSearchDTO.getDateFrom()); 
+		System.out.println(vehicleSearchDTO.getDateTo());
+		System.out.println(vehicleSearchDTO.getCity());
+		*/
+		
+		
+		
+		try {
+			return new ResponseEntity<Collection<Vehicle>>(vehicleService.vehiclesFilter(country, vehicleSearchDTO), HttpStatus.OK);
+		} catch (ParseException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
+		}
 		
 	}
 

@@ -43,6 +43,40 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>{
 	@Query(value = "DELETE FROM branch_office_vehicle WHERE vehicle_id = :vehicleId", nativeQuery = true)
 	public void deleteBranchOfficeVehicleConnection(@Param("vehicleId") Long vehicleId);
 	
+	//kako ovo?
+	@Query(value = "SELECT "
+			+ "* "
+			+ "FROM "
+			+ "vehicles v  "
+			+ "INNER JOIN "
+			+ "branch_office b "
+			+ "ON "
+			+ "v.branch_office_id = b.id " 
+			+ "INNER JOIN "
+			+ "locations l "
+			+ "ON "
+			+ "l.id = b.location_id " 
+			+ "WHERE l.country = :country", nativeQuery = true) //promeni l.country - dok ne napravim pretragu za gradove
+	Collection<Vehicle> vehiclesFromCountry(@Param("country") String country);
+	
+	//kako ovo?
+	@Query(value = "SELECT "
+			+ "* "
+			+ "FROM "
+			+ "vehicles v  "
+			+ "INNER JOIN "
+			+ "branch_office b "
+			+ "ON "
+			+ "v.branch_office_id = b.id " 
+			+ "INNER JOIN "
+			+ "locations l "
+			+ "ON "
+			+ "l.id = b.location_id " 
+			+ "WHERE l.country = :country and l.city = :city", nativeQuery = true)
+	Collection<Vehicle> vehiclesFromCity(@Param("country") String country, @Param("city") String city);
+	
+	
+	
 	
 	
 //treba dodati za sliku i tako svasta nesto	
