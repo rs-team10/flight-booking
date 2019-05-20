@@ -75,7 +75,7 @@ export default {
                     lng: 42.0,
                     formattedAddress: '',
                 },
-                averageFeedback: 0
+                averageFeedback: 3.5
             },
             currentMapCenter : {
                 lat: 21.0,
@@ -93,6 +93,7 @@ export default {
         this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
             .then((response) => {
                 this.airline = response.data;
+                this.airline.averageFeedback = 3.5;
                 this.currentMapCenter.lat = this.airline.location.latitude;
                 this.currentMapCenter.lng = this.airline.location.longitude;
             }).catch((error) => {

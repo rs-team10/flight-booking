@@ -17,6 +17,10 @@
                     <v-icon left>flight</v-icon>
                     <span>Airlines</span>
                 </v-btn>
+                <v-btn flat router to="/searchFlights">
+                    <v-icon left>search</v-icon>
+                    <span>Search Flights</span>
+                </v-btn>
 
                 <v-btn flat router to="/hotels" blur>
                     <v-icon left>hotel</v-icon>

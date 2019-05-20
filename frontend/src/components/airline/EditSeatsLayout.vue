@@ -17,7 +17,7 @@
         <v-card-text>
             <v-container grid-list-md>
 
-                <v-layout row>
+                <v-layout row align-start justify-center>
                     <v-item-group multiple :key="cmpkey">
                         <table v-if="lastRowIsFull">
                             <thead>
@@ -56,13 +56,50 @@
                         </table>
 
                     </v-item-group>
-                    <v-layout align-space-between justify-start column ma-3>
-                        <v-btn raised @click="addNewSeatRow()"><v-icon left>library_add</v-icon>Add Row</v-btn>
-                        <v-btn raised @click="activateSelectedSeats()"><v-icon left>touch_app</v-icon>Activate</v-btn>
-                        <v-btn raised @click="deleteSelectedSeats()"><v-icon left>block</v-icon>Deactivate</v-btn>
-                        <v-btn raised @click="assignFirstClass()">Assign First Class</v-btn>
-                        <v-btn raised @click="assignBusinessClass()">Assign Business Class</v-btn>
-                        <v-btn raised @click="assignEconomicClass()">Assign Economic Class</v-btn>
+                    <v-layout column align-start justify-start fill-height>
+
+                        <h2 class="ma-4">Actions:</h2>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="addNewSeatRow()"><v-icon left>library_add</v-icon>Add Row</v-btn>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="activateSelectedSeats()"><v-icon left>touch_app</v-icon>Activate</v-btn>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="deleteSelectedSeats()"><v-icon left>block</v-icon>Deactivate</v-btn>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="assignFirstClass()">Assign First Class</v-btn>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="assignBusinessClass()">Assign Business Class</v-btn>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-btn raised block @click="assignEconomicClass()">Assign Economic Class</v-btn>
+                        </v-layout>
+
+                        <h2 class="ma-4">Legend:</h2>
+                        <v-layout row class="mx-4">
+                            <v-card color="deep-purple lighten-1" class="ma-2" dark height="30" width="30" ma-4></v-card>
+                            <v-card flat class="ma-2" height="30" width="250">First class seats</v-card>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-card color="blue lighten-1" class="ma-2" dark height="30" width="30" ma-4></v-card>
+                            <v-card flat class="ma-2" height="30" width="250">Business class seats</v-card>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-card color="grey darken-3" class="ma-2" dark height="30" width="30" ma-4></v-card>
+                            <v-card flat class="ma-2" height="30" width="250">Economy class seats</v-card>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-card color="green" class="ma-2" dark height="30" width="30" ma-4></v-card>
+                            <v-card flat class="ma-2" height="30" width="250">Selected seats</v-card>
+                        </v-layout>
+                        <v-layout row class="mx-4">
+                            <v-card color="red lighten-4" class="ma-2" dark height="30" width="30" ma-4></v-card>
+                            <v-card flat class="ma-2" height="30" width="250">Inactive seats</v-card>
+                        </v-layout>
+
                     </v-layout>
                 </v-layout>
 
@@ -149,7 +186,7 @@ export default {
         },
         clickOnSeat(i) {
             this.seats[i].isSelected = !this.seats[i].isSelected;
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         addNewSeatRow() {
 
@@ -187,7 +224,7 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         activateSelectedSeats() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -196,7 +233,7 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignFirstClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -205,7 +242,7 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignBusinessClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -214,7 +251,7 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignEconomicClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -223,7 +260,7 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            this.cmpkey += 1;                    // TODO: FIX
+            //this.cmpkey += 1;                    // TODO: FIX
         },
         compare(a, b) {
 

@@ -16,6 +16,7 @@ import ViewUserProfile from './views/ViewUserProfile.vue'
 import EditUserProfile from './views/EditUserProfile.vue'
 import ViewAirlineProfile from './views/ViewAirlineProfile.vue'
 import EditAirlineProfile from './views/EditAirlineProfile.vue'
+import SearchFlights from './views/SearchFlights.vue'
 import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
@@ -61,6 +62,11 @@ export default new Router({
       path: '/editAirlineProfile',
       name: 'editAirlineProfile',
       component: EditAirlineProfile
+    },
+    {
+      path: '/searchFlights',
+      name: 'searchFlights',
+      component: SearchFlights
     },
     {
       path: '/hotels',
