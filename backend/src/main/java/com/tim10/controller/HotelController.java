@@ -27,6 +27,7 @@ import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.QuickRoomReservation;
 import com.tim10.domain.Room;
 import com.tim10.dto.HotelDTO;
+import com.tim10.dto.HotelReportDTO;
 import com.tim10.dto.HotelRoomsDTO;
 import com.tim10.dto.QuickRoomResDTO;
 import com.tim10.dto.RoomDTO;
@@ -55,31 +56,6 @@ public class HotelController {
 		return new ResponseEntity<List<HotelDTO>>(dtos, HttpStatus.OK);
 	}
 	
-	/*
-	 * Pretraga hotela po nazivu i lokaciji. Vraca stranice
-	 */
-	@RequestMapping(value="/searchHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelDTO>> searchHotels(Pageable page,
-														@PathParam("hotelName") String hotelName,
-														@PathParam("hotelLocation") String hotelLocation) {
-		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
-		for(Hotel h : hotelService.findByParameter(page, hotelName, hotelLocation))
-			dtos.add(new HotelDTO(h));
-		return new ResponseEntity<>(dtos, HttpStatus.OK);
-	}
-	
-	/*
-	 * Za sad se koristi samo pri rezervaciji hotela, fetchuje sve hotele (po stranicama) 
-	 */
-	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelDTO>> getResHotelsPage(Pageable page) {
-		Page<Hotel> pageHotels = hotelService.findAll(page);
-		List<HotelDTO> hotelsDTO = new ArrayList<>();
-		for(Hotel h : pageHotels) 
-			hotelsDTO.add(new HotelDTO(h));
-		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
-	}
-	
 	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
 		if(!hotelService.findOneByName(hotel.getName()).isPresent()) {
@@ -106,6 +82,31 @@ public class HotelController {
 			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	/*
+	 * Pretraga hotela po nazivu i lokaciji. Vraca stranice
+	 */
+	@RequestMapping(value="/searchHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> searchHotels(Pageable page,
+														@PathParam("hotelName") String hotelName,
+														@PathParam("hotelLocation") String hotelLocation) {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h : hotelService.findByParameter(page, hotelName, hotelLocation))
+			dtos.add(new HotelDTO(h));
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
+	}
+	
+	/*
+	 * Za sad se koristi samo pri rezervaciji hotela, fetchuje sve hotele (po stranicama) 
+	 */
+	@RequestMapping(value = "/pageHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> getResHotelsPage(Pageable page) {
+		Page<Hotel> pageHotels = hotelService.findAll(page);
+		List<HotelDTO> hotelsDTO = new ArrayList<>();
+		for(Hotel h : pageHotels) 
+			hotelsDTO.add(new HotelDTO(h));
+		return new ResponseEntity<>(hotelsDTO, HttpStatus.OK);
 	}
 	
 	/* 
@@ -138,10 +139,10 @@ public class HotelController {
 	}
 	
 	/*
-	 * Vracanje brzih rezervacija hotela
+	 * Vracanje brzih rezervacija hotela (hotelAdmin)
 	 */
 	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathVariable("hotelId") Long hotelId){
+	public ResponseEntity<List<QuickRoomResDTO>> getAllQuickRoomReservations(@PathVariable("hotelId") Long hotelId){
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
 		Set<QuickRoomReservation> quickRoomReservations = hotelService.findOne(hotelId).get().getQuickRoomReservations();
 		
@@ -151,13 +152,33 @@ public class HotelController {
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
 	}
 	
+	/*
+	 * Dodavanje nove/novih brzih rezervacija hotela (hotelAdmin)
+	 */
 	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> setQuickRoomReservations(@RequestBody Set<QuickRoomReservation> quickRoomReservations, @PathVariable("hotelId") Long hotelId){
 		Hotel hotel = hotelService.findOne(hotelId).get();
 		hotel.setQuickRoomReservations(quickRoomReservations);
-		hotelService.save(hotel);
-		
+		hotelService.save(hotel);	
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	/*
+	 * Prikaz brzih rezervacija korisniku za odredjeni period
+	 */
+	@RequestMapping(value="/quickRoomReservations", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathParam("hotelId") Long hotelId,
+														@PathParam("checkInDate") String checkInDate,
+														@PathParam("checkOutDate") String checkOutDate) throws ParseException{
+		return new ResponseEntity<>(hotelService.getQuickRoomReservations(hotelId, checkInDate, checkOutDate), HttpStatus.OK);
+	}
+	
+	/*
+	 * Dobavljanje svih izvestaja za hotel sa prosledjenim id-jem
+	 */
+	@RequestMapping(value="/getReport/{hotelId}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<HotelReportDTO> getReport(@PathVariable("hotelId") Long hotelId){
+		return new ResponseEntity<>(hotelService.getReports(hotelId), HttpStatus.OK);
 	}
 	
 	

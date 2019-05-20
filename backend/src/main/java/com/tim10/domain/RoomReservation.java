@@ -64,6 +64,7 @@ public class RoomReservation implements Serializable{
 		this.dateFrom = new Date();
 		this.dateTo = new Date();
 		this.additionalServices = new HashSet<>();
+		this.review = new Review();
 	}
 	
 	public RoomReservation(Date dateFrom, Date dateTo, BigDecimal totalPrice,
@@ -76,13 +77,6 @@ public class RoomReservation implements Serializable{
 		this.room = room;
 	}
 	
-//	public RoomReservation(RoomReservationDTO dto) {
-//		this.dateFrom = dto.getDateFrom();
-//		this.dateTo = dto.getDateTo();
-//		this.totalPrice = dto.getTotalPrice();
-//		this.additionalServices = dto.getAdditionalServices();
-//		this.room = room;
-//	}
 
 	public Long getId() {
 		return id;

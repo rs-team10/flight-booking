@@ -1,6 +1,6 @@
 <template>
   <div class="hotels">
-  <v-flex xs12 sm6 offset-sm3>
+  <v-flex xs12 sm6 offset-sm3 id="search">
   <v-layout row>
     <v-text-field
       v-model="hotelName"
@@ -73,16 +73,16 @@
 
   
   <v-item-group>
-    <v-container grid-list-md>
-      <v-layout row wrap>
+      <v-flex xs10 offset-sm1 >
+      <v-layout wrap>
         <v-flex
           v-for="hotel in hotels"
           :key="hotel.name"
-          class="d-flex align-center"
+          class="d-inline-flex"
           >
           <v-item>
             <v-card
-              class="mx-1"
+              class="mt-2 mx-1"
               width="344"
             >
             <v-img
@@ -111,8 +111,11 @@
                 </div>
               </div>
               <v-spacer></v-spacer>
-              <v-btn icon v-on:click="hotelSelected(hotel)">
-                <v-icon medium color="purple">edit</v-icon>
+              <v-btn icon @click="hotelSelected(hotel)">
+                <v-icon medium color="indigo">edit</v-icon>
+              </v-btn>
+              <v-btn icon @click="generateReports(hotel)">
+                <v-icon medium color="indigo">assessment</v-icon>
               </v-btn>
             </v-card-title>
 
@@ -120,7 +123,8 @@
           </v-item>
           </v-flex>
       </v-layout>
-    </v-container>
+      </v-flex>
+
   </v-item-group>
 
 
@@ -169,6 +173,9 @@ export default {
           hotel = response.data
           this.$emit('hotelSelected', hotel);
         })
+      },
+      generateReports(hotel){
+        this.$emit('generateReports', hotel);
       },
       searchHotels(){
         this.$axios

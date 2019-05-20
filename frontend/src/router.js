@@ -18,8 +18,7 @@ import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
-import HotelReservation from './components/HotelReservation/HotelReservation.vue'
-import QuickRoomReservations from './components/HotelAdmin/QuickRoomReservations'
+import Reserve from './components/HotelReservation/Reserve.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -123,9 +122,6 @@ export default new Router({
     },
     */
   //=====================================
-
-
-
     {
       path: '/addAirline',
       name: 'addAirline',
@@ -140,9 +136,8 @@ export default new Router({
     {
       path: '/hotelReservation',
       name: 'hotelReservation',
-      component: HotelReservation
+      component: Reserve
     }
-
     //=====================================
   ]
 })

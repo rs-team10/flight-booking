@@ -2,9 +2,9 @@ package com.tim10.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
-import com.tim10.domain.QuickRoomReservation;
-
+import com.tim10.domain.PriceListItem;
 import com.tim10.domain.QuickRoomReservation;
 
 public class QuickRoomResDTO {
@@ -15,6 +15,7 @@ public class QuickRoomResDTO {
 	private Date dateTo;
 	private BigDecimal totalPrice;
 	private Double discount;
+	private Set<PriceListItem> additionalServices;
 	
 	public QuickRoomResDTO() {
 		super();
@@ -28,6 +29,7 @@ public class QuickRoomResDTO {
 		this.dateTo = res.getDateTo();
 		this.totalPrice = res.getTotalPrice();
 		this.discount = res.getDiscount();
+		this.additionalServices = res.getAdditionalServices();
 	}
 	
 	public QuickRoomResDTO(Long id, RoomDTO room, Date dateFrom, Date dateTo, BigDecimal totalPrice, Double discount) {

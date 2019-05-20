@@ -46,27 +46,5 @@ public class ReservationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-//	/*
-//	 * Dodavanje brze rezervacije (hotel admin)
-//	 */
-//	@RequestMapping(value = "/addQuickReservation", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<?> addQuickReservation(@RequestBody RoomReservationDTO reservationDTO) {
-//		
-//		long diffInMillies = Math.abs(reservationDTO.getDateTo().getTime() - reservationDTO.getDateFrom().getTime());
-//	    int days = (int)TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-//
-//		for(RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
-//			Room room = roomService.getRoom(roomDTO.getId()).get();
-//			QuickRoomReservation quickRoomReservation = 
-//					new QuickRoomReservation(reservationDTO.getDateFrom(), reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(), room, reservationDTO.getDiscount());
-//			
-//			BigDecimal additionalServicesPrice = quickRoomReservation.getTotalPrice();
-//			quickRoomReservation.setTotalPrice(additionalServicesPrice.add(room.getRoomType().getPricePerNight().multiply(new BigDecimal(days))));
-//			roomReservationService.save(quickRoomReservation);
-//		}
-//		
-//		//zabraniti rezervaciju ako je soba rezervisana
-//		return new ResponseEntity<>(HttpStatus.OK);
-//	}
 
 }

@@ -27,4 +27,5 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>{
 			+ "AND lower(l.street) LIKE concat('%', lower(:hotelLocation), '%')",
 			nativeQuery = true)
 	Page<Hotel> findByParameter(Pageable pageable, @Param("hotelName") String hotelName, @Param("hotelLocation") String hotelLocation);
+	
 }

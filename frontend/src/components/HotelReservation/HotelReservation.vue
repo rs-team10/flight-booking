@@ -29,7 +29,7 @@
                         <!-- datum od -->
                         <v-layout row>
                         <v-menu
-                        v-model="checkInMenu"
+                        v-model="checkInMenuDialog"
                         :close-on-content-click="true"
                         :nudge-right="40"
                         lazy
@@ -50,12 +50,12 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker v-model="checkInDate" @input="checkInMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         
                         <!-- datum do -->
                         <v-menu
-                        v-model="checkOutMenu"
+                        v-model="checkOutMenuDialog"
                         :close-on-content-click="true"
                         :nudge-right="40"
                         lazy
@@ -75,7 +75,7 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker v-model="checkOutDate" @input="checkOutMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         </v-layout>
 
@@ -106,10 +106,10 @@
                                     <v-layout row>
                                         <v-flex xs6 md6>
                                         <v-text-field
-                                        v-model="hotelName"
-                                        append-icon="search"
-                                        label="Hotel name"
-                                        class="mx-3">
+                                            v-model="hotelName"
+                                            append-icon="search"
+                                            label="Hotel name"
+                                            class="mx-3">
                                         </v-text-field>
                                         </v-flex>
                                         <v-flex xs6 md6>
@@ -247,7 +247,7 @@
                                                             </div>  
 
                                                             <div>
-                                                                <v-btn flat href>Discounted rooms</v-btn>
+                                                                <v-btn flat class="text-uppercase font-weight-bold indigo--text mx-0 px-1" @click="goToQuickRes(hotel.id)"><u>Discounted rooms</u></v-btn>
                                                             </div> 
                                                         </div>
                                                     </v-card-title>
@@ -353,8 +353,10 @@ export default {
             guests: '',
 
             checkInMenu: false,
+            checkInMenuDialog: false,
             checkInDate: new Date().toISOString().substr(0, 10),
             checkOutMenu: false,
+            checkOutMenuDialog: false,
             checkOutDate: new Date().toISOString().substr(0, 10),
 
             days: '',
@@ -419,14 +421,14 @@ export default {
         validateDates(){
             if((this.checkOutDate == this.checkInDate) || (this.checkOutDate < this.checkInDate)){
                 this.$swal("Invalid check-in/check-out dates", "", "error");
-                return;
+                return false;
                 //return false;
             }
             var days = (new Date(this.checkOutDate) - new Date(this.checkInDate)) / (1000*60*60*24);
             this.days = days;
             this.dateDialog = false;
             this.showCard = true;
-            //return true;
+            return true;
 
         },
         finishReservation(reservation){
@@ -440,6 +442,15 @@ export default {
         },
         goBack(){
             this.e6 -= 1;
+        },
+        goToQuickRes(hotelId){
+            if(this.validateDates)
+                var dataToPass = {
+                    hotelId: hotelId,
+                    checkInDate: this.checkInDate,
+                    checkOutDate: this.checkOutDate
+                }
+                this.$emit('goToQuickReservations', dataToPass)
         }
     },
     mounted(){
