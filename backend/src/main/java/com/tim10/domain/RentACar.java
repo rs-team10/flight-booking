@@ -23,7 +23,7 @@ public class RentACar extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickVehicleReservation> quickVehicleReservations;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	public PriceList additionalServicesPriceList;
 
 	public RentACar() {

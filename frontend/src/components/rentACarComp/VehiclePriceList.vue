@@ -20,7 +20,7 @@
         <v-list
           two-line
         >
-        <template v-for="item in this.priceList">
+        <template v-for="item in this.priceList.priceListItems">
           <v-list-tile :key="item.id">
               
                 <v-list-tile-content>
@@ -65,6 +65,8 @@
 <script>
 import PriceItemDialog from "@/components/rentACarComp/PriceItemDialog.vue"
 export default {
+    props:['priceList'],
+
     components:{
         'priceItemDialog': PriceItemDialog
     },
@@ -78,7 +80,7 @@ export default {
             price       : 0,
             discount    : 0
         },
-        priceList: [
+        priceListTEST: [
             {
                 id          : 1,
                 name        : "Driver",
@@ -98,7 +100,7 @@ export default {
                 name        : "Insurance",
                 description : "Insurance for you and passangers.",	
                 price       : 10,
-                discount    : 3
+                discount    : 5
             },
             {
                 id          : 4,

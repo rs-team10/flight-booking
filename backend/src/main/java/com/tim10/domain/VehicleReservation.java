@@ -2,6 +2,7 @@ package com.tim10.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,21 +12,20 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name="VehicleReservations")
 public class VehicleReservation {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="dateFrom")
@@ -37,6 +37,7 @@ public class VehicleReservation {
 	@Column(name="totalPrice")
 	private BigDecimal totalPrice;
 	
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@OneToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
@@ -46,13 +47,14 @@ public class VehicleReservation {
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
-	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "vehicleId")
-	private Vehicle reservedVehicle;
+	private Vehicle reservedVehicle; //pogledaj mapiranje
 
 	public VehicleReservation() {
 		super();
+		additionalServices = new HashSet<PriceListItem>();
 	}
 
 	public Long getId() {

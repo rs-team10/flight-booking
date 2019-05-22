@@ -30,7 +30,7 @@
                     >
                         <v-flex>
                             <v-slider
-                                v-model.lazy="priceListItem.discount"
+                                v-model="priceListItem.discount"
                                 :max="100"
                                 :min="0"
                                 :step="1"
@@ -63,7 +63,7 @@
                 <v-card-actions v-if="priceListItem.id===0">
                     <v-spacer></v-spacer>
                     <v-btn  @click="submit">submit</v-btn>
-                    <v-btn  color ='error' @click="reset">Cancel</v-btn>
+                    <v-btn  color ='error' @click="cancel">Cancel</v-btn>
                 </v-card-actions>
                 <v-card-actions v-else>
                     <v-spacer></v-spacer>
@@ -98,9 +98,7 @@ export default {
 
     }),
     methods:{
-        reset() {
-            this.$refs.myForm.reset()
-        },
+
         cancel:function(){
 
             this.$refs.myForm.reset()

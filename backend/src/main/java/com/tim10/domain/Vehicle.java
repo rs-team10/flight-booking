@@ -2,6 +2,7 @@ package com.tim10.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -71,6 +72,7 @@ public class Vehicle {
 
 	public Vehicle() {
 		super();
+		this.reservations = new HashSet<VehicleReservation>();
 	}
 
 	public Long getId() {
@@ -186,15 +188,16 @@ public class Vehicle {
 	}
 	
 	public boolean isReserved(Date from, Date to) {
-		
+		System.out.println(this.id + " -> " + this.reservations.size());
 		for( VehicleReservation r: this.reservations) {
 			Date rFrom = r.getDateFrom();
 			Date rTo = r.getDateTo();
 			
 			boolean prov1 = (from.before(rFrom) && to.after(rFrom) ) || (from.before(rTo) && to.after(rTo)); //svi koji su delimicno rezervisani
-			boolean prov2 = from.after(rFrom) && to.before(rTo); 											 //ako je vozilo zauzeto u celom intervalu
+			boolean prov2 = from.after(rFrom) && to.before(rTo); //ako je vozilo zauzeto u celom intervalu
+			boolean prov3 = from.equals(rFrom) && to.equals(rTo);
 			
-			if( prov1 || prov2) {
+			if( prov1 || prov2 ||  prov3) {
 				return true;
 			}
 			
@@ -243,11 +246,11 @@ public class Vehicle {
 		if(!(dailyRentalPrice0.compareTo(this.dailyRentalPrice) == -1 ||  dailyRentalPrice0.compareTo(this.dailyRentalPrice) == 0)
 		&& (dailyRentalPrice1.compareTo(this.dailyRentalPrice) == 1 ||  dailyRentalPrice1.compareTo(this.dailyRentalPrice) == 0))
 			return false;
-		
-		if(seatsCount!=null)
-			if(!this.seatsCount.equals(seatsCount))
-				return false;
-		
+		if(seatsCount !=null)
+			if(seatsCount!=0 && seatsCount!=1) 
+				if(!this.seatsCount.equals(seatsCount)) 
+					return false;
+				
 		
 		if(transmission!= null)
 			if(!this.transmission.equals(transmission))

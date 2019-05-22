@@ -105,7 +105,7 @@ export default {
                 )
                 .then((result) => {
                     if (result.dismiss === this.$swal.DismissReason.timer) {
-                        this.$router.go(-1);
+                        this.$router.go(0);
                     }
                 });
                 

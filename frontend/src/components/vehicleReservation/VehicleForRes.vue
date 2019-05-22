@@ -1,9 +1,9 @@
 <template>
 <v-card>
-<v-dialog v-model="dialog" max-width="1200px"> 
+<v-dialog v-model="dialog" max-width="1000px"> 
     <component 
         :is='component'
-        :vehicle = 'selectedVehicle'
+        :overview = 'overview'
     >
     </component>
 </v-dialog>
@@ -42,7 +42,7 @@
                             style="height: 100%;"
                             @click="showPrev(props.item)"
                         >
-                            €{{props.item.dailyRentalPrice}}/day                                   
+                            €{{props.item.totalPrice}}                                  
                         </div>
                     </v-expand-transition>
                     
@@ -81,7 +81,19 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
 
         data: () => ({
 
-            selectedVehicle : '',
+            overview:{
+                vehicle : '',
+                rentACarId: '',
+                rentACarName: '',
+                branchOfficeId: '',
+                country: "",
+                city    : "",
+                vehicleId: '',
+                priceList: {
+                    id: '',
+                    priceListItems: []
+                }
+            },
             dialog : null,
             component: 'vehicleReservationPre',
 
@@ -94,7 +106,22 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
         }),
         methods:{
             showPrev:function(vehicle){
-                this.selectedVehicle = vehicle
+                
+                this.$axios
+                .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id)
+                .then(respone =>{
+                    var datas = respone.data
+                    this.overview.rentACarId = datas.rentACarId;
+                    this.overview.rentACarName = datas.rentACarName;
+                    this.overview.branchOfficeId = datas.branchOfficeId;
+                    this.overview.country = datas.country;
+                    this.overview.city = datas.city;
+                    this.overview.vehicleId = datas.vehicleId;
+                    this.overview.priceList = datas.priceList;
+                })
+                
+
+                this.overview.vehicle = vehicle
                 this.dialog = true;
             }
         }

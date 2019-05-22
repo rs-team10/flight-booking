@@ -326,7 +326,7 @@
                     fuel                    : '',
                     engine                  : [0.9, 5.0],
                     transmission            : '',
-                    seatsCount              : "",
+                    seatsCount              : '',
                     airCondition            : '',
                     dailyRentalPrice        : [0, 1000], 
                     dateFrom                : "",

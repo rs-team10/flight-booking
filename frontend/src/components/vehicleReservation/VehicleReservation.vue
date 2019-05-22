@@ -57,7 +57,7 @@
                         
                     <component
                         :is='component2'
-                        :vehicles = vehicles
+                        :vehicles = 'vehicles'
                     >
                     <!--Nekako da mu oznacis da je quic reservation-->
                     </component>
@@ -105,9 +105,16 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             var images = require.context('@/assets/vehicles/', false, /\.jpg$/)
             return images('./' + file)
         },
+        priceForPeriod: function(price){
+            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+            var firstDate = Date.parse('2019-01-01'); //this.dateFrom
+            var secondDate = Date.parse('2019-01-11'); //this.dateTo (iz propertyja)
+        
+            return price * (secondDate - firstDate )/(oneDay);
+        },
         cancelSearch:function(){
             var inputFrom = '2019-01-01 00:00'; //property pa compute...
-            var inputTo = '2019-01-02 00:00';
+            var inputTo = '2019-01-11 00:00';
 
             var from = this.trim(inputFrom); 
             var to = this.trim(inputTo);
@@ -140,6 +147,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                                                                 airCondition        : v.airCondition,
                                                                 dailyRentalPrice    : v.dailyRentalPrice,
                                                                 image               : this.getImgUrl(v.image),
+                                                                totalPrice          : this.priceForPeriod(v.dailyRentalPrice),
                                                                 mainRentACar        : 'My rent-a-car service'
                                                             }));
 
@@ -157,7 +165,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
         onSearch: function(vehicleSearchDTO){
             
             vehicleSearchDTO.dateFrom ='2019-01-01'; //uzimace iz propertyja
-            vehicleSearchDTO.dateTo =  '2019-01-02';
+            vehicleSearchDTO.dateTo =  '2019-01-11';
 
             this.$axios
             .post('http://localhost:8080/api/vehicleSearch/serbia',vehicleSearchDTO)
@@ -176,6 +184,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                                                                 airCondition        : v.airCondition,
                                                                 dailyRentalPrice    : v.dailyRentalPrice,
                                                                 image               : this.getImgUrl(v.image),
+                                                                totalPrice          : this.priceForPeriod(v.dailyRentalPrice),
                                                                 mainRentACar        : 'My rent-a-car service'
                                                             }));
 
@@ -198,11 +207,11 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 
     created(){
         var inputFrom = '2019-01-01 00:00'; //property pa compute...
-        var inputTo = '2019-01-02 00:00';
+        var inputTo = '2019-01-10 00:00';
 
         var from = this.trim(inputFrom); 
         var to = this.trim(inputTo);
-        var country = 'Serbia';
+        var country = 'Serbia';             //property
 
         var countryDate = {
             country : country,
