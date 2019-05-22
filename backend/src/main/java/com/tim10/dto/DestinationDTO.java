@@ -4,6 +4,7 @@ import com.tim10.domain.Destination;
 
 public class DestinationDTO {
 	
+	private Long id;
 	private String name;
 	private String airportName;
 	private String airportCode;
@@ -15,10 +16,19 @@ public class DestinationDTO {
 	
 	public DestinationDTO(Destination d) {
 		super();
+		this.id = d.getId();
 		this.name = d.getName();
 		this.airportName = d.getAirportName();
 		this.airportCode = d.getAirportCode();
 		this.location = new LocationDTO(d.getLocation());
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {

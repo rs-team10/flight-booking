@@ -2,67 +2,32 @@
     <div>
         <v-layout row-wrap mx-4 mt-4>
             <!-- TYPE -->
-            <v-flex xs12 sm6 d-flex>
+            <v-flex xs4 md2>
                 <v-select
                     v-model="searchType"
                     :items="searchTypeItems"
-                    label="Type"
-                    solo
+                    prepend-icon="compare_arrows"
+                    label="Search Type"
+                    
                 ></v-select>
             </v-flex>
             <!-- CLASS -->
-            <v-flex xs12 sm6 d-flex>
+            <v-flex xs4 md2 mx-2>
                 <v-select
                     v-model="searchClass"
                     :items="searchClassItems"
+                    prepend-icon="airline_seat_legroom_normal"
                     label="Flight Class"
-                    solo
+                    
                 ></v-select>
             </v-flex>
             <!-- PASSENGER COUNT -->
-            <v-flex xs12 sm6 d-flex>
-                <v-menu
-                    v-model="showPassengersCountMenu"
-                    :close-on-content-click="false"
-                    :nudge-width="200"
-                    offset-x
-                    >
-
-                    <template v-slot:activator="{ on }" >
-                        <v-btn v-on="on">Passenger count: {{ passengersCount }}</v-btn>
-                    </template>
-
-                    <v-card>
-                        <v-card-title>
-                            <v-layout column>
-                                <v-layout pt-2 row wrap justify-center>
-                                    <!-- MINUS -->
-                                    <v-flex xs1 ma-2 d-inline-block>
-                                        <v-btn flat icon v-if="this.passengersCount > 1" @click="--passengersCount">
-                                            <v-icon>indeterminate_check_box</v-icon>
-                                        </v-btn>
-                                        <v-btn v-else disabled flat icon>
-                                            <v-icon>indeterminate_check_box</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                     <!-- COUNT -->
-                                    <v-flex xs1 ma-2 d-inline-block justify-center align-center>
-                                        <div> {{ this.passengersCount }} </div>
-                                    </v-flex>
-                                     <!-- PLUS -->
-                                    <v-flex xs1 ma-2 d-inline-block>
-                                        <v-btn flat icon v-if="this.passengersCount < 20" @click="++passengersCount">
-                                            <v-icon>add_box</v-icon>
-                                        </v-btn>
-                                        <v-btn v-else disabled flat icon>
-                                            <v-icon>add_box</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </v-layout>
-                        </v-card-title>
-                    </v-card>
-                </v-menu>
+            <v-flex xs4 md2>
+                <v-layout row>
+                <v-icon @click="decrementPassengersCount" color="black" left>remove</v-icon>
+                <v-text-field v-model="passengersCount" label="Passengers count" append-icon="people" type="number" readonly></v-text-field>
+                <v-icon @click="incrementPassengersCount" color="black" right>add</v-icon>
+                </v-layout>
             </v-flex>
         </v-layout>
 
@@ -76,6 +41,8 @@
                         prepend-icon="flight_takeoff"
                         v-model="oneWaySearch.departure"
                         :items="availableDestinations"
+                        return-object
+                        :item-text="selectionItemText"
                         solo
                         >
                     </v-autocomplete>
@@ -93,6 +60,8 @@
                         prepend-icon="flight_land"
                         v-model="oneWaySearch.destination"
                         :items="availableDestinations"
+                        return-object
+                        :item-text="selectionItemText"
                         solo
                         >
                     </v-autocomplete>
@@ -124,20 +93,25 @@
                         </v-date-picker>
                     </v-menu>
                 </v-flex>
-                <v-flex xs4><v-btn @click="performOneWaySearch">Search</v-btn></v-flex>
+                <v-flex xs4><v-btn color="primary" @click="performOneWaySearch">Search</v-btn></v-flex>
             </v-layout>
         </div>
 
         <!-- ROUND TRIP SEARCH -->
         <div v-else-if='searchType === "Round-trip"'>
-            <v-layout row-wrap ma-4>
+            <v-layout row-wrap mx-4>
                 <!-- DEPARTURE -->
                 <v-flex xs3 mr-2>
-                    <v-text-field
+                    <v-autocomplete
                         label="From"
                         prepend-icon="flight_takeoff"
-                        v-model="roundTripSearch.departure">
-                    </v-text-field>
+                        v-model="roundTripSearch.departure"
+                        :items="availableDestinations"
+                        return-object
+                        :item-text="selectionItemText"
+                        solo
+                        >
+                    </v-autocomplete>
                 </v-flex>
                 <!-- SWAP -->
                 <v-flex xs>
@@ -147,11 +121,16 @@
                 </v-flex>
                 <!-- DESTINATION -->
                 <v-flex xs3 mr-2>
-                    <v-text-field
+                    <v-autocomplete
                         label="To"
                         prepend-icon="flight_land"
-                        v-model="roundTripSearch.destination">
-                    </v-text-field>
+                        v-model="roundTripSearch.destination"
+                        :items="availableDestinations"
+                        return-object
+                        :item-text="selectionItemText"
+                        solo
+                        >
+                    </v-autocomplete>
                 </v-flex>
                 <!-- DEPARTURE DATE -->
                 <v-flex xs3 ml-2>
@@ -207,20 +186,41 @@
                         </v-date-picker>
                     </v-menu>
                 </v-flex>
-                <v-flex xs4><v-btn @click="performRoundTripSearch">Search</v-btn></v-flex>
+                <v-flex xs4><v-btn color="primary" @click="performRoundTripSearch">Search</v-btn></v-flex>
             </v-layout>
         </div>
 
         <!-- MULTI CITY SEARCH -->
         <div v-else-if='searchType === "Multi-city"'>
             <div v-for="(route, index) in multiCitySearch.routes" :key="index">
-                <v-layout row-wrap justify-start align-center mt-2 mx-4>
+                <v-layout row-wrap mx-4>
+                    <!-- DEPARTURE -->
                     <v-flex xs4 mr-3>
-                        <v-text-field label="Departure" prepend-icon="flight_takeoff" v-model="route.departure"></v-text-field>
+                        <v-autocomplete
+                            label="From"
+                            prepend-icon="flight_takeoff"
+                            v-model="route.departure"
+                            :items="availableDestinations"
+                            return-object
+                            :item-text="selectionItemText"
+                            solo
+                        >
+                        </v-autocomplete>
                     </v-flex>
+                    <!-- DESTINATION -->
                     <v-flex xs4>
-                        <v-text-field label="Destination" prepend-icon="flight_land" v-model="route.destination"></v-text-field>
+                        <v-autocomplete
+                            label="From"
+                            prepend-icon="flight_takeoff"
+                            v-model="route.destination"
+                            :items="availableDestinations"
+                            return-object
+                            :item-text="selectionItemText"
+                            solo
+                        >
+                        </v-autocomplete>
                     </v-flex>
+                    <!-- DATE -->
                     <v-flex xs3 ml-2>
                     <v-menu
                         v-model="route.showMenu"
@@ -247,19 +247,17 @@
                             </v-date-picker>
                         </v-menu>
                     </v-flex>
-
                 </v-layout>
             </div>
-            <v-flex xs2 ma-2>
-                <v-btn small @click="addRow">Add</v-btn>
-            </v-flex>
-            <v-flex xs2 ma-2>
-                <v-btn small @click="removeRow">Remove</v-btn>
-            </v-flex>
-            <v-flex xs4 ma-2><v-btn @click="performMultiCitySearch">Search</v-btn></v-flex>
+            <v-layout row align-start mx-4>
+                <v-btn @click="addRow">Add</v-btn>
+                <v-btn @click="removeRow">Remove</v-btn>
+                <v-btn color="primary" @click="performMultiCitySearch">Search</v-btn>
+            </v-layout>
         </div>
-        
-        <div v-if="searchResults.length > 0">
+
+        <!-- FILTER AND RESULTS -->
+        <div>
             <v-flex xs12 sm12 md12>
             <v-layout row justify-start>
 
@@ -275,7 +273,7 @@
                             label="Airlines"
                             multiple
                             chips
-                            style="width: 270px"
+                            style="width: 200px"
                             >
                         </v-select>
                     </v-flex>
@@ -316,97 +314,91 @@
                         <v-checkbox v-model="filterOptions.selectedClasses" label="First" value="first" hide-details></v-checkbox>
                     </v-flex>
 
-                    <v-flex xs4><v-btn @click="filterData" ma-4>Apply Filter</v-btn></v-flex>
-                    <v-flex xs4><v-btn @click="resetFilter" ma-4>Reset Filter</v-btn></v-flex>
+                    <v-flex xs4 mx-1 mt-2><v-btn @click="filterData">Apply Filter</v-btn></v-flex>
+                    <v-flex xs4 mx-1><v-btn @click="resetFilter">Reset Filter</v-btn></v-flex>
                 </v-layout>
                 </v-flex>
                 
 
                 <!-- RESULTS -->
-                <v-flex xs10 sm10 md10>
+                <v-flex xs10 sm10 md10 v-if="searchResults.length > 0">
                 <v-item-group>
 
                     <!-- RESULT LIST -->
                     <v-layout column>
-                        <v-list class="scroll-y pt-0" style="height: 700px">
+                        <v-list>
                             <v-flex
                                 v-for="flight in this.searchResults"
                                 :key="flight.id"
                                 class="d-inline align-center">
                                 <v-item width="100%">
-                                    <div style="margin: auto;">
-                                        <v-card flat>
-                                            <v-container fluid>
-                                                <v-layout row wrap>
-                                                    <v-flex xs12 md12>
-                                                        <v-card>
-                                                            <v-layout>
-                                                                <!--
-                                                                <v-flex xs4 md4>
-                                                                    <v-avatar class="ma-2" :tile="false" :size="80">
-                                                                        <v-img :src="image" height="100%" max-height="170px" max-width="200px"></v-img>
-                                                                    </v-avatar>
-                                                                </v-flex>
-                                                                -->
-                                                                <v-flex xs5 md5>
-                                                                    <v-card-title primary-title>
-                                                                        <div>
-                                                                            <div class="headline">{{ flight.departureTime + ' - ' + flight.arrivalTime }}</div>
-                                                                            <div class="pl-0">
-                                                                                <span class="grey--text text--darken-2 ">{{ flight.airline }}</span>
-                                                                            </div>
+                                    <v-card flat>
+                                            <v-layout row wrap ma-3>
+                                                <v-flex xs12 md12>
+                                                    <v-card>
+                                                        <v-layout>
+                                                            
+                                                            <v-flex xs4 md4 align-self-center mx-2>
+                                                                <v-img :src="image" max-height="90px" max-width="120px"></v-img>
+                                                            </v-flex>
+                                                            
+                                                            <v-flex xs5 md5>
+                                                                <v-card-title primary-title>
+                                                                    <div>
+                                                                        <div class="headline">{{ flight.departureTime + ' - ' + flight.arrivalTime }}</div>
+                                                                        <div class="pl-0">
+                                                                            <span class="grey--text text--darken-2 ">{{ flight.airline }}</span>
                                                                         </div>
-                                                                    </v-card-title>
-                                                                </v-flex>
+                                                                    </div>
+                                                                </v-card-title>
+                                                            </v-flex>
 
-                                                                <v-flex xs5 md5>
-                                                                    <v-card-title primary-title>
-                                                                        <div>
-                                                                            <div class="d-flex">
-                                                                                <span class="grey--text text--darken-2 ">{{ transitLabelContent(flight) }}</span>
-                                                                            </div>  
-                                                                        </div>
-                                                                    </v-card-title>
-                                                                </v-flex>
+                                                            <v-flex xs5 md5>
+                                                                <v-card-title primary-title>
+                                                                    <div>
+                                                                        <div class="d-flex">
+                                                                            <span class="grey--text text--darken-2 ">{{ transitLabelContent(flight) }}</span>
+                                                                        </div>  
+                                                                    </div>
+                                                                </v-card-title>
+                                                            </v-flex>
 
-                                                                <v-flex xs5 md5>
-                                                                    <v-card-title primary-title>
-                                                                        <div>
-                                                                            <div class="headline">{{ flight.departureCode + ' - ' + flight.destinationCode }}</div>
-                                                                            <div class="d-flex">
-                                                                                <span class="grey--text text--darken-2 ">{{ flight.flightDuration }}</span>
-                                                                            </div>  
-                                                                        </div>
-                                                                    </v-card-title>
-                                                                </v-flex>
+                                                            <v-flex xs5 md5>
+                                                                <v-card-title primary-title>
+                                                                    <div>
+                                                                        <div class="headline">{{ flight.departureCode + ' - ' + flight.destinationCode }}</div>
+                                                                        <div class="d-flex">
+                                                                            <span class="grey--text text--darken-2 ">{{ flight.flightDuration + ' minutes'}}</span>
+                                                                        </div>  
+                                                                    </div>
+                                                                </v-card-title>
+                                                            </v-flex>
 
-                                                                <v-flex xs5 md5>
-                                                                    <v-card-title primary-title>
-                                                                        <div>
-                                                                            <div class="headline">{{ "from " + flight.ticketPrice + "€" }}</div> 
-                                                                        </div>
-                                                                    </v-card-title>
-                                                                </v-flex>
+                                                            <v-flex xs5 md5>
+                                                                <v-card-title primary-title>
+                                                                    <div>
+                                                                        <div class="headline">{{ "from " + flight.ticketPrice + "€" }}</div> 
+                                                                    </div>
+                                                                </v-card-title>
+                                                            </v-flex>
 
-                                                                <v-flex>
-                                                                    <v-card-actions>
-                                                                        <v-spacer></v-spacer>
-                                                                        <v-layout row>
-                                                                            <v-btn flat @click.stop="doShowDeal(flight)">View Deal</v-btn>
-                                                                            <v-btn flat @click="flightSelected(flight)">
-                                                                                Reserve
-                                                                                <v-icon right>input</v-icon>
-                                                                            </v-btn>
-                                                                        </v-layout>
-                                                                    </v-card-actions>
-                                                                </v-flex>
-                                                            </v-layout>
-                                                        </v-card>
-                                                    </v-flex>
-                                                </v-layout>
-                                            </v-container>
-                                        </v-card>
-                                    </div>
+                                                            <v-flex>
+                                                                <v-card-actions>
+                                                                    <v-spacer></v-spacer>
+                                                                    <v-layout row>
+                                                                        <v-btn flat @click.stop="doShowDeal(flight)">View Deal</v-btn>
+                                                                        <v-btn flat @click="flightSelected(flight)">
+                                                                            Reserve
+                                                                            <v-icon right>input</v-icon>
+                                                                        </v-btn>
+                                                                    </v-layout>
+                                                                </v-card-actions>
+                                                            </v-flex>
+                                                        </v-layout>
+                                                    </v-card>
+                                                </v-flex>
+                                            </v-layout>
+                                    </v-card>
                                 </v-item>
                             </v-flex>
                         </v-list>
@@ -435,20 +427,20 @@
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex>
-                                <h2>Tuesday, 2019-05-21</h2>
+                                <h2>{{ selectedFlight.departureDate }}</h2>
                                 <p></p>
-                                <h3>Flight number: LX1419</h3>
+                                <h3>Flight number: {{ selectedFlight.flightNumber }}</h3>
                                 <p></p>
-                                <p>From: Nikola Tesla (BEG)</p>
-                                <p>To: Zurich Airport (ZRH)</p>
-                                <p>Airline: Air France</p>
-                                <h3>15:25 - 20:10</h3>
-                                <p>4h 45min, 1 stop</p>
-                                <p>Distance: 1878km</p>
-                                <p>Stops: Heatrow Airport (LHR)</p>
+                                <p>From: {{ selectedFlight.departureAirport }} ({{ selectedFlight.departureCode }})</p>
+                                <p>To: {{ selectedFlight.destinationAirport }} ({{ selectedFlight.destinationCode }})</p>
+                                <p>Airline: {{ selectedFlight.airline }}</p>
+                                <h3>{{ selectedFlight.departureTime + ' - ' + selectedFlight.arrivalTime}}</h3>
+                                <p>{{ selectedFlight.flightDuration }}, {{ selectedFlight.transitCount }} stop</p>
+                                <p>Distance: {{ selectedFlight.flightDistance }}km</p>
+                                <p>Stops: PLACEHOLDER</p>
                                 <p>Passenger count: {{ passengersCount }}</p>
                                 <p>Class: {{ searchClass }}</p>
-                                <h2>Trip total: 81€</h2>
+                                <h2>Trip total: {{ selectedFlight.ticketPrice }}€</h2>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -465,6 +457,8 @@
 
 
 <script>
+var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
 export default {
     computed: {
         minimalDepartureDate() {
@@ -484,6 +478,11 @@ export default {
     },
     data() {
         return {
+            
+            // ============================================================
+            // SEARCH PARAMETERS
+            // ============================================================
+
             searchType: "One-way",
             searchTypeItems: ["One-way", "Round-trip", "Multi-city"],
             searchClass: "Economy",
@@ -494,9 +493,10 @@ export default {
 
             oneWaySearch: {
                 showMenu: false,
-                departure: "",
-                destination: "",
-                date: ""
+                departure: { id: undefined },
+                destination: { id: undefined },
+                date: undefined,
+                filterEnabled: false
             },
             roundTripSearch: {
                 departure: "",
@@ -523,151 +523,245 @@ export default {
                 ]
             },
 
-
-            // ==================================================== SEARCH
+            // ============================================================
+            // SEARCH RESULTS
+            // ============================================================
 
             searchResults: [],
             page: 0,
             size: 5,
-            rating: 4.5,         // TODO: CHANGE
-            image: "https://beebom.com/wp-content/uploads/2018/12/Lufthansa-Logo.jpg",
+            image: "https://carwad.net/sites/default/files/aeroplane-logo-102302-3436257.jpg",
             showDeal: false,
+            selectedFlight: {},
 
-
-            // ==================================================== FILTER
-            searchResultAirlines: ["Air France", "Air Serbia", "American Airlines", "Etihad", "Lufthansa", "RyanAir", "SWISS Airlines", "WizzAir"],     // TODO: CHANGE
+            // ============================================================
+            // FILTER PARAMETERS
+            // ============================================================
+            searchResultAirlines: [],
             filterOptions: {
                 airlines: [],
                 stopsCount: [],
                 minPrice: 0,
-                maxPrice: 1000,
-                priceRange: [0, 1000],
+                maxPrice: 2000,
+                priceRange: [0, 2000],
                 selectedClasses: [],
             },
 
-            // ==================================================== AUTOCOMPLETE
+            // ============================================================
+            // AUTOCOMPLETE DATA
+            // ============================================================
 
-            availableDestinations: ["Beijing", "Belgrade", "Dubai", "London", "Los Angeles", "Zurich"]                                                   // TODO: CHANGE
+            availableDestinations: []
         }
     },
     methods: {
+        // ============================================================
+        // SEARCH PARAMETERS
+        // ============================================================
+        selectionItemText: item => item.name + ' (' + item.airportCode + ')',
+        incrementPassengersCount() {
+            if(this.passengersCount < 20)
+                this.passengersCount++;
+        },
+        decrementPassengersCount() {
+            if(this.passengersCount > 1)
+                this.passengersCount--;
+        },
         swap(searchType) {
             [searchType.departure, searchType.destination] = [searchType.destination, searchType.departure];
         },
-        addRow() {
-            if(this.multiCitySearch.routes.length < 7) {
-                this.multiCitySearch.routes.push( {from: "", to: ""} );
+        // ============================================================
+        // ONE WAY SEARCH
+        // ============================================================
+
+        performOneWaySearch() {
+
+            // TODO: config za token (Promeniti u POST i slati objekat)
+
+            if(this.oneWaySearch.departure.id && this.oneWaySearch.destination.id && this.oneWaySearch.date) {
+
+                if(!this.oneWaySearch.filterEnabled) {
+                    
+                    // SEARCH
+
+                    this.$axios.get('http://localhost:8080/api/flightSearch/oneWaySearch', {
+                            params: {
+                                page: this.page,
+                                size: this.size,
+                                departureId: this.oneWaySearch.departure.id,
+                                destinationId: this.oneWaySearch.destination.id,
+                                departureDate: this.oneWaySearch.date,
+                                passengerCount: this.passengersCount,
+                                flightClassString: this.searchClass
+                            }
+                        }).then((response) => {
+                            if(response.data.length > 0) {
+                                this.searchResults = response.data;
+                            } else {
+                                this.page -= 1;
+                                this.searchResults = [];
+                                this.$swal.fire({
+                                    title: 'No results', 
+                                    html: 'Search with given parameters returned 0 results.',
+                                    type: 'info',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    allowOutsideClick: true
+                                });
+                            }
+                        }).catch((error) => {
+                            this.$swal("Error", error.response.data.message, 'error');
+                        });
+                } else {
+
+                    // FILTER
+
+                    var stopsCount = 0;
+
+                    if(this.filterOptions.stopsCount[0] == "direct")
+                        stopsCount = 0;
+                    else if(this.filterOptions.stopsCount[0] == "1")
+                        stopsCount = 1;
+                    else if(this.filterOptions.stopsCount[0] == "2+")
+                        stopsCount = 2;
+
+                    var leftBound = this.filterOptions.priceRange[0];
+                    var rightBound = this.filterOptions.priceRange[1];
+
+                    var objectToSend = {
+                        departureId: this.oneWaySearch.departure.id,
+                        destinationId: this.oneWaySearch.destination.id,
+                        departureDate: this.oneWaySearch.date,
+                        passengerCount: this.passengersCount,
+                        flightClassString: this.searchClass,
+                        airlines: this.filterOptions.airlines,
+                        stopsCount: stopsCount,
+                        minPrice: leftBound,
+                        maxPrice: rightBound
+                    }
+
+                    yourConfig.params = {
+                        page: this.page,
+                        size: this.size
+                    }
+
+                    this.$axios.post('http://localhost:8080/api/flightSearch/oneWayFilterSearch', objectToSend, yourConfig)
+                        .then((response) => {
+                            if(response.data.length > 0) {
+                                this.searchResults = response.data;
+                            } else {
+                                this.page -= 1;
+                                this.searchResults = [];
+                                this.$swal.fire({
+                                    title: 'No results', 
+                                    html: 'Search with given parameters returned 0 results.',
+                                    type: 'info',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    allowOutsideClick: true
+                                });
+                            }
+                        }).catch((error) => {
+                            this.$swal("Error", error.response.data.message, 'error');
+                        });
+                }
+
             } else {
+                this.$swal("Error", "Please fill out all fields.", 'error');
                 return;
             }
         },
-        removeRow() {
-            if(this.multiCitySearch.routes.length > 2) {
-                this.multiCitySearch.routes.splice(-1, 1);
-            }
-        },
-        performOneWaySearch() {
-            // TODO: Posalji GET na server i popuni listu rezultata
 
-            this.searchResults = [
+        // ============================================================
+        // ROUND TRIP SEARCH
+        // ============================================================
 
-                { 
-                    airline: "SWISS Airlines",
-                    departure: "Belgrade",
-                    departureCode: "BEG",
-                    destination: "Zurich",
-                    destinationCode: "ZRH",
-                    departureTime: "14:40",
-                    arrivalTime: "16:30",
-                    transitCount: 0,
-                    flightDuration: "1h 50m",
-                    ticketPrice: 96
-                },
-                { 
-                    airline: "Air Serbia",
-                    departure: "Belgrade",
-                    departureCode: "BEG",
-                    destination: "Zurich",
-                    destinationCode: "ZRH",
-                    departureTime: "18:05",
-                    arrivalTime: "19:55",
-                    transitCount: 0,
-                    flightDuration: "1h 50m",
-                    ticketPrice: 98
-                },
-                { 
-                    airline: "Air Serbia",
-                    departure: "Belgrade",
-                    departureCode: "BEG",
-                    destination: "Zurich",
-                    destinationCode: "ZRH",
-                    departureTime: "07:20",
-                    arrivalTime: "09:10",
-                    transitCount: 0,
-                    flightDuration: "1h 50m",
-                    ticketPrice: 81
-                },
-                { 
-                    airline: "Air Serbia",
-                    departure: "Belgrade",
-                    departureCode: "BEG",
-                    destination: "Zurich",
-                    destinationCode: "ZRH",
-                    departureTime: "12:40",
-                    arrivalTime: "14:30",
-                    transitCount: 0,
-                    flightDuration: "1h 50m",
-                    ticketPrice: 81
-                },
-                { 
-                    airline: "Air France",
-                    departure: "Belgrade",
-                    departureCode: "BEG",
-                    destination: "Zurich",
-                    destinationCode: "ZRH",
-                    departureTime: "15:25",
-                    arrivalTime: "20:10",
-                    transitCount: 1,
-                    flightDuration: "4h 45m",
-                    ticketPrice: 81
-                },
-            ]
-        },
         performRoundTripSearch() {
             // TODO: Posalji GET na server i popuni listu rezultata
+        },
+
+        // ============================================================
+        // MULTI CITY SEARCH
+        // ============================================================
+
+        addRow() {
+            if(this.multiCitySearch.routes.length < 7)
+                this.multiCitySearch.routes.push( {from: "", to: ""} );
+            else
+                return;
+        },
+        removeRow() {
+            if(this.multiCitySearch.routes.length > 2)
+                this.multiCitySearch.routes.splice(-1, 1);
         },
         performMultiCitySearch() {
             // TODO: Posalji GET na server i popuni listu rezultata
         },
-        nextPage(){
+
+        // ============================================================
+        // PAGINATION
+        // ============================================================
+        nextPage() {
+            
+            // TODO: Ovo radi samo za 1. pretragu - uraditi i za ostale
+
             this.page += 1;
-            this.$axios.get('http://localhost:8080/api/flights/searchFlights', {
-                params: {
-                    page: this.page,
-                    size: this.size,
-                    hotelName: this.hotelName,              // TODO: CHANGE
-                    hotelLocation: this.hotelLocation       // TODO: CHANGE
-            }})
-            .then(response => {
-                if(response.data.length > 0) {
-                    this.searchResults = response.data;  
-                } else {
-                    this.page -= 1;
-                    this.empty = true; 
-                    setTimeout(() => {
-                        this.empty = false;
-                    }, 3000)      
-                }
-            })
+
+            if(this.oneWaySearch.departure.id && this.oneWaySearch.destination.id && this.oneWaySearch.date) {
+
+                this.$axios.get('http://localhost:8080/api/flightSearch/oneWaySearch', {
+                        params: {
+                            page: this.page,
+                            size: this.size,
+                            departureId: this.oneWaySearch.departure.id,
+                            destinationId: this.oneWaySearch.destination.id,
+                            departureDate: this.oneWaySearch.date,
+                            passengerCount: this.passengersCount,
+                            flightClassString: this.searchClass
+                        }
+                    }).then((response) => {
+                        
+                        if(response.data.length > 0) {
+                            this.searchResults = response.data;
+                        } else {
+                            this.page -= 1;
+                            this.$swal.fire({
+                                title: 'No results', 
+                                html: 'There are no more flight that satisfy the given search criteria.',
+                                type: 'info',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                allowOutsideClick: true
+                            });
+                        }
+
+                    }).catch((error) => {
+                        this.$swal("Error", error.response.data.message, 'error');
+                    });
+            } else {
+                this.$swal("Error", "Please fill out all fields.", 'error');
+                return;
+            }
         },
-        previousPage(){
-            this.page -= 1;                             // TODO: CHANGE (Videti koji tip pretrage je u pitanju)
-            this.fetchFlights();
+        previousPage() {
+            this.page -= 1;
+
+            if(this.searchType == "One-way")
+                this.performOneWaySearch();
+            else if(this.searchType == "Round-trip")
+                this.performRoundTripSearch();
+            else if(this.searchType == "Multi-city")
+                this.performMultiCitySearch();
         },
+
+        // ============================================================
+        // SEARCH RESULTS
+        // ============================================================
+
         flightSelected(flight){
             this.selectedFlight = flight;
 
-            this.$axios.get('http://localhost:8080/api/hotels/getFlight/' + this.selectedFlight.id)
+            this.$axios.get('http://localhost:8080/api/hotels/getFlight/' + this.selectedFlight.id)         // TODO: Uraditi rezervaciju nadalje
             .then(response => {
                 console.log(response.data) 
                 this.searchResults = response.data
@@ -683,11 +777,15 @@ export default {
                 return flight.transitCount + " stops";
         },
         doShowDeal(flight) {
+            this.selectedFlight = flight;
             this.showDeal = true;
-            // TODO: Dodati prave detalje
         },
+
+        // ============================================================
+        // FILTER
+        // ============================================================
         resetFilter() {
-            
+
             this.filterOptions = {
                 airlines: [],
                 stopsCount: [],
@@ -695,70 +793,56 @@ export default {
                 maxPrice: 1000,
                 priceRange: [0, 1000],
                 selectedClasses: [],
-            },
+            };
 
-            this.performOneWaySearch();
+            this.filterOptions.airlines = this.searchResultAirlines;
+
+            if(this.searchType == "One-way") {
+                this.oneWaySearch.filterEnabled = false;
+                this.performOneWaySearch();
+            }
+            else if(this.searchType == "Round-trip") {
+                this.roundTripSearch.filterEnabled = false;
+                this.performRoundTripSearch();
+            }
+            else if(this.searchType == "Multi-city") {
+                this.multiCitySearch.filterEnabled = false;
+                this.performMultiCitySearch();
+            }
         },
         filterData() {
-
-            // TODO: Uraditi filter na backendu
-
-            var results = this.searchResults;
-            var filteredByAirline = [];
-
-            if(this.filterOptions.airlines.length == 0) {
-                filteredByAirline = results;
-            } else {
-                for(var i = 0; i < this.filterOptions.airlines.length; i++) {
-                    for(var j = 0; j < results.length; j++) {
-                        if(results[j].airline.includes(this.filterOptions.airlines[i].toString())) {
-                            filteredByAirline.push(results[j]);
-                        }
-                    }
-                }
+            
+            if(this.searchType == "One-way") {
+                this.oneWaySearch.filterEnabled = true;
+                this.performOneWaySearch();
             }
-
-            var filteredByTransitCount = [];
-            var stopsCount = 0;
-
-            if(this.filterOptions.stopsCount[0] == "direct")
-                stopsCount = 0;
-            else if(this.filterOptions.stopsCount[0] == "1")
-                stopsCount = 1;
-            else if(this.filterOptions.stopsCount[0] == "2+")
-                stopsCount = 2;
-
-            if(this.filterOptions.stopsCount.length == 0) {
-                filteredByTransitCount = filteredByAirline;
-            } else {
-                for(var i = 0; i < filteredByAirline.length; i++) {
-                    if(stopsCount != 2) {
-                        if(filteredByAirline[i].transitCount == stopsCount) {
-                            filteredByTransitCount.push(filteredByAirline[i]);
-                        }
-                    } else {
-                        if(filteredByAirline[i].transitCount >= stopsCount) {
-                            filteredByTransitCount.push(filteredByAirline[i]);
-                        }
-                    }
-
-                }
+            else if(this.searchType == "Round-trip") {
+                this.roundTripSearch.filterEnabled = true;
+                this.performRoundTripSearch();
             }
-
-            var filteredByPriceRange = [];
-
-            var leftBound = this.filterOptions.priceRange[0];
-            var rightBound = this.filterOptions.priceRange[1];
-
-            for(var i = 0; i < filteredByTransitCount.length; i++) {
-                if(leftBound <= filteredByTransitCount[i].ticketPrice && filteredByTransitCount[i].ticketPrice <= rightBound) {
-                    filteredByPriceRange.push(filteredByTransitCount[i]);
-                }
+            else if(this.searchType == "Multi-city") {
+                this.multiCitySearch.filterEnabled = true;
+                this.performMultiCitySearch();
             }
+        },
+    },
+    created() {
 
-            if(filteredByPriceRange.length)
-                this.searchResults = filteredByPriceRange;
-        }
+        this.$axios.get('http://localhost:8080/api/flightSearch/getAllDestinations', yourConfig)
+            .then((response) => {
+                this.availableDestinations = response.data;
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
+
+        // TOOO: OVO IZMESTITI na kad se klikne search da get-uje samo one aviokompanije koje imaju let na datim parametrima
+        this.$axios.get('http://localhost:8080/api/flightSearch/getAirlineNames', yourConfig)
+            .then((response) => {
+                this.searchResultAirlines = response.data;
+                this.filterOptions.airlines = this.searchResultAirlines;
+            }).catch((error) => {
+                this.$swal("Error", error.response.data.message, 'error');
+            });
     }
 }
 </script>
