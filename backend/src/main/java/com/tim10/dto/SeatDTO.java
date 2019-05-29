@@ -5,6 +5,7 @@ import com.tim10.domain.SegmentClass;
 
 public class SeatDTO {
 	
+	private Long id;
 	private Integer red;
 	private Integer kolona;
 	private SegmentClass segmentClass;
@@ -17,12 +18,17 @@ public class SeatDTO {
 	}
 	
 	public SeatDTO(Seat s) {
+		this.id = s.getId();
 		this.red = s.getRed();
 		this.kolona = s.getKolona();
 		this.segmentClass = s.getSegmentClass();
 		this.isReserved = s.getIsReserved();
 		this.isActive = s.getIsActive();
 		this.isSelected = false;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
 	public Integer getRed() {
