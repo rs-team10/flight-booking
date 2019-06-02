@@ -358,6 +358,7 @@ export default {
             checkOutMenu: false,
             checkOutMenuDialog: false,
             checkOutDate: new Date().toISOString().substr(0, 10),
+            minDate: new Date().toISOString().substr(0, 10),
 
             days: '',
             totalRoomPrice: '',

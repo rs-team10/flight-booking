@@ -29,7 +29,7 @@ public class QuickRoomResDTO {
 		this.dateTo = res.getDateTo();
 		this.totalPrice = res.getTotalPrice();
 		this.discount = res.getDiscount();
-		this.additionalServices = res.getAdditionalServices();
+		this.setAdditionalServices(res.getAdditionalServices());
 	}
 	
 	public QuickRoomResDTO(Long id, RoomDTO room, Date dateFrom, Date dateTo, BigDecimal totalPrice, Double discount) {
@@ -78,6 +78,14 @@ public class QuickRoomResDTO {
 	}
 	public void setDiscount(Double discount) {
 		this.discount = discount;
+	}
+
+	public Set<PriceListItem> getAdditionalServices() {
+		return additionalServices;
+	}
+
+	public void setAdditionalServices(Set<PriceListItem> additionalServices) {
+		this.additionalServices = additionalServices;
 	}
 	
 	

@@ -1,10 +1,12 @@
 package com.tim10.controller;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,7 +82,8 @@ public class HotelController {
 		if(h.isPresent()){
 			hotel.setAdministrators(h.get().getAdministrators());
 			hotel.setQuickRoomReservations(h.get().getQuickRoomReservations());
-			return new ResponseEntity<>(hotelService.save(hotel), HttpStatus.OK);
+			Hotel returnHotel = hotelService.save(hotel);
+			return new ResponseEntity<>(returnHotel, HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Wanted hotel does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -169,17 +172,42 @@ public class HotelController {
 	 */
 	@RequestMapping(value="/quickRoomReservations", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathParam("hotelId") Long hotelId,
-														@PathParam("checkInDate") String checkInDate,
-														@PathParam("checkOutDate") String checkOutDate) throws ParseException{
+																			@PathParam("checkInDate") String checkInDate,
+																			@PathParam("checkOutDate") String checkOutDate) throws ParseException{
 		return new ResponseEntity<>(hotelService.getQuickRoomReservations(hotelId, checkInDate, checkOutDate), HttpStatus.OK);
 	}
 	
 	/*
-	 * Dobavljanje svih izvestaja za hotel sa prosledjenim id-jem
+	 * Dobavljanje svih izvestaja (osim zarade) za hotel sa prosledjenim id-jem
 	 */
 	@RequestMapping(value="/getReport/{hotelId}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<HotelReportDTO> getReport(@PathVariable("hotelId") Long hotelId) throws ParseException{
 		return new ResponseEntity<>(hotelService.getReports(hotelId), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/getIncomeReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<BigDecimal> getIncomeReport(@PathParam("hotelId") Long hotelId,
+											@PathParam("dateFrom") String dateFrom,
+											@PathParam("dateTo") String dateTo) throws ParseException {
+		return new ResponseEntity<>(hotelService.getIncomeReport(hotelId,  dateFrom,  dateTo), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/dailyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getDailyReport(@PathParam("hotelId") Long hotelId,
+															@PathParam("dateFrom") String dateFrom) throws ParseException{
+		return new ResponseEntity<>(hotelService.getDailyReport(hotelService.findOne(hotelId).get(), dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/weeklyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> gteWeeklyReport(@PathParam("hotelId") Long hotelId,
+															@PathParam("dateFrom") String dateFrom) throws ParseException{
+		return new ResponseEntity<>(hotelService.getWeeklyReport(hotelService.findOne(hotelId).get(), dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/monthlyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getYearlyReport(@PathParam("hotelId") Long hotelId,
+															@PathParam("numberOfYears") int numberOfYears) throws ParseException{
+		return new ResponseEntity<>(hotelService.getYearlyReport(hotelService.findOne(hotelId).get(), numberOfYears), HttpStatus.OK);
 	}
 	
 	

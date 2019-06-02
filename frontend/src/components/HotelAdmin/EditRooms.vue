@@ -117,6 +117,7 @@ export default {
         },
         saveRoom(){
             this.newRoom.roomType = Object.assign({}, this.selectedRoomType);
+            //this.newRoom.hotel = this.selectedHotel;
             this.selectedHotel.rooms.push(this.newRoom);
             this.closeAddDialog();
         }

@@ -38,6 +38,11 @@ public class Room implements Serializable{
 	@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
 	
+//	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+//	@ManyToOne(fetch=FetchType.LAZY)
+//	@JoinColumn(name="hotel_id")
+//	private Hotel hotel;
+	
 	public boolean isReserved(Date checkInDate, Date checkOutDate) {
 		for(RoomReservation roomReservation: this.roomReservations) {
 			if( ((roomReservation.getDateFrom().compareTo(checkInDate) <= 0) && (roomReservation.getDateTo().compareTo(checkInDate) > 0))
@@ -51,6 +56,7 @@ public class Room implements Serializable{
 	public Room() {
 		super();
 		this.roomReservations = new HashSet<>();
+		//this.hotel = new Hotel();
 	}
 
 	public Long getId() {

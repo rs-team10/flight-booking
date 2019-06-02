@@ -111,12 +111,17 @@
                 </div>
               </div>
               <v-spacer></v-spacer>
-              <v-btn icon @click="hotelSelected(hotel)">
+              <v-btn icon @click="hotelSelected(hotel)" v-if="checkAdmin()">
                 <v-icon medium color="indigo">edit</v-icon>
               </v-btn>
-              <v-btn icon @click="generateReports(hotel)">
+              <v-btn icon @click="generateReports(hotel)" v-if="checkAdmin()">
                 <v-icon medium color="indigo">assessment</v-icon>
               </v-btn>
+              
+              <v-btn icon>
+                <v-icon medium color="indigo">face</v-icon>
+              </v-btn>
+              
             </v-card-title>
 
             </v-card>
@@ -193,6 +198,11 @@ export default {
         }).catch(error => {
           console.log(error.response.data);
         })
+      },
+      checkAdmin(){
+        if(localStorage.getItem("role") == "ROLE_HOTEL_ADMIN")
+          return true;     
+        return false;
       }
   },
   mounted(){

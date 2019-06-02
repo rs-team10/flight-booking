@@ -26,7 +26,8 @@
                 <v-card class="ma-3" id="roomsFeedback">
                     <v-item-group>
                         <v-layout column>
-                            <v-list class="scroll-y" style="height: 630px">
+                            <!-- style="height: 630px" -->
+                            <v-list class="scroll-y" style="height: 1325px">
                                 <v-flex
                                     v-for="roomType in this.report.roomTypes"
                                     :key="roomType.id"
@@ -60,28 +61,51 @@
             </v-layout>
         </v-flex>
 
-        <v-flex xs5 md5 sm5>
-            <v-layout class="mt-4" column>
+        <v-flex xs5 md5 sm5 class="mr-2">
+            <v-layout class="mt-3" column>
                 <v-flex id="dailyVisits">
                     <v-card
-                        class="mt-3"
-                        max-width="760px">
+                        class="mt-4"
+                        max-width="760px"
+                        v-if="canRender">
                         <v-sheet
                         class="v-sheet--offset mx-auto"
-                        color="indigo lighten-1"
+                        color="indigo lighten-4"
                         elevation="12"
                         max-width="calc(100% - 32px)">
-                            <v-sparkline
-                                :labels="(Array.from(Object.keys(this.report.dailyReports), x=>x.substr(5, 5).replace('-', '/'))).sort()"
-                                :value="Object.values(this.report.dailyReports)"
-                                color="white"
-                                line-width="2"
-                                padding="16"
-                            ></v-sparkline>
+                            <bar-chart 
+                                class="pt-2 temp"
+                                :chart-data="dailyReport">
+                            </bar-chart>
                         </v-sheet>
 
-                        <v-card-text class="pt-0">
-                        <div class="title indigo--text font-weight-regular mb-2">Daily visits</div>
+                        <v-card-text class="py-0">
+                        <v-layout row>
+                        <div class="title indigo--text font-weight-regular mt-2">Daily visits</div>
+                        <v-spacer></v-spacer>
+                        <v-flex xs5 sm5 md5>
+                            <v-menu
+                            v-model="dailyDateMenu"
+                            :close-on-content-click="true"
+                            :nudge-right="40"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px"
+                            >
+                            <template v-slot:activator="{ on }">
+                                <v-text-field
+                                    v-model="dailyDate"
+                                    append-icon="event"
+                                    v-on="on"
+                                    class="my-0 py-0">
+                                </v-text-field>
+                            </template>
+                            <v-date-picker v-model="dailyDate" @change="getDailyVisits()" @input="dailyDateMenu=false" color="indigo lighten-1"></v-date-picker>
+                            </v-menu>
+                        </v-flex>
+                        </v-layout>
                         </v-card-text>
                     </v-card>
                 </v-flex>
@@ -89,49 +113,80 @@
                 <v-flex id="weeklyVisits">
                     <v-card
                         class="mt-5"
-                        max-width="760px">
+                        max-width="760px"
+                        v-if="canRender">
                         <v-sheet
                         class="v-sheet--offset mx-auto"
-                        color="indigo lighten-1"
+                        color="indigo lighten-4"
                         elevation="12"
-                        max-width="calc(100% - 32px)"
-                        >
-                            <v-sparkline
-                                :labels="labels"
-                                :value="weeklyValues"
-                                color="white"
-                                line-width="2"
-                                padding="16"
-                            ></v-sparkline>
+                        max-width="calc(100% - 32px)">
+                            <bar-chart 
+                                class="pt-2 temp"
+                                :chart-data="weeklyReport">
+                            </bar-chart>
                         </v-sheet>
 
-                        <v-card-text class="pt-0">
-                        <div class="title indigo--text font-weight-regular mb-2">Weekly visits</div>
-
+                        <v-card-text class="py-0">
+                        <v-layout row>
+                        <div class="title indigo--text font-weight-regular mt-2">Weekly visits</div>
+                        <v-spacer></v-spacer>
+                        <v-flex xs5 sm5 md5>
+                            <v-menu
+                            v-model="weeklyDateMenu"
+                            :close-on-content-click="true"
+                            :nudge-right="40"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px"
+                            >
+                            <template v-slot:activator="{ on }">
+                                <v-text-field
+                                    v-model="weeklyDate"
+                                    append-icon="event"
+                                    v-on="on"
+                                    class="my-0 py-0">
+                                </v-text-field>
+                            </template>
+                            <v-date-picker v-model="weeklyDate" 
+                                    @change="getWeeklyVisits()" @input="weeklyDateMenu=false" color="indigo lighten-1" :allowed-dates="allowedDates"></v-date-picker>
+                            </v-menu>
+                        </v-flex>
+                        </v-layout>
                         </v-card-text>
                     </v-card>
                 </v-flex>
 
                 <v-flex id="monthlyVisits">
                     <v-card
-                        class="mt-5"
-                        max-width="760px">
+                        class="my-5"
+                        max-width="760px"
+                        v-if="canRender">
                         <v-sheet
                         class="v-sheet--offset mx-auto"
-                        color="indigo lighten-1"
+                        color="indigo lighten-4"
                         elevation="12"
                         max-width="calc(100% - 32px)">
-                            <v-sparkline
-                                :labels="monthlyLabels"
-                                :value="value"
-                                color="white"
-                                line-width="2"
-                                padding="16"
-                            ></v-sparkline>
+                            <bar-chart 
+                                class="pt-2 temp"
+                                :chart-data="yearlyReport">
+                            </bar-chart>
                         </v-sheet>
 
-                        <v-card-text class="pt-0">
-                        <div class="title indigo--text font-weight-regular mb-2">Monthly visits</div>
+                        <v-card-text class="py-0">
+                        <v-layout row>
+                        <div class="title indigo--text font-weight-regular mt-2">Monthly visits</div>
+                        <v-spacer></v-spacer>
+                        <v-flex xs3 sm3 md3>
+                            <v-select
+                            :items="years"
+                            v-model="year"
+                            class="my-0 py-0"
+                            @change="getMonthlyVisits()"
+                            ></v-select>
+                        </v-flex>
+                        </v-layout>
                         </v-card-text>
                     </v-card>
                 </v-flex>
@@ -166,7 +221,7 @@
                     </v-text-field>
                 </v-flex>
                 </template>
-                <v-date-picker v-model="dateFrom" @input="dateFromMenu=false" color="indigo lighten-1"></v-date-picker>
+                <v-date-picker v-model="dateFrom" @input="dateFromMenu=false" color="indigo lighten-1" :max="maxDate"></v-date-picker>
                 </v-menu>
                 
                 <!-- datum do -->
@@ -191,10 +246,39 @@
                     </v-text-field>
                 </v-flex>
                 </template>
-                <v-date-picker v-model="dateTo" @input="dateToMenu=false" color="indigo lighten-1"></v-date-picker>
+                <v-date-picker v-model="dateTo" @input="dateToMenu=false" color="indigo lighten-1" :max="maxDate"></v-date-picker>
                 </v-menu>
+
+                <v-btn class="mt-2" outline block flat color="indigo lighten-3" @click="getIncomeReport">Show</v-btn>
                 </v-layout>
             </v-card-text>
+
+            <div v-if="showIncome">
+            <v-divider></v-divider>
+            <v-card-text v-if="showIncome">
+                <v-layout column>
+                    <v-layout row class="title font-weight-light indigo--text">
+                        <span>From:</span>
+                        <v-spacer></v-spacer>
+                        <span>{{ showDateFrom }}</span>
+                    </v-layout><br>
+
+                    <v-layout row class="title font-weight-light indigo--text">
+                        <span>To:</span>
+                        <v-spacer></v-spacer>
+                        <span>{{ showDateTo }}</span>
+                    </v-layout><br>
+
+                    <v-divider light></v-divider><br>
+
+                    <v-layout row class="headline font-weight-medium indigo--text text-uppercase">
+                        <span>Total income:</span>
+                        <v-spacer></v-spacer>
+                        <span>{{ income }}€</span>
+                    </v-layout>
+                </v-layout>
+            </v-card-text>
+            </div>
         </v-card>
         </v-flex>
 
@@ -203,27 +287,140 @@
 </template>
 
 <script>
+import Chart from './Chart.vue'
+
 export default {
+    components: {
+        'bar-chart' : Chart
+    },
+
     props: ['selectedHotel'],
 
     data(){
         return{
             report: {},
-            labels: ['12am','3am','6am','9am','12pm','3pm','6pm','9pm'],
-            weeklyValues: [200,675,410,390,310,460,250,240],
-            value: [200,675,410,390,310,460,250,240, 200, 200, 200, 200],
-            monthlyLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
 
             dateFromMenu: false,
             dateFrom: new Date().toISOString().substr(0, 10),
             dateToMenu: false,
             dateTo: new Date().toISOString().substr(0, 10),
+            maxDate: new Date().toISOString().substr(0, 10),
+
+            income: '',
+            canRender: false,
+            showIncome: false,
+            showDateFrom: '',
+            showDateTo: '',
+
+            dailyReport: {},
+            dailyDate: new Date().toISOString().substr(0, 10),
+            dailyDateMenu: false,
+
+            weeklyReport: {},
+            weeklyDate: new Date().toISOString().substr(0, 10),
+            weeklyDateMenu: false,
+
+            yearlyReport: {},
+            year: '',   
+
+            months: { 0 : 'JAN', 1 : 'FEB', 2 : 'MAR', 3 : 'APR', 4 : 'MAY', 5 : 'JUN', 6 : 'JUL', 7 : 'AUG', 8 : 'SEP', 9 : 'OCT', 10 : 'NOV', 11 : 'DEC' }
         }
     },
 
     methods:{
         numberOfRoomReviews(roomTypeId){
+            //TODO
             return 0;
+        },
+        getIncomeReport(){
+            this.$axios
+                .get('http://localhost:8080/api/hotels/getIncomeReport/', {
+                    params: {
+                        hotelId : this.selectedHotel.id,
+                        dateFrom : this.dateFrom,
+                        dateTo: this.dateTo
+                    }
+                }).then(response => {
+                    this.income = response.data;
+                    this.showDateFrom = this.dateFrom;
+                    this.showDateTo = this.dateTo;
+                    this.showIncome = true;
+                })
+        },
+        getMonthlyVisits(){
+            this.$axios
+                .get('http://localhost:8080/api/hotels/monthlyReport/', {
+                    params: {
+                        hotelId : this.selectedHotel.id,
+                        numberOfYears : new Date().getFullYear() - this.year
+                    }
+                }).then(response => {
+                    this.yearlyReport = {
+                        labels : (Array.from(Object.keys(response.data), x=>this.months[new Date(parseInt(x)).getMonth()])),
+                        datasets : [
+                            {
+                            backgroundColor: '#5c6bc0',
+                            hoverBackgroundColor: '#7986cb',
+                            borderWidth: 1,
+                            pointBorderColor: '#249EBF',
+                            data: Object.values(response.data)
+                            }
+                        ]
+                    }
+                    this.year = new Date(parseInt((Object.keys(response.data))[0])).getFullYear()
+                })
+        },
+        getWeeklyVisits(){
+            this.$axios
+                .get('http://localhost:8080/api/hotels/weeklyReport/', {
+                    params: {
+                        hotelId : this.selectedHotel.id,
+                        dateFrom : this.weeklyDate
+                    }
+                }).then(response => {
+                    this.weeklyReport = {
+                        labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
+                        datasets : [
+                            {
+                            backgroundColor: '#5c6bc0',
+                            hoverBackgroundColor: '#7986cb',
+                            borderWidth: 1,
+                            pointBorderColor: '#249EBF',
+                            data: Object.values(response.data)
+                            }
+                        ]
+                    }
+                })
+        },
+        getDailyVisits(){
+            this.$axios
+                .get('http://localhost:8080/api/hotels/dailyReport/', {
+                    params: {
+                        hotelId : this.selectedHotel.id,
+                        dateFrom : this.dailyDate
+                    }
+                }).then(response => {
+                    console.log(response.data)
+                    this.dailyReport = {
+                        labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
+                        datasets : [
+                            {
+                            backgroundColor: '#5c6bc0',
+                            hoverBackgroundColor: '#7986cb',
+                            borderWidth: 1,
+                            pointBorderColor: '#249EBF',
+                            data: Object.values(response.data)
+                            }
+                        ]
+                    }
+                })
+        },
+        allowedDates: val => new Date(val).getDay() == 1
+    },
+    computed: {
+        years () {
+            const year = new Date().getFullYear()
+            return Array.from({length: year - 1969}, (value, index) => 1970 + index)
         }
     },
     created(){
@@ -231,9 +428,41 @@ export default {
             .get('http://localhost:8080/api/hotels/getReport/' + this.selectedHotel.id)
             .then(response => {
                 this.report = response.data;
-                var keys = Object.keys(this.report.dailyReports)
-                var temp = Array.from(Object.keys(this.report.dailyReports), x=>x.substr(8, 2))
-                console.log(temp)
+                this.dailyReport.labels = Array.from(Object.keys(this.report.dailyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5));
+                this.dailyReport.datasets = [
+					{
+                        backgroundColor: '#5c6bc0',
+                        hoverBackgroundColor: '#7986cb',
+						borderWidth: 1,
+						pointBorderColor: '#249EBF',
+						data: Object.values(this.report.dailyReports)
+					}
+                ]
+
+                this.weeklyReport.labels = (Array.from(Object.keys(this.report.weeklyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/')));
+                this.weeklyReport.datasets = [
+                    {
+                        backgroundColor: '#5c6bc0',
+                        hoverBackgroundColor: '#7986cb',
+						borderWidth: 1,
+						pointBorderColor: '#249EBF',
+                        data: Object.values(this.report.weeklyReports)
+                    }
+                ]
+
+                this.yearlyReport.labels = (Array.from(Object.keys(this.report.yearlyReport), x=>this.months[new Date(parseInt(x)).getMonth()]));
+                this.yearlyReport.datasets = [
+                    {
+                        backgroundColor: '#5c6bc0',
+                        hoverBackgroundColor: '#7986cb',
+						borderWidth: 1,
+						pointBorderColor: '#249EBF',
+                        data: Object.values(this.report.yearlyReport)
+                    }
+                ],
+                this.year = new Date(parseInt((Object.keys(this.report.yearlyReport))[0])).getFullYear()
+
+                this.canRender = true;
             })
     }
 }

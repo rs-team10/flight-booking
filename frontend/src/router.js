@@ -19,6 +19,7 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import Reserve from './components/HotelReservation/Reserve.vue'
+import BarChart from './components/HotelAdmin/Chart.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -137,6 +138,11 @@ export default new Router({
       path: '/hotelReservation',
       name: 'hotelReservation',
       component: Reserve
+    },
+    {
+      path: '/temp',
+      name: 'barChart',
+      component: BarChart
     }
     //=====================================
   ]

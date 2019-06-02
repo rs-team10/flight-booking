@@ -415,7 +415,6 @@ export default {
             this.$v.$touch();
 
             if(!this.$v.$invalid){
-                console.log(this.selectedHotel);
                 this.editHotel();
             }
         },
@@ -428,7 +427,8 @@ export default {
                     this.success = false
             }, 3000)
             }).catch(error => {
-                this.error = error.response.data;
+                console.log("Edit hotel GRESKA")
+                //this.error = error.response.data;
             });
         },
         //==============================SERVICES================================================
@@ -457,7 +457,6 @@ export default {
                 //ako nijedan item nije selektovan znaci da dodajemo novi
                 this.selectedHotel.additionalServicesPriceList.priceListItems.push(this.serviceEditedItem)
             }
-            console.log(this.selectedHotel)
             this.serviceClose()
         },
         //=========================================================================================
@@ -486,7 +485,6 @@ export default {
                 //ako nijedan item nije selektovan znaci da dodajemo novi
                 //this.roomEditedItem["specialRoomPrices"] = new Array();
                 this.selectedHotel.roomTypes.push(this.roomEditedItem);
-                console.log(this.selectedHotel);
             }
             this.roomClose()
         },
