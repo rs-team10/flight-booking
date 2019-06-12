@@ -12,7 +12,7 @@ import com.tim10.dto.BranchOfficeLocationDTO;
 public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Long>{
 
 	@Query(value = "SELECT "
-			+ "bo.branch_office_id, "
+			+ "bo.id, "
 			+ "city, "
 			+ "country"  
 			+ "  FROM "
@@ -22,7 +22,7 @@ public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Long
 			+" ON "
 			+ 	"bo.location_id = l.id"
 			+" WHERE "
-			+ 	"company_id = :rentACarId", nativeQuery = true)
+			+ 	"main_office_id = :rentACarId", nativeQuery = true)
 	Collection<BranchOfficeLocationDTO> getBranchOfficesFromRentACar(@Param("rentACarId") Long rentACarId);
 	
 }

@@ -14,7 +14,7 @@ public class RentACarAdmin extends User {
 	private Boolean hasCustomPassword;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "company_id")//nullable false
+	@JoinColumn(name = "rentACarId")//nullable false
 	private RentACar company;
 
 	public RentACarAdmin() {
