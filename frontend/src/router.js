@@ -19,7 +19,7 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import Reserve from './components/HotelReservation/Reserve.vue'
-import BarChart from './components/HotelAdmin/Chart.vue'
+import DefineDiscount from './components/SysAdmin/DefineDiscount.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -141,8 +141,8 @@ export default new Router({
     },
     {
       path: '/temp',
-      name: 'barChart',
-      component: BarChart
+      name: 'defineDiscount',
+      component: DefineDiscount
     }
     //=====================================
   ]

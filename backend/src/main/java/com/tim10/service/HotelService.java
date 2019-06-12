@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,23 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.Hotel;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.QuickRoomReservation;
+import com.tim10.domain.Room;
+import com.tim10.dto.HotelDTO;
 import com.tim10.dto.HotelReportDTO;
+import com.tim10.dto.HotelRoomsDTO;
 import com.tim10.dto.QuickRoomResDTO;
+import com.tim10.dto.RoomDTO;
 import com.tim10.repository.HotelRepository;
+import com.tim10.repository.UserRepository;
 
 @Service
 public class HotelService {
 	
 	@Autowired
 	private HotelRepository hotelRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -57,10 +66,64 @@ public class HotelService {
 		return hotelRepository.findByParameter(pageable, hotelName, hotelLocation);
 	}
 	
-	public Hotel registerHotel(Hotel hotel) {
-		for(HotelAdmin admin : hotel.getAdministrators()) 
+	public Hotel registerHotel(Hotel hotel) throws Exception {
+		//dozvoljeno je registrovanje hotela sa istim imenom
+		for(HotelAdmin admin : hotel.getAdministrators()) {
+			if(userRepository.findOneByUsername(admin.getUsername()).isPresent()) 
+				throw new Exception("User with username: " + admin.getUsername() + " already exists");
+			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
+				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		return hotelRepository.save(hotel);
+		}
+		return save(hotel);
+	}
+	
+	public Hotel updateHotel(Hotel hotel) throws Exception {
+		Optional<Hotel> h = findOne(hotel.getId());
+		if(h.isPresent()) {
+			hotel.setAdministrators(h.get().getAdministrators());
+			hotel.setQuickRoomReservations(h.get().getQuickRoomReservations());
+			return save(hotel);
+		}
+		throw new Exception("Hotel doesn't exist");
+	}
+	
+	public List<HotelDTO> searchHotels(Pageable page, String hotelName, String hotelLocation) {
+		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
+		for(Hotel h : findByParameter(page, hotelName, hotelLocation))
+			dtos.add(new HotelDTO(h));
+		return dtos;
+	}
+	
+	public List<RoomDTO> getFreeRooms(Long id, String checkInDate, String checkOutDate) throws ParseException {
+		Set<Room> rooms = findOne(id).get().getRooms();
+		List<RoomDTO> responseRooms = new ArrayList<>();
+		
+		//Bilo bi brze preko upita, neka ga za sad ovako
+		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(checkInDate);
+		Date dateTo = new SimpleDateFormat("yyyy-MM-dd").parse(checkOutDate);
+		for(Room r : rooms) {
+			if(!r.isReserved(dateFrom, dateTo))
+				responseRooms.add(new RoomDTO(r));
+		}
+		return responseRooms;
+		
+	}
+	
+	public HotelRoomsDTO getHotelRooms(Long id) throws Exception {
+		Optional<Hotel> hotel = findOne(id);
+		if(hotel.isPresent())
+			return new HotelRoomsDTO(hotel.get());
+		throw new Exception("Hotel doesn't exist");
+	}
+	
+	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId) {
+		List<QuickRoomResDTO> responseList = new ArrayList<>();
+		Set<QuickRoomReservation> quickRoomReservations = findOne(hotelId).get().getQuickRoomReservations();
+		for(QuickRoomReservation res : quickRoomReservations) {
+			responseList.add(new QuickRoomResDTO(res));
+		}
+		return responseList;
 	}
 	
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId, String checkInDate, String checkOutDate) throws ParseException{
@@ -71,6 +134,17 @@ public class HotelService {
 			if(quickRoomReservation.getDateFrom().equals(dateFrom) && quickRoomReservation.getDateTo().equals(dateTo))
 				responseList.add(new QuickRoomResDTO(quickRoomReservation));
 		}
+		return responseList;
+	}
+	
+	public List<QuickRoomResDTO> setQuickRoomReservations(Set<QuickRoomReservation> quickRoomReservations, Long hotelId) {
+		Hotel hotel = findOne(hotelId).get();
+		hotel.setQuickRoomReservations(quickRoomReservations);
+		save(hotel);
+		List<QuickRoomResDTO> responseList = new ArrayList<>();
+		for(QuickRoomReservation qrr : quickRoomReservations) 
+			responseList.add(new QuickRoomResDTO(qrr));
+		
 		return responseList;
 	}
 	
@@ -168,15 +242,7 @@ public class HotelService {
 		
 		return yearlyReport;
 	}
-	
-//	public boolean isBetween(Date dateFrom, Date dateTo, Date checkInDate) {
-//		if(checkInDate.equals(dateFrom) || checkInDate.equals(dateTo))
-//			return true;
-//		else if(checkInDate.after(dateFrom) && checkInDate.before(dateTo))
-//			return true;
-//		return false;
-//	}
-	
+
 	public BigDecimal getIncomeReport(Long hotelId, String stringFrom, String stringTo) throws ParseException {
 		return hotelRepository.getIncomeReport(hotelId, stringFrom, stringTo);
 	}
