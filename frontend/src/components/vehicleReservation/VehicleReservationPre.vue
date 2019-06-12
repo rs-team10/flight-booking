@@ -126,6 +126,8 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn @click='confirmResrvation'>Accept</v-btn>
+                    <v-btn @click='cancel'>Cancel</v-btn>
+                    
                 </v-card-actions>
 
             </v-layout>
@@ -182,8 +184,13 @@ export default {
                 .catch(error => {
                     alert(error.resposne)
                 });
-            
                 
+        },
+        cancel:function(){
+         
+            this.$router.go(0);
+           
+      
         }
     }
     

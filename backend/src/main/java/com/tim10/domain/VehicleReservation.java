@@ -12,13 +12,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
 
 @Entity
 @Table(name="VehicleReservations")
@@ -37,8 +34,8 @@ public class VehicleReservation {
 	@Column(name="totalPrice")
 	private BigDecimal totalPrice;
 	
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@OneToMany(fetch=FetchType.LAZY)
+	
+	@ManyToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
@@ -47,10 +44,9 @@ public class VehicleReservation {
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
-	@Cascade(org.hibernate.annotations.CascadeType.ALL)
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "vehicleId")
-	private Vehicle reservedVehicle; //pogledaj mapiranje
+	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Vehicle reservedVehicle; //pogledaj mapiranje
 
 	public VehicleReservation() {
 		super();

@@ -1,5 +1,7 @@
 package com.tim10.controller;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.QuickVehicleReservation;
+import com.tim10.dto.QuickVehicleReservationDTO;
 import com.tim10.dto.VehicleReservationDTO;
 import com.tim10.dto.VehicleReservationPrewDTO;
 import com.tim10.service.VehicleReservationService;
@@ -43,6 +47,30 @@ public class VehicleReservationController {
 		}
 		
 		return new ResponseEntity<VehicleReservationPrewDTO>(forRet, HttpStatus.OK);
+
+		
+	}
+	
+	
+	
+	@RequestMapping(
+			value = "api/QuickVehicleReservation/{rentACarId}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> rentACarQuick( 
+			@PathVariable("rentACarId") Long rentACarId) {
+		
+		
+		Collection<QuickVehicleReservationDTO>  forRet;
+		
+		try {
+			forRet=vehicleReservationService.rentACarQuick(rentACarId);
+		}
+		catch(ResourceNotFoundException e){
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<Collection<QuickVehicleReservationDTO>>(forRet, HttpStatus.OK);
 
 		
 	}
@@ -93,6 +121,9 @@ public class VehicleReservationController {
 		
 		return new ResponseEntity<>("Successfully saved!", HttpStatus.OK);
 	}
+	
+	
+	
 	
 	
 	

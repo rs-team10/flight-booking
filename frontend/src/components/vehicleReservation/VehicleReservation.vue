@@ -56,8 +56,8 @@
                 <v-tab-item :value="'mobile-tabs-5-2'">
                         
                     <component
-                        :is='component2'
-                        :vehicles = 'vehicles'
+                        :is='component3'
+                        :vehiclesQuick='vehiclesQuick'
                     >
                     <!--Nekako da mu oznacis da je quic reservation-->
                     </component>
@@ -80,12 +80,14 @@
 
 import VehicleParamSearch from "@/components/vehicleReservation/VehicleParamSearch.vue"
 import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
+import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue"
 
     export default {
 
         components: {
             'vehicleParamSearch' : VehicleParamSearch,
-            'vehicleForRes' : VehicleForRes
+            'vehicleForRes' : VehicleForRes,
+            'vehicleQuickRes' : VehicleQuickRes
         },
 
         
@@ -93,11 +95,13 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 
             component1:'vehicleParamSearch',
             component2: 'vehicleForRes',
+            component3: 'vehicleQuickRes',
             
             tabs : null,
 
             
             vehicles: [],
+            vehiclesQuick: []
 
     }),
     methods : {

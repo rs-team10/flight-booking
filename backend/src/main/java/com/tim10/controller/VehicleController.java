@@ -146,6 +146,47 @@ public class VehicleController {
 	
 	
 	@RequestMapping(
+			value = "api/quickResVehicles/{from}/{to}/{country}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> quickResVehicles(
+									@PathVariable("from") String from, 
+									@PathVariable("to") String to,
+									@PathVariable("country") String country 
+	){
+		
+		
+		try {
+			return new ResponseEntity<Collection<Vehicle>>(vehicleService.vehiclesOnQucikFromCountry(from, to, country), HttpStatus.OK);
+		} catch (ParseException e) {
+			return new ResponseEntity<>("izmeni", HttpStatus.NOT_FOUND);
+		}
+		
+		
+	}
+	
+	@RequestMapping(
+			value = "api/quickResVehicleSearch/{country}",
+			method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public  ResponseEntity<?> quickResSearchParams(
+			@PathVariable("country") String country, 
+			@RequestBody VehicleSearchDTO vehicleSearchDTO
+		){
+		
+		
+		
+		try {
+			return new ResponseEntity<Collection<Vehicle>>(vehicleService.vehiclesQuickFilter(country, vehicleSearchDTO), HttpStatus.OK);
+		} catch (ParseException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
+		}
+		
+	}
+	
+	
+	@RequestMapping(
 			value = "api/testV/{country}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)

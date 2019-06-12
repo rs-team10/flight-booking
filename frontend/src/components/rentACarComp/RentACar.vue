@@ -113,6 +113,16 @@
                     > 
                     </component>
                 </v-flex>
+
+                <v-flex xs8>
+                   
+                    <component
+                        :is="component3"
+                        :quickReservations ='quickRes'
+                    >
+                    </component>
+               
+                </v-flex>
                 
 
         </v-layout>
@@ -140,6 +150,8 @@
 import ViewBranchOffices from "@/components/rentACarComp/ViewBranchOffices.vue"
 import VehiclePriceList from "@/components/rentACarComp/VehiclePriceList.vue"
 
+import QuickReservations from "@/components/rentACarComp/QuickReservations.vue"
+
 export default {
     props:{
         rentACarId:{
@@ -149,7 +161,9 @@ export default {
     },
     components: {
         'viewBranchOffices' : ViewBranchOffices,
-        'vehiclePriceList' : VehiclePriceList
+        'vehiclePriceList' : VehiclePriceList,
+
+        'quickReservations' : QuickReservations
     },
     data () {
       return {
@@ -174,8 +188,16 @@ export default {
         component1 : 'viewBranchOffices',
         component2 : 'vehiclePriceList',
 
+        component3 : 'quickReservations',
+
         text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu',
-        realId : 0
+        realId : 0,
+
+        vehicles: [],
+        quickRes: []
+
+
+
       }
     },
 

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,11 +18,14 @@ import com.tim10.domain.BranchOffice;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceList;
 import com.tim10.domain.PriceListItem;
+import com.tim10.domain.QuickVehicleReservation;
 import com.tim10.domain.RentACar;
 import com.tim10.domain.Vehicle;
 import com.tim10.domain.VehicleReservation;
+import com.tim10.dto.QuickVehicleReservationDTO;
 import com.tim10.dto.VehicleReservationDTO;
 import com.tim10.dto.VehicleReservationPrewDTO;
+import com.tim10.repository.RentACarRepository;
 import com.tim10.repository.VehicleRepository;
 import com.tim10.repository.VehicleReservationRepository;
 
@@ -29,9 +34,7 @@ import com.tim10.repository.VehicleReservationRepository;
 public class VehicleReservationService {
 	
 	/*
-	@Autowired
-	private RentACarRepository rentACarRepository;
-	
+
 	
 	@Autowired
 	private BranchOfficeRepository branchOfficeRepository;
@@ -43,6 +46,8 @@ public class VehicleReservationService {
 	@Autowired
 	private VehicleRepository vehicleRepository;
 
+	@Autowired
+	private RentACarRepository rentACarRepository;
 	
 	
 	
@@ -140,11 +145,11 @@ public class VehicleReservationService {
 		vehicleRes.setAdditionalServices(items);
 		vehicle.getReservations().add(vehicleRes);
 		
-		vehicle = vehicleRepository.save(vehicle);
-		System.out.println("STA JE OVAJ BROJ OVDE REKAO -> " + vehicle.getReservations().size());
+		//vehicle = vehicleRepository.save(vehicle);
+		//System.out.println("STA JE OVAJ BROJ OVDE REKAO -> " + vehicle.getReservations().size());
 		
 		
-		//vehicleReservationRepository.save(vehicleRes);
+		vehicleReservationRepository.save(vehicleRes);
 		
 		//Vehicle ajde = vehicleRepository.findById(vehicle.getId()).get();
 		//System.out.println(ajde.getId());
@@ -153,6 +158,36 @@ public class VehicleReservationService {
 		return true;
 		
 	}
+	
+	public Collection<QuickVehicleReservationDTO> rentACarQuick(Long rentACarId) throws ResourceNotFoundException{
+		 
+		 
+		 
+		 Optional<RentACar> rc = rentACarRepository.findById(rentACarId);
+		 
+		 if(!rc.isPresent())
+			 throw new ResourceNotFoundException("Rent a car with id: "+rentACarId+" doesn't exist!");
+			 
+		 RentACar rcT = rc.get();
+		 
+		 Set<QuickVehicleReservation> lit = rcT.getQuickVehicleReservations();
+		 
+		 HashSet<QuickVehicleReservationDTO> ret = new HashSet<QuickVehicleReservationDTO>();
+		 
+		 
+		 
+		 for(QuickVehicleReservation qr : lit) {
+			 QuickVehicleReservationDTO qrdto = new QuickVehicleReservationDTO(qr.getId(), qr.getDateFrom(),qr.getDateTo(),qr.getAdditionalServices(), qr.getReservedVehicle().getId(),
+					 qr.getReservedVehicle().getManufacturer(), qr.getReservedVehicle().getModel(), qr.getTotalPrice(), qr.getDiscount());
+			 ret.add(qrdto);
+		 }
+		 
+		 
+		 
+		 return ret;
+	 }
+	 
+	 
 	
 
 }
