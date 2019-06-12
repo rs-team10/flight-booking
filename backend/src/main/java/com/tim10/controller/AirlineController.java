@@ -10,10 +10,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
+import com.tim10.domain.Destination;
+import com.tim10.domain.PriceListItem;
+import com.tim10.dto.AirlineProfileDTO;
+import com.tim10.dto.DestinationDTO;
+import com.tim10.dto.PriceListItemDTO;
 import com.tim10.service.AirlineService;
 import com.tim10.service.UserService;
 
@@ -65,20 +71,78 @@ public class AirlineController {
 		return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
 	}
 	
+	
+	// ===========================================================================
+	
+	// ===========================================================================
+	
 	@RequestMapping(
-			value="/airlines",
+			value = "/airlines/getCurrentAdminAirline",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AirlineProfileDTO> getCurrentAdminAirline() {
+		return airlineService.getCurrentAdminAirline();
+	}
+	
+	@RequestMapping(
+			value="/airlines/updateAirline",
 			method=RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateAirline(@RequestBody Airline airline) {
-		
-		Airline existingAirline = airlineService.findOneByName(airline.getName());
-		if(existingAirline != null && existingAirline.getId() != airline.getId())
-			return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
-		if(airlineService.findOne(airline.getId()) != null)
-			return new ResponseEntity<>(airlineService.save(airline), HttpStatus.OK);
-		
-		return new ResponseEntity<>("Wanted airline does not exist in the database :(", HttpStatus.INTERNAL_SERVER_ERROR);
+	public ResponseEntity<?> updateAirline(@RequestBody Airline editedAirline, 
+			@RequestParam(value = "previousAirlineName", required = true) String previousAirlineName) {
+		return airlineService.updateAirline(editedAirline, previousAirlineName);
 	}
-
+	
+	@RequestMapping(
+			value = "/airlines/getBusinessLocations",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<DestinationDTO>> getBusinessLocations() {
+		return airlineService.getBusinessLocations();
+	}
+	
+	@RequestMapping(
+			value="/airlines/addBusinessLocation",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> addBusinessLocation(@RequestBody Destination destination) {
+		return airlineService.addBusinessLocation(destination);
+	}
+	
+	@RequestMapping(
+			value="/airlines/removeBusinessLocation",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> removeBusinessLocation(@RequestBody DestinationDTO destinationDTO) {
+		return airlineService.removeBusinessLocation(destinationDTO);
+	}
+	
+	@RequestMapping(
+			value = "/airlines/getPriceListItems",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<PriceListItemDTO>> getPriceListItems() {
+		return airlineService.getPriceListItems();
+	}
+	
+	@RequestMapping(
+			value="/airlines/addPriceListItem",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> addPriceListItem(@RequestBody PriceListItem item) {
+		return airlineService.addPriceListItem(item);
+	}
+	
+	@RequestMapping(
+			value="/airlines/removePriceListItem",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> removePriceListItem(@RequestBody PriceListItemDTO itemDTO) {
+		return airlineService.removePriceListItem(itemDTO);
+	}
 }

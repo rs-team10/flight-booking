@@ -18,21 +18,21 @@ public class Destination {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="name")
+	@Column(name="name", nullable=false)
 	private String name;
 	
 	@Column(name="airportName")
 	private String airportName;
 	
-	@Column(name="airportCode")
+	@Column(name="airportCode", nullable=false)
 	private String airportCode;
+	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	private Location location;
 	
 	@Column(name="image")
 	private String image;
 	
-	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	private Location location;
-
 	public Destination() {
 	}
 

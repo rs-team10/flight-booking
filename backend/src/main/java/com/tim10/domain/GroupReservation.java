@@ -1,6 +1,7 @@
 package com.tim10.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,19 +23,21 @@ public class GroupReservation {
 	private Long id;
 	
 	@Column(name="creationDateTime")
-	private LocalDateTime creationDateTime;
+	private Date creationDateTime;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<Reservation> reservations;
 
 	public GroupReservation() {
+		super();
+		reservations = new HashSet<Reservation>();
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public LocalDateTime getCreationDateTime() {
+	public Date getCreationDateTime() {
 		return creationDateTime;
 	}
 
@@ -46,12 +49,16 @@ public class GroupReservation {
 		this.id = id;
 	}
 
-	public void setCreationDateTime(LocalDateTime creationDateTime) {
+	public void setCreationDateTime(Date creationDateTime) {
 		this.creationDateTime = creationDateTime;
 	}
 
 	public void setReservations(Set<Reservation> reservations) {
 		this.reservations = reservations;
+	}
+
+	public boolean add(Reservation e) {
+		return reservations.add(e);
 	}
 
 }

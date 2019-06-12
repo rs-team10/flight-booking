@@ -12,16 +12,16 @@ import com.tim10.dto.UserFriendsDTO;
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 	
 	
-	@Query(value = "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
+	@Query(value = "SELECT u.id AS id, u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
 				   "FROM Friendship f JOIN User u ON f.receiver_id = u.id " +
 				   "WHERE f.sender_id = :id AND f.status != 'DENIED' " +
 				   "UNION ALL " +
-				   "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
+				   "SELECT u.id AS id, u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
 				   "FROM Friendship f JOIN User u ON f.sender_id = u.id " +
 				   "WHERE f.receiver_id = :id AND f.status = 'ACCEPTED'", nativeQuery = true)
 	List<UserFriendsDTO> getAllFriends(@Param("id") Long id);
 	
-	@Query(value = "SELECT u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
+	@Query(value = "SELECT u.id as id, u.first_name AS firstName, u.last_name AS lastName, u.email AS email, f.status AS status " +
 				   "FROM Friendship f JOIN User u ON f.sender_id = u.id " +
 				   "WHERE f.receiver_id = :id AND f.status = 'WAITING'", nativeQuery = true)
 	List<UserFriendsDTO> getAllFriendshipRequests(@Param("id") Long id);

@@ -31,9 +31,24 @@ public class Seat {
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	private Flight flight;
+	
+	@Column(name="isReserved")
+	private Boolean isReserved;
+	
+	@Column(name="isActive")
+	private Boolean isActive;
 
 	public Seat() {
 		super();
+	}
+	
+	public Seat(Flight flight, Integer red, Integer kolona, SegmentClass segmentClass) {
+		this.flight = flight;
+		this.red = red;
+		this.kolona = kolona;
+		this.segmentClass = segmentClass;
+		this.isReserved = false;
+		this.isActive = true;
 	}
 
 	public Long getId() {
@@ -56,6 +71,14 @@ public class Seat {
 		return flight;
 	}
 
+	public Boolean getIsReserved() {
+		return isReserved;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -76,4 +99,11 @@ public class Seat {
 		this.flight = flight;
 	}
 
+	public void setIsReserved(Boolean isReserved) {
+		this.isReserved = isReserved;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 }

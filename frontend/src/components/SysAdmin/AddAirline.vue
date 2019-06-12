@@ -13,7 +13,7 @@
 
             <v-alert
                 :value="error"
-                type="error"
+                type="error"T
                 dismissible
                 >
                 {{this.error}}
@@ -242,7 +242,7 @@ export default {
         },
         addAirline: function(){
             this.$axios
-            .post('http://localhost:8081/api/airlines', this.airline)
+            .post('http://localhost:8080/api/airlines', this.airline)
             .then(() => {
                 this.success = true;
                 setTimeout(() => {

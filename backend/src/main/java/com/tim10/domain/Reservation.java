@@ -14,7 +14,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name="Reservations")
@@ -53,10 +52,10 @@ public class Reservation {
 	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private GroupReservation groupReservation;
 	
-	@Transient
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private FlightReservation flightReservation;
 	
-	@Transient
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private VehicleReservation vehicleReservation;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
