@@ -6,10 +6,11 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
 public class QuickRoomReservation extends RoomReservation {
+	
+	private static final long serialVersionUID = 1L;
 	
 	@Column(name="discount")
 	private Double discount;

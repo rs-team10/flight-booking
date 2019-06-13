@@ -5,7 +5,8 @@ import javax.persistence.Entity;
 @Entity
 public class SystemAdmin extends User {
 
-	public SystemAdmin() {
-	}
+	private static final long serialVersionUID = 1L;
+
+	public SystemAdmin() {}
 
 }

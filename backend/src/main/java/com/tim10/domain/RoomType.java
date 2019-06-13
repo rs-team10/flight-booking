@@ -1,4 +1,4 @@
-	package com.tim10.domain;
+package com.tim10.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,47 +16,49 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="RoomTypes")
+@Table(name = "RoomTypes")
 public class RoomType implements Serializable {
-	
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@Column(name="type")
+
+	@Column(name = "type")
 	private String type;
-	
-	@Column(name="pricePerNight")
+
+	@Column(name = "pricePerNight")
 	private BigDecimal pricePerNight;
-	
-	@Column(name="capacity")
+
+	@Column(name = "capacity")
 	private int capacity;
-	
-	@Column(name="singleBedCount")
+
+	@Column(name = "singleBedCount")
 	private Integer singleBedCount;
-	
-	@Column(name="doubleBedCount")
+
+	@Column(name = "doubleBedCount")
 	private Integer doubleBedCount;
-	
-	@Column(name="hasTV")
+
+	@Column(name = "hasTV")
 	private Boolean hasTV;
-	
-	@Column(name="squareFootage")
+
+	@Column(name = "squareFootage")
 	private Integer squareFootage;
-	
-	@Column(name="hasBalcony")
+
+	@Column(name = "hasBalcony")
 	private Boolean hasBalcony;
-	
-	@Column(name="description")
+
+	@Column(name = "description")
 	private String description;
-	
-	@Column(name="image")
+
+	@Column(name = "image")
 	private String image;
-	
-	@Column(name="averageFeedback")							
+
+	@Column(name = "averageFeedback")
 	private Double averageFeedback;
-	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Set<SpecialRoomPrice> specialRoomPrices;
 
 	public RoomType() {

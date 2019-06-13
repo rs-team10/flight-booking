@@ -17,6 +17,8 @@ import com.tim10.dto.NewHotelDTO;
 @Table(name="Hotels")
 public class Hotel extends Company {
 	
+	private static final long serialVersionUID = 1L;
+
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name = "hotel_id")
 	private Set<Room> rooms;
