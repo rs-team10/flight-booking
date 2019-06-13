@@ -4,7 +4,7 @@
     <v-card>
 
         <v-toolbar dark color="primary">
-            <v-btn icon dark @click="showDialog = false">
+            <v-btn icon dark @click="closeThisDialog()">
                 <v-icon>close</v-icon>
             </v-btn>
             <v-toolbar-title>Edit Seats Layout</v-toolbar-title>
@@ -18,7 +18,7 @@
             <v-container grid-list-md>
 
                 <v-layout row align-start justify-center>
-                    <v-item-group multiple :key="cmpkey">
+                    <v-item-group multiple>
                         <table v-if="lastRowIsFull">
                             <thead>
                                 <tr>
@@ -112,7 +112,6 @@
 
 <script>
 
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 export default {
 
@@ -125,7 +124,7 @@ export default {
     data() {
         return {
             seats: [],
-            cmpkey: 0,
+            showThisDialog: false
         }
     },
     computed: {
@@ -186,7 +185,6 @@ export default {
         },
         clickOnSeat(i) {
             this.seats[i].isSelected = !this.seats[i].isSelected;
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         addNewSeatRow() {
 
@@ -224,7 +222,6 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         activateSelectedSeats() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -233,7 +230,6 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignFirstClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -242,7 +238,6 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignBusinessClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -251,7 +246,6 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         assignEconomicClass() {
             for(var i = 0; i < this.seats.length; i++) {
@@ -260,7 +254,6 @@ export default {
                     this.seats[i].isSelected = false;
                 }
             }
-            //this.cmpkey += 1;                    // TODO: FIX
         },
         compare(a, b) {
 
@@ -289,20 +282,37 @@ export default {
                 flightId: this.flight
             }
 
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
+
             this.$axios.post('http://localhost:8080/api/flights/updateFlightSeats', requestBody, yourConfig)
                 .then((response) => {
                     this.$swal("Success", "Updated seating layout", 'success');
                 }).catch((error) => {
                     this.$swal("Error", error.response.data.message, 'error');
                 });
+        },
+        closeThisDialog() {
+            this.seats = [];
+            this.showThisDialog = false;
+            this.$emit('isClosed', this.showThisDialog);
         }
     },
     beforeUpdate() {
-        if(this.seats.length == 0 && this.receivedSeats.length != 0) {
 
-            var temp = this.receivedSeats.sort(this.compare);   // SORTIRAJ
-            this.seats = [...temp];
-        }  
+        if(this.showDialog) {
+
+            if(this.receivedSeats.length != 0 && this.seats.length == 0) {
+                
+                var temp = [...this.receivedSeats];
+                this.seats = temp.sort(this.compare);
+
+                this.showThisDialog = this.showDialog;
+            }
+
+        } else {
+            this.closeThisDialog();
+        }
     }
 }
 </script>

@@ -3,6 +3,7 @@ package com.tim10.dto;
 public class SeatReservationDTO {
 	
 	private Long seatId;
+	private Long seatVersion;
 	private Long userId;
 	private String firstName;
 	private String lastName;
@@ -16,6 +17,10 @@ public class SeatReservationDTO {
 		return seatId;
 	}
 
+	public Long getSeatVersion() {
+		return seatVersion;
+	}
+	
 	public Long getUserId() {
 		return userId;
 	}
@@ -34,6 +39,10 @@ public class SeatReservationDTO {
 
 	public void setSeatId(Long seatId) {
 		this.seatId = seatId;
+	}
+	
+	public void setSeatVersion(Long seatVersion) {
+		this.seatVersion = seatVersion;
 	}
 
 	public void setUserId(Long userId) {

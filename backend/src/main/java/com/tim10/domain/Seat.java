@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="Seats")
@@ -37,6 +38,10 @@ public class Seat {
 	
 	@Column(name="isActive")
 	private Boolean isActive;
+	
+	@Version
+	@Column(name="version")
+	private Long version;
 
 	public Seat() {
 		super();
@@ -105,5 +110,13 @@ public class Seat {
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }

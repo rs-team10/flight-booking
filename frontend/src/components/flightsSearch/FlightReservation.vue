@@ -1,5 +1,5 @@
 <template>
-<div v-if="show">
+<div v-if="showDialog">
     <v-btn color="primary" @click="goBack">Back to search</v-btn>
     <v-layout row fill-height>
 
@@ -22,9 +22,10 @@
                                 <p>Airline: {{ flight.airline }}</p>
                                 <h3>{{ flight.departureTime + ' - ' + flight.arrivalTime}}</h3>
                                 <p>{{ flight.flightDuration }}, {{ flight.transitCount }} stop</p>
+                                <p v-for="t in flight.transitDestinations" :key="t.id">{{ t.name + ', ' + t.airportName + ' (' + t.airportCode + ')'}}</p>
+                                <br>
                                 <p>Distance: {{ flight.flightDistance }}km</p>
-                                <p>Stops: PLACEHOLDER</p>
-                                <h2>Trip total: {{ flight.ticketPrice }}€</h2>
+                                <h2>Trip total: {{ flight.ticketPrice * this.selectedSeatsCount }}€</h2>
                                 <br>
                                 <hr>
                                 <br>
@@ -304,13 +305,12 @@
 
 <script>
 
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
 
 export default {
     props: {
         show: Boolean,
         flight: Object,
-        receivedSeats: Array,
         passengerCountSearch: Number
     },
     watch: {
@@ -322,17 +322,19 @@ export default {
     },
     data() {
         return {
-            currentStep: 1,
 
+            // STEPPER
+            currentStep: 1,
+            infoStepper: 1,
+            infoKey: 1,
+            steps: this.passengerCountSearch,
+
+            // STEP 1 - SEATS
             selectedSeatsCount: 0,
             seats: [],
 
-            infoStepper: 1,
-            steps: this.passengerCountSearch,
-            infoKey: 1,
 
-            passengerInfo: [],
-
+            // STEP 2 - FRIENDS
             search: '',
             headers: [
                 {
@@ -365,6 +367,9 @@ export default {
             users: [],
             selectedFriendsIds: [],
 
+
+
+            passengerInfo: [],
             reservationDataItems: [],
 
             flightReservation: undefined,
@@ -402,8 +407,18 @@ export default {
                 return false;
             else
                 return true; 
-        }
+        },
+        showDialog() {
 
+            if(this.show == false) {
+                return false;
+            } else {
+
+                this.getSeatsData();
+
+                return true;
+            }
+        }
     },
     methods: {
         proceedToStep2() {
@@ -424,11 +439,12 @@ export default {
                 }
 
                 if(this.selectedSeatsCount == 1) {
-                    proceedToStep3();
+                    this.proceedToStep3();
                 } else {
-                    yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+                    
+                    var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.get('http://localhost:8080/api/getAllFriends/', yourConfig).then((response) => {
+                    this.$axios.get('http://localhost:8080/api/getAllFriendsAccepted/', yourConfig).then((response) => {
                         this.users = response.data;
                         this.currentStep = 2;
                     }).catch((error) => {
@@ -441,8 +457,10 @@ export default {
         },
         proceedToStep3() {
 
-            // TODO: Popuniti polja sa podacima sa korisnikom i pozvanim prijateljima i disable-ovati polja za unos imena i prezimena
+            // Popuniti polja sa podacima sa korisnikom i pozvanim prijateljima i disable-ovati polja za unos imena i prezimena
             
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
             this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig)
                 .then((response) => {
                     
@@ -470,81 +488,93 @@ export default {
                     this.currentStep = 3;
 
                 }).catch((error) => {
-                    console.log("errorcina")
                     this.$swal("Error", error.response.data.message, 'error');
                 });
         },
         proceedToStep4() {
 
-            // Prodji kroz sva sedista i izdvoj samo odabrana sedista
-            var reservedSeats = [];
-            var reservedSeatIds = [];
-            for(var i = 0; i < this.seats.length; i++) {
-                if(this.seats[i].isSelected) {
-                    reservedSeats.push(this.seats[i]);
-                    reservedSeatIds.push(this.seats[i].id);
+            var hasEmptyField = false;
+
+            for(var i = 0; i < this.passengerInfo.length; i++) {
+                if(this.passengerInfo[i].firstName == "" || this.passengerInfo[i].lastName == "" || this.passengerInfo[i].passportNumber == "" || isNaN(this.passengerInfo[i].passportNumber))
+                    hasEmptyField = true;
+            }
+
+            if(!hasEmptyField) {
+
+                // Prodji kroz sva sedista i izdvoj samo odabrana sedista
+                var reservedSeats = [];
+                var reservedSeatIds = [];
+                for(var i = 0; i < this.seats.length; i++) {
+                    if(this.seats[i].isSelected) {
+                        reservedSeats.push(this.seats[i]);
+                        reservedSeatIds.push(this.seats[i].id);
+                    }
                 }
-            }
 
-            // Pozvani prijatelji
-            var userIds = [this.currentUserId];
-            for(i = 0; i < this.selectedFriendsIds.length; i++) {
-                userIds.push(this.selectedFriendsIds[i]);
-            }
-            for(i = userIds.length - 1; i < reservedSeatIds.length; i++) {
-                userIds.push(this.currentUserId);
-            }
+                // Pozvani prijatelji
+                var userIds = [this.currentUserId];
+                for(i = 0; i < this.selectedFriendsIds.length; i++) {
+                    userIds.push(this.selectedFriendsIds[i]);
+                }
+                for(i = userIds.length - 1; i < reservedSeatIds.length; i++) {
+                    userIds.push(this.currentUserId);
+                }
 
-            // Informacije o putnicima
-            var seatReservationList = [];
-            for(i = 0; i < reservedSeatIds.length; i++) {
-                var seatReservation = {
-                    seatId: reservedSeatIds[i],
-                    userId: userIds[i],
-                    firstName: this.passengerInfo[i].firstName,
-                    lastName: this.passengerInfo[i].lastName,
-                    passportNumber: this.passengerInfo[i].passportNumber
+                // Informacije o putnicima
+                var seatReservationList = [];
+                for(i = 0; i < reservedSeatIds.length; i++) {
+                    var seatReservation = {
+                        seatId: reservedSeatIds[i],
+                        seatVersion: reservedSeats[i].version,
+                        userId: userIds[i],
+                        firstName: this.passengerInfo[i].firstName,
+                        lastName: this.passengerInfo[i].lastName,
+                        passportNumber: this.passengerInfo[i].passportNumber
+                    };
+                    seatReservationList.push(seatReservation);
+                }
+
+                // Kreiraj objekat za slanje
+                var flightReservation = {
+                    flightId: this.flight.id,
+                    seatReservationDTOList: seatReservationList
                 };
-                seatReservationList.push(seatReservation);
-            }
 
-            // Kreiraj objekat za slanje
-            var flightReservation = {
-                flightId: this.flight.id,
-                seatReservationDTOList: seatReservationList
-            };
-
-            this.flightReservation = flightReservation;
+                this.flightReservation = flightReservation;
 
 
-            // TODO: Prikazati ih na interfejsu
+                // Prikazati ih na interfejsu
+                this.reservationDataItems = [];
+                for(i = 0; i < seatReservationList.length; i++) {
+                    
+                    var item = seatReservationList[i];
+                    
+                    var reservationDataItem = {
+                        id: i,
+                        firstName : item.firstName,
+                        lastName: item.lastName,
+                        passportNumber: item.passportNumber,
+                        seatRow: reservedSeats[i].red,
+                        seatColumnLetter: String.fromCharCode(64 + reservedSeats[i].kolona),
+                        seatClass: "Economy class",
+                        ticketPrice: "PLACEHOLDER"
+                    }
 
-            for(i = 0; i < seatReservationList.length; i++) {
-                
-                var item = seatReservationList[i];
-                console.log(item);
-                var reservationDataItem = {
-                    id: i,
-                    firstName : item.firstName,
-                    lastName: item.lastName,
-                    passportNumber: item.passportNumber,
-                    seatRow: reservedSeats[i].red,
-                    seatColumnLetter: String.fromCharCode(64 + reservedSeats[i].kolona),
-                    seatClass: "Economy class",
-                    ticketPrice: "PLACEHOLDER"
+                    if(reservedSeats[i].segmentClass == "ECONOMIC_CLASS")
+                        reservationDataItem.seatClass = "Economy class";
+                    else if(reservedSeats[i].segmentClass == "BUSINESS_CLASS")
+                        reservationDataItem.seatClass = "Business class";
+                    else if(reservedSeats[i].segmentClass == "FIRST_CLASS")
+                        reservationDataItem.seatClass = "First class";
+
+                    this.reservationDataItems.push(reservationDataItem);
                 }
 
-                if(reservedSeats[i].segmentClass == "ECONOMIC_CLASS")
-                    reservationDataItem.seatClass = "Economy class";
-                else if(reservedSeats[i].segmentClass == "BUSINESS_CLASS")
-                    reservationDataItem.seatClass = "Business class";
-                else if(reservedSeats[i].segmentClass == "FIRST_CLASS")
-                    reservationDataItem.seatClass = "First class";
-
-                this.reservationDataItems.push(reservationDataItem);
+                this.currentStep = 4;
+            } else {
+                this.$swal("Can't proceed to next step", "Please enter the data for each passenger.", 'warning');
             }
-
-            this.currentStep = 4;
         },
         changeStep(i) {
             if(this.selectedSeatsCount == 1 && i == 2) {
@@ -634,7 +664,24 @@ export default {
                 this.infoStepper = n + 1;
             }
         },
+        getSeatsData() {
+            var dto = JSON.parse(JSON.stringify(this.flight));
+            delete dto.transitDestinations;
+
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
+            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', dto, yourConfig)
+                .then((response) => {
+
+                    this.seats = response.data.sort(this.compare);
+                    
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
+                });
+        },
         confirmReservation() {
+
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
             this.$axios.post('http://localhost:8080/api/reserveFlight', this.flightReservation, yourConfig)
                 .then((response) => {
@@ -653,7 +700,12 @@ export default {
                         });
                 }).catch((error) => {
                     this.$swal("Error", "Unsuccessfull reservation. The selected seats are probably already reserved. Please select other seats.", 'error');
+
+
                     // TODO 5 : Ako ne uspe rezervacija, vratiti ga na korak 1 da izabere druga sedista
+                    
+                    this.getSeatsData();
+                    this.selectedSeatsCount = 0;
 
                     this.currentStep = 1;
                 });
@@ -669,7 +721,7 @@ export default {
         },
         continueToRentACarReservation() {
 
-            // FILIP
+            // COKSI
 
             // TODO: Korisnik nastavlja sa rezervacijom vozila na destinaciji za koju je rezervisao let
             //       Na kraju tih rezervacija, potrebno je poslati mail korisniku da je rezervisao let + nesto dodatno (hotel, rentacar ili oba)
@@ -687,6 +739,9 @@ export default {
                 confirmButtonText: 'Pay now',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
+
+                    var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                     return this.$axios.post("http://localhost:8080/api/sendEmails/" + this.groupReservationId, yourConfig)
                         .then(response => {
                             if(!response) {
@@ -733,14 +788,7 @@ export default {
             this.passengerInfo.push(newInfoObject);
         }
     },
-    beforeUpdate() {
 
-        if(this.receivedSeats.length != 0) {
-
-            var temp = this.receivedSeats.sort(this.compare);   // SORTIRAJ SEDISTA
-            this.seats = [...temp];
-        }  
-    }
 }
 </script>
 

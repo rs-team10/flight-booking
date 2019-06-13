@@ -26,6 +26,9 @@ public class ReservationController {
 	@Autowired
 	ReservationService reservationService;
 	
+	/**
+	 * @author fivkovic
+	 */
 	@RequestMapping(
 			value = "/reserveFlight",
 			method = RequestMethod.POST,
@@ -41,6 +44,9 @@ public class ReservationController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	/**
+	 * @author fivkovic
+	 */
 	@RequestMapping(
 			value = "/sendEmails/{id}",
 			method = RequestMethod.POST,
