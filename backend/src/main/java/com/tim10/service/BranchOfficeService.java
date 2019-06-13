@@ -130,6 +130,7 @@ public class BranchOfficeService {
 		if(longitude != null)
 			locChange.setLongitude(longitude);
 		
+		
 		if(street != null)
 			locChange.setStreet(street);
 		

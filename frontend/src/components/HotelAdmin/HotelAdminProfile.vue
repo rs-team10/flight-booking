@@ -29,7 +29,7 @@
                     @blur="$v.user.password.$touch()">
                 </v-text-field>
 
-                <v-text-field
+                <!-- <v-text-field
                     v-model="user.passwordConfirmation"
                     label="New password confirmation"
                     :append-icon="showPasswordConfirmation ? 'visibility' : 'visibility_off'"
@@ -39,7 +39,7 @@
                     @click:append="showPasswordConfirmation = !showPasswordConfirmation"
                     @input="$v.user.passwordConfirmation.$touch()"
                     @blur="$v.user.passwordConfirmation.$touch()">
-                </v-text-field>
+                </v-text-field> -->
 
                 <v-text-field
                     v-model="user.firstName"
@@ -83,15 +83,15 @@ export default{
         user: {
             username: { required, minLength: minLength(5) },
             password: { minLength: minLength(6) },
-            passwordConfirmation: { minLength: minLength(6), sameAs: sameAs('password') },
+            //passwordConfirmation: { minLength: minLength(6), sameAs: sameAs('password') },
             email: { required, email }
         }
     },
     data(){
         return{
             user: {
-                password: '',
-                passwordConfirmation: ''
+                password: ''
+                //passwordConfirmation: ''
             },
             showPassword: false,
             showPasswordConfirmation: false,
@@ -136,7 +136,7 @@ export default{
                     }
                 };
 
-                delete this.user.passwordConfirmation;
+                //delete this.user.passwordConfirmation;
                 this.$axios.put('http://localhost:8080/api/users/hotelAdmin', this.user, yourConfig)
                 .then(response => {
                     this.$swal("Success", "User profile updated successfully", "success");
@@ -159,7 +159,7 @@ export default{
             console.log()
             this.user = response.data;
             this.user.password = '';
-            this.user.passwordConfirmation = '';
+            //this.user.passwordConfirmation = '';
         }).catch((error) => {
             this.$swal("Error", "User not logged in", 'error');
         });
