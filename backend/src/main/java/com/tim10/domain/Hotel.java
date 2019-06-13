@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.tim10.dto.NewHotelDTO;
+
 @Entity
 @Table(name="Hotels")
 public class Hotel extends Company {
@@ -28,7 +30,7 @@ public class Hotel extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER/*, mappedBy="hotel"*/)
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
@@ -37,6 +39,16 @@ public class Hotel extends Company {
 		additionalServicesPriceList = new PriceList();
 		quickRoomReservations = new HashSet<QuickRoomReservation>();
 		administrators = new HashSet<HotelAdmin>();
+	}
+	
+	public Hotel(NewHotelDTO dto) {
+		rooms = new HashSet<Room>();
+		roomTypes = new HashSet<RoomType>();
+		additionalServicesPriceList = new PriceList();
+		quickRoomReservations = new HashSet<QuickRoomReservation>();
+		this.setName(dto.getName());
+		this.setLocation(dto.getLocation());
+		administrators = dto.getAdministrators();
 	}
 
 	public Set<Room> getRooms() {

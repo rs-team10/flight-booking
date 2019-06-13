@@ -3,8 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 
 import Hotels from './views/Hotels.vue'
-import AddAirline from './components/SysAdmin/AddAirline.vue'
-import AddRentACar from './components/SysAdmin/AddRentACar.vue'
+
 import RentACars from './views/RentACars.vue'
 
 import RentACar from './components/rentACarComp/RentACar.vue'
@@ -22,7 +21,7 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import Reserve from './components/HotelReservation/Reserve.vue'
-import DefineDiscount from './components/SysAdmin/DefineDiscount.vue'
+import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -137,25 +136,14 @@ export default new Router({
     */
   //=====================================
     {
-      path: '/addAirline',
-      name: 'addAirline',
-      component: AddAirline
-    },
-    //ubacicu kao komponentu u viewer tako da moze da se izbaci odavde
-    {
-      path: '/addRentACar',
-      name: 'addRentACar',
-      component: AddRentACar
-    },
-    {
       path: '/hotelReservation',
       name: 'hotelReservation',
       component: Reserve
     },
     {
       path: '/temp',
-      name: 'defineDiscount',
-      component: DefineDiscount
+      name: 'dashboard',
+      component: Dashboard
     }
     //=====================================
   ]

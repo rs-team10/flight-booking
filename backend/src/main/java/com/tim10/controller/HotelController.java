@@ -25,6 +25,7 @@ import com.tim10.domain.QuickRoomReservation;
 import com.tim10.dto.HotelDTO;
 import com.tim10.dto.HotelReportDTO;
 import com.tim10.dto.HotelRoomsDTO;
+import com.tim10.dto.NewHotelDTO;
 import com.tim10.dto.QuickRoomResDTO;
 import com.tim10.dto.RoomDTO;
 import com.tim10.service.HotelService;
@@ -59,8 +60,9 @@ public class HotelController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> registerHotel(@RequestBody Hotel hotel){
+	public ResponseEntity<?> registerHotel(@RequestBody NewHotelDTO hotelDTO){
 		Hotel registeredHotel = null;
+		Hotel hotel = new Hotel(hotelDTO);
 		try {
 			registeredHotel = hotelService.registerHotel(hotel);
 		}catch(Exception ex) {

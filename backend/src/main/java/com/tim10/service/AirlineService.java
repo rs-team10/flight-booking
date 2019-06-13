@@ -21,6 +21,7 @@ import com.tim10.dto.AirlineProfileDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.repository.AirlineRepository;
+import com.tim10.repository.UserRepository;
 
 @Service
 public class AirlineService {
@@ -29,16 +30,24 @@ public class AirlineService {
 	private AirlineRepository airlineRepository;
 	
 	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	public List<Airline> findAll() {
 		return airlineRepository.findAll();
 	}
 	
-	public Airline registerAirline(Airline airline) {
-		for(AirlineAdmin admin : airline.getAdministrators())
+	public Airline registerAirline(Airline airline) throws Exception {
+		for(AirlineAdmin admin : airline.getAdministrators()) {
+			if(userRepository.findOneByUsername(admin.getUsername()).isPresent())
+				throw new Exception("User with username: " + admin.getUsername() + " already exists");
+			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
+				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		return airlineRepository.save(airline);
+		}
+		return save(airline);
 	}
 	
 	public Airline save(Airline airline) {

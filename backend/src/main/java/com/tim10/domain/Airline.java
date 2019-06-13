@@ -10,6 +10,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.tim10.dto.NewAirlineDTO;
+
 @Entity
 @Table(name="Airlines")
 public class Airline extends Company {
@@ -37,6 +39,16 @@ public class Airline extends Company {
 		administrators = new HashSet<AirlineAdmin>();
 		quickFlightReservations = new HashSet<QuickFlightReservation>();
 		luggagePriceList = new PriceList();
+	}
+	
+	public Airline(NewAirlineDTO dto) {
+		businessLocations = new HashSet<Destination>();
+		flights = new HashSet<Flight>();
+		quickFlightReservations = new HashSet<QuickFlightReservation>();
+		luggagePriceList = new PriceList();
+		this.setName(dto.getName());
+		this.setLocation(dto.getLocation());
+		administrators = dto.getAdministrators();
 	}
 
 	public Set<Destination> getBusinessLocations() {
