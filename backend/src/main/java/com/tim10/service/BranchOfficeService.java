@@ -111,7 +111,6 @@ public class BranchOfficeService {
 		String image = locFrom.getImage();
 		Double latitude = locFrom.getLatitude();
 		Double longitude = locFrom.getLongitude();
-		String postalCode = locFrom.getPostalCode();
 		String street = locFrom.getStreet();
 		
 		
@@ -130,9 +129,6 @@ public class BranchOfficeService {
 		
 		if(longitude != null)
 			locChange.setLongitude(longitude);
-		
-		if(postalCode != null)
-			locChange.setPostalCode(postalCode);
 		
 		if(street != null)
 			locChange.setStreet(street);
