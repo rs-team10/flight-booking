@@ -1,10 +1,14 @@
 package com.tim10.service;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Flight;
 import com.tim10.domain.FlightReservation;
@@ -18,6 +22,7 @@ import com.tim10.dto.SeatReservationDTO;
 import com.tim10.repository.FlightRepository;
 import com.tim10.repository.GroupReservationRepository;
 import com.tim10.repository.RegisteredUserRepository;
+import com.tim10.repository.SeatRepository;
 
 @Service
 public class ReservationService {
@@ -27,6 +32,9 @@ public class ReservationService {
 	
 	@Autowired
 	FlightRepository flightRepository;
+	
+	@Autowired
+	SeatRepository seatRepository;
 	
 	@Autowired
 	RegisteredUserRepository registeredUserRepository;
@@ -78,23 +86,32 @@ public class ReservationService {
     	
     }
 	
-	
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
 	public Long reserveFlight(FlightReservationDTO flightReservationDTO) {
 		
-		Flight flight = flightRepository.findById(flightReservationDTO.getFlightId()).get();
-		if(flight == null)
-			return null;
+		Optional<Flight> repoFlight = flightRepository.findById(flightReservationDTO.getFlightId());
 		
-		// TODO 1 : Kreiraj novu grupnu rezervaciju, dodeli joj trenutni datum kao datum kreiranja
+		if (!repoFlight.isPresent()) {
+			return null;
+		}
+		
+		Flight flight = repoFlight.get();
+		
+		
+		// STEP 1 : Kreiraj novu grupnu rezervaciju, dodeli joj trenutni datum kao datum kreiranja
 		//			Sve prethodno kreirane rezervacije dodaj u GroupReservation
 		
 		GroupReservation groupReservation = new GroupReservation();
 		groupReservation.setCreationDateTime(new Date());
 		
-		// TODO 2 : Za svako rezervisano sediste kreirati FlightReservation
+		// STEP 2 : Za svako rezervisano sediste kreirati FlightReservation
 		//			Popuniti podatke o putniku za sediste
 		//			Povezati sediste koje se rezervise sa FlightReservation
 		//			Review objekat postaviti na null
+		
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		
 		
 		for(SeatReservationDTO dto : flightReservationDTO.getSeatReservationDTOList()) {
 			
@@ -103,14 +120,20 @@ public class ReservationService {
 			flightReservation.setPassengerLastName(dto.getLastName());
 			flightReservation.setPassportNumber(dto.getPassportNumber());
 			
-			for(Seat seat : flight.getSeats()) {
-				if(seat.getId().equals(dto.getSeatId())) {
+			Optional<Seat> repoSeat = seatRepository.findById(dto.getSeatId());
+			
+			if(repoSeat.isPresent()) {
+				Seat seat = repoSeat.get();
+				
+				if(seat.getVersion().equals(dto.getSeatVersion())) {
 					seat.setIsReserved(true);
-					flightReservation.setSeat(seat);
+					flightReservation.setSeat(seatRepository.save(seat));
+				} else {
+					return null;
 				}
 			}
 			
-			// TODO 3 : Za svaki kreirani objekat FlightReservation kreirati Reservation i povezati ih
+			// STEP 3 : Za svaki kreirani objekat FlightReservation kreirati Reservation i povezati ih
 			//			Za trenutnog korisnika postavi da je host, za ostale da nisu host
 			// 			Generisi za svaku rezervaciju invitation code, osim za hosta
 			//			Postavi status rezervacije hosta na accepted, a ostale na waiting
@@ -121,7 +144,7 @@ public class ReservationService {
 			Reservation reservation = new Reservation();
 			reservation.setFlightReservation(flightReservation);
 			
-			RegisteredUser currentUser = registeredUserRepository.getOne(1809L);		// TODO: Povezati trenutnog korisnika
+
 			
 			if(dto.getUserId() == null) {
 				
@@ -133,6 +156,8 @@ public class ReservationService {
 				reservation.setRegisteredUser(null);
 				
 			} else {
+				
+				
 				
 				// Jeste korisnik aplikacije
 				
@@ -168,10 +193,16 @@ public class ReservationService {
 		
 		// TODO 4: Pokusaj cuvanje u bazu
 		
-		GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+		try {
+		
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
 
-		
-		
-		return savedGroupReservation.getId();
 	}
 }

@@ -438,10 +438,11 @@
                                     <h3>{{ selectedFlight.departureTime + ' - ' + selectedFlight.arrivalTime}}</h3>
                                     <p>{{ selectedFlight.flightDuration }}, {{ selectedFlight.transitCount }} stop</p>
                                     <p>Distance: {{ selectedFlight.flightDistance }}km</p>
-                                    <p>Stops: PLACEHOLDER</p>
+                                    <p>Stops:</p>
+                                    <p v-for="t in selectedFlight.transitDestinations" :key="t.id">{{ t.name + ', ' + t.airportName + ' (' + t.airportCode + ')'}}</p>
                                     <p>Passenger count: {{ passengersCount }}</p>
                                     <p>Class: {{ searchClass }}</p>
-                                    <h2>Trip total: {{ selectedFlight.ticketPrice }}€</h2>
+                                    <h2>Single ticket price: {{ selectedFlight.ticketPrice }}€</h2>
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -460,7 +461,6 @@
 
         <flight-reservation
             :show="showReservationStepper"
-            :receivedSeats="seats"
             :flight="selectedFlight"
             :passengerCountSearch="passengersCount"
             @goBack="showReservationStepper = false"
@@ -578,7 +578,6 @@ export default {
             // ============================================================
 
             showReservationStepper: false,
-            seats: [],
         }
     },
     methods: {
@@ -791,15 +790,8 @@ export default {
         // ============================================================
 
         flightSelected(flight) {
-
-            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
-                .then((response) => {
-                    this.seats = response.data;
-                    this.selectedFlight = flight;
-                    this.showReservationStepper = true;
-                }).catch((error) => {
-                    this.$swal("Error", error.response.data.message, 'error');
-                });
+           this.selectedFlight = flight;
+           this.showReservationStepper = true;
         },
         transitLabelContent(flight) {
             if(flight.transitCount == 0)

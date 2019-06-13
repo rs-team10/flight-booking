@@ -12,6 +12,7 @@ public class SeatDTO {
 	private Boolean isReserved;
 	private Boolean isActive;
 	private Boolean isSelected;
+	private Long version;
 	
 	public SeatDTO() {
 		super();
@@ -25,6 +26,7 @@ public class SeatDTO {
 		this.isReserved = s.getIsReserved();
 		this.isActive = s.getIsActive();
 		this.isSelected = false;
+		this.version = s.getVersion();
 	}
 	
 	public Long getId() {
@@ -78,5 +80,12 @@ public class SeatDTO {
 	public void setIsSelected(Boolean isSelected) {
 		this.isSelected = isSelected;
 	}
-	
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
 }

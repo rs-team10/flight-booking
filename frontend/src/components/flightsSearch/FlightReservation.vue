@@ -1,5 +1,5 @@
 <template>
-<div v-if="show">
+<div v-if="showDialog">
     <v-btn color="primary" @click="goBack">Back to search</v-btn>
     <v-layout row fill-height>
 
@@ -22,9 +22,10 @@
                                 <p>Airline: {{ flight.airline }}</p>
                                 <h3>{{ flight.departureTime + ' - ' + flight.arrivalTime}}</h3>
                                 <p>{{ flight.flightDuration }}, {{ flight.transitCount }} stop</p>
+                                <p v-for="t in flight.transitDestinations" :key="t.id">{{ t.name + ', ' + t.airportName + ' (' + t.airportCode + ')'}}</p>
+                                <br>
                                 <p>Distance: {{ flight.flightDistance }}km</p>
-                                <p>Stops: PLACEHOLDER</p>
-                                <h2>Trip total: {{ flight.ticketPrice }}€</h2>
+                                <h2>Trip total: {{ flight.ticketPrice * this.selectedSeatsCount }}€</h2>
                                 <br>
                                 <hr>
                                 <br>
@@ -310,7 +311,6 @@ export default {
     props: {
         show: Boolean,
         flight: Object,
-        receivedSeats: Array,
         passengerCountSearch: Number
     },
     watch: {
@@ -322,17 +322,19 @@ export default {
     },
     data() {
         return {
-            currentStep: 1,
 
+            // STEPPER
+            currentStep: 1,
+            infoStepper: 1,
+            infoKey: 1,
+            steps: this.passengerCountSearch,
+
+            // STEP 1 - SEATS
             selectedSeatsCount: 0,
             seats: [],
 
-            infoStepper: 1,
-            steps: this.passengerCountSearch,
-            infoKey: 1,
 
-            passengerInfo: [],
-
+            // STEP 2 - FRIENDS
             search: '',
             headers: [
                 {
@@ -365,6 +367,9 @@ export default {
             users: [],
             selectedFriendsIds: [],
 
+
+
+            passengerInfo: [],
             reservationDataItems: [],
 
             flightReservation: undefined,
@@ -402,8 +407,18 @@ export default {
                 return false;
             else
                 return true; 
-        }
+        },
+        showDialog() {
 
+            if(this.show == false) {
+                return false;
+            } else {
+
+                this.getSeatsData();
+
+                return true;
+            }
+        }
     },
     methods: {
         proceedToStep2() {
@@ -424,7 +439,7 @@ export default {
                 }
 
                 if(this.selectedSeatsCount == 1) {
-                    proceedToStep3();
+                    this.proceedToStep3();
                 } else {
                     
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
@@ -442,7 +457,7 @@ export default {
         },
         proceedToStep3() {
 
-            // TODO: Popuniti polja sa podacima sa korisnikom i pozvanim prijateljima i disable-ovati polja za unos imena i prezimena
+            // Popuniti polja sa podacima sa korisnikom i pozvanim prijateljima i disable-ovati polja za unos imena i prezimena
             
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
@@ -473,7 +488,6 @@ export default {
                     this.currentStep = 3;
 
                 }).catch((error) => {
-                    console.log("errorcina")
                     this.$swal("Error", error.response.data.message, 'error');
                 });
         },
@@ -512,6 +526,7 @@ export default {
                 for(i = 0; i < reservedSeatIds.length; i++) {
                     var seatReservation = {
                         seatId: reservedSeatIds[i],
+                        seatVersion: reservedSeats[i].version,
                         userId: userIds[i],
                         firstName: this.passengerInfo[i].firstName,
                         lastName: this.passengerInfo[i].lastName,
@@ -529,12 +544,12 @@ export default {
                 this.flightReservation = flightReservation;
 
 
-                // TODO: Prikazati ih na interfejsu
-
+                // Prikazati ih na interfejsu
+                this.reservationDataItems = [];
                 for(i = 0; i < seatReservationList.length; i++) {
                     
                     var item = seatReservationList[i];
-                    console.log(item);
+                    
                     var reservationDataItem = {
                         id: i,
                         firstName : item.firstName,
@@ -649,6 +664,21 @@ export default {
                 this.infoStepper = n + 1;
             }
         },
+        getSeatsData() {
+            var dto = JSON.parse(JSON.stringify(this.flight));
+            delete dto.transitDestinations;
+
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
+            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', dto, yourConfig)
+                .then((response) => {
+
+                    this.seats = response.data.sort(this.compare);
+                    
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
+                });
+        },
         confirmReservation() {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
@@ -670,7 +700,12 @@ export default {
                         });
                 }).catch((error) => {
                     this.$swal("Error", "Unsuccessfull reservation. The selected seats are probably already reserved. Please select other seats.", 'error');
+
+
                     // TODO 5 : Ako ne uspe rezervacija, vratiti ga na korak 1 da izabere druga sedista
+                    
+                    this.getSeatsData();
+                    this.selectedSeatsCount = 0;
 
                     this.currentStep = 1;
                 });
@@ -686,7 +721,7 @@ export default {
         },
         continueToRentACarReservation() {
 
-            // FILIP
+            // COKSI
 
             // TODO: Korisnik nastavlja sa rezervacijom vozila na destinaciji za koju je rezervisao let
             //       Na kraju tih rezervacija, potrebno je poslati mail korisniku da je rezervisao let + nesto dodatno (hotel, rentacar ili oba)
@@ -753,14 +788,7 @@ export default {
             this.passengerInfo.push(newInfoObject);
         }
     },
-    beforeUpdate() {
 
-        if(this.receivedSeats.length != 0) {
-
-            var temp = this.receivedSeats.sort(this.compare);   // SORTIRAJ SEDISTA
-            this.seats = [...temp];
-        }  
-    }
 }
 </script>
 
