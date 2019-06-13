@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RentACar;
-import com.tim10.dto.RentACarDTO;
 import com.tim10.domain.RentACarAdmin;
+import com.tim10.dto.NewRentACarDTO;
+import com.tim10.dto.RentACarDTO;
 import com.tim10.service.RentACarService;
 import com.tim10.service.UserService;
 
@@ -76,6 +77,8 @@ public class RentACarController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
+		
+		
 		return new ResponseEntity<RentACarDTO>(rac, HttpStatus.OK);
 		
 	}
@@ -89,17 +92,26 @@ public class RentACarController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> saveRentACar(
-			@RequestBody RentACar rentACar) throws Exception {
-		if(!rentACarService.findOneByName(rentACar.getName()).isPresent()) {
-			for(RentACarAdmin admin : rentACar.getAdministrators()) {
-				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
-					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
-				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
-					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
-			}
-			return new ResponseEntity<RentACar>(rentACarService.registerRentACar(rentACar), HttpStatus.CREATED);
+			@RequestBody NewRentACarDTO rentACarDTO) throws Exception {
+		RentACar registeredRentACar = null;
+		RentACar rentACar = new RentACar(rentACarDTO);
+		try {
+			registeredRentACar = rentACarService.registerRentACar(rentACar);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}
-		return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
+		return new ResponseEntity<>(registeredRentACar, HttpStatus.CREATED);
+
+//		if(!rentACarService.findOneByName(rentACar.getName()).isPresent()) {
+//			for(RentACarAdmin admin : rentACar.getAdministrators()) {
+//				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
+//					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
+//				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
+//					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
+//			}
+//			return new ResponseEntity<RentACar>(rentACarService.registerRentACar(rentACar), HttpStatus.CREATED);
+//		}
+//		return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
 	}
 	
 	
@@ -124,7 +136,6 @@ public class RentACarController {
 		}
 		
 		RentACar rentACarReal = rentACarEx.get();
-		System.out.println(rentACarReal.getName());
 
 		//rentACarReal.setLocation(rentACar.getLocation());
 		//ako se menjaju jos neki parametri...
@@ -135,8 +146,7 @@ public class RentACarController {
 		
 		rentACarReal = rentACarService.save(rentACarReal);
 		
-		//GRESKA Rent-A-Car with id: 1 doesn't exist! - a ja uneo ga u bazu regularno (PITAJ ZA BAZU VISE)
-		return new ResponseEntity<RentACar>(rentACarReal, HttpStatus.OK);
+		return new ResponseEntity<>("Updated successfully!", HttpStatus.OK);
 	}
 	
 	@RequestMapping(

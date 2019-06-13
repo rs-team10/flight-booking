@@ -19,7 +19,9 @@ public interface RentACarRepository extends JpaRepository<RentACar, Long>{
 	@Query(value = "SELECT * FROM branch_office where main_office_id = :rentACarId", nativeQuery = true)
 	Collection<BranchOffice> getBranchesFromRentACar(@Param("rentACarId") Long rentACarId);
 	
+	/*
+	
 	@Query(value = "SELECT id, description, name FROM rentacar where id = :rentACarId", nativeQuery = true)
 	RentACarDTO getRentACarById(@Param("rentACarId") Long rentACarId);
-
+	*/
 }

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class Location implements Serializable {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="street", nullable = false)
@@ -22,9 +22,6 @@ public class Location implements Serializable {
 	
 	@Column(name="city")
 	private String city;
-	
-	@Column(name="postalCode")
-	private String postalCode;
 	
 	@Column(name="country")
 	private String country;
@@ -35,6 +32,9 @@ public class Location implements Serializable {
 	@Column(name="longitude")
 	private Double longitude;
 	
+	@Column(name="formattedAddress")
+	private String formattedAddress;
+	
 	@Column(name="image")
 	private String image;
 
@@ -42,13 +42,13 @@ public class Location implements Serializable {
 		super();
 	}
 	
-	public Location(Long id, String street, String city, String postalCode, String country, Double latitude,
+	public Location(Long id, String street, String city, String formattedAddress, String country, Double latitude,
 			Double longitude, String image) {
 		super();
 		this.id = id;
 		this.street = street;
 		this.city = city;
-		this.postalCode = postalCode;
+		this.formattedAddress = formattedAddress;
 		this.country = country;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -67,8 +67,8 @@ public class Location implements Serializable {
 		return city;
 	}
 
-	public String getPostalCode() {
-		return postalCode;
+	public String getformattedAddress() {
+		return formattedAddress;
 	}
 
 	public String getCountry() {
@@ -99,8 +99,8 @@ public class Location implements Serializable {
 		this.city = city;
 	}
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
+	public void setformattedAddress(String formattedAddress) {
+		this.formattedAddress = formattedAddress;
 	}
 
 	public void setCountry(String country) {

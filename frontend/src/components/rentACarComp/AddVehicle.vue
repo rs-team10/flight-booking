@@ -297,8 +297,8 @@ export default {
             this.$axios
             .post('http://localhost:8080/api/vehicles/'+this.myBranch, this.vehicle)
             .then(response => {
-                //fali event, da obavesti roditelja da je dodato novo vozilo
                 alert(response.data);
+                this.cancel();
             }).catch(error => {
                 alert(error.response.data.message);
             });

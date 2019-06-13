@@ -1,5 +1,4 @@
 <template>
-  <div id="view-vehicles">
 
     <v-layout row>
         <v-flex xs12 sm10 offset-sm1>
@@ -19,18 +18,16 @@
             v-model="search"
          >
       </v-text-field>
-
-
       <v-divider
         class="mx-1"
         inset
         vertical
       ></v-divider>
       <v-spacer></v-spacer>
-      <!-- Mozda zatreba za neki dijalog
+
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-3" @click="addItem">Add vehicle</v-btn> verovatno bez dugmeta
+          <v-btn color="primary" dark class="mb-3" @click="addItem">Add vehicle</v-btn>
         </template>
         <v-card>
           <v-card-text>
@@ -41,6 +38,7 @@
                  <component 
                   v-bind:is="component"
                   :selectedVehicle="selectedVehicle"
+                  :myBranch="branchOfficeId"
                  > 
                  </component>
   
@@ -50,10 +48,12 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-    </v-toolbar> 
-    -->
-         <template>
 
+    </v-toolbar> 
+         <template>
+               <v-flex xs3 sm4>
+                  
+               </v-flex>
                <v-data-table  
                :headers="headers"
                :items="vehicles"
@@ -61,7 +61,7 @@
                class="elevation-1"
                         >
                <template slot="items" slot-scope="props">
-                  <tr @click="showAlert(props.item)">  <!--vehicleSelected(props.item)    -->
+                  <tr><!--<tr @click="showAlert(props.item)">  vehicleSelected(props.item)    -->
                      <td class="text-xs-left">{{ props.item.manufacturer }}</td>
                      <td class="text-xs-left">{{ props.item.model }}</td>
                      <td class="text-xs-left">{{ props.item.year }}</td>
@@ -71,6 +71,22 @@
                      <td class="text-xs-left">{{ props.item.seatsCount }}</td>
                      <td class="text-xs-left">{{ props.item.airCondition }}</td>
                      <td class="text-xs-left">{{ props.item.dailyRentalPrice }}</td>
+                     <td class="justify-center layout px-0">
+                        <v-icon
+                           small
+                           class="mr-2"
+                           @click="editItem(props.item)"
+                           >
+                           edit
+                        </v-icon>
+                        <v-icon
+                           small
+                           @click="deleteItem(props.item)"
+                           color = "error"
+                           >
+                           delete
+                        </v-icon>
+                        </td>
                      </tr>
                   </template>
                   <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -80,7 +96,6 @@
             </template>
         </v-flex>
     </v-layout>
-  </div>
 </template>
 
 
@@ -97,9 +112,11 @@ import EditVehicle from "@/components/rentACarComp/EditVehicle.vue"
 
 
 export default {
+   props: ['branchOfficeId'],
 
    components: {
-      //mozda za neki odabir vozila zatreba
+      "addVehicle" : AddVehicle,
+      "editVehicle" : EditVehicle
    },
   name: 'vehicles',
   data(){
@@ -173,8 +190,8 @@ export default {
             component: "addVehicle",
             dialog: false,
 
-
-
+         vehicles: []
+/*
 
           vehicles: [
               {
@@ -201,19 +218,30 @@ export default {
                 airCondition        : 'True',
                 dailyRentalPrice    : 100000
           }]
+*/
       }
+
   },
   methods:{
       fetchVehicles: function(){
+         
           this.$axios
-          .get('http://localhost:8080/api/branchOffice/vehicles/1')//+branchOffice.id
+          .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId)
           .then(response => this.vehicles = response.data)
+          .catch(error => {
+                alert(error.resposne.data)
+                this.search = 'error';
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
       },
  
       showAlert: function(){
          alert(this.selectedVehicle.manufacturer) 
       },
    
+
 
    //kacin nacin
       vehicleSelected: function(vehicle){
@@ -223,13 +251,49 @@ export default {
             this.selectedVehicle = vehicle;
             this.component = 'editVehicle';
       },
+   
+      
+      
+      addItem(){
+         this.component = 'addVehicle';
+         this.dialog = true;
+      },
+
+      editItem (item) {
+         this.selectedVehicle = item;
+         this.component = 'editVehicle';
+         this.dialog = true;  
+      },
+      deleteItem (item) {
+         if(confirm('Are you sure you want to delete this vehicle?')){
+            this.$axios
+               .delete('http://localhost:8080/api/vehicle/'+item.id)
+               .then(response => {
+                     this.vehicles = this.vehicles.filter(i=>i !== item);
+                     alert(response.data);
+               })
+
+           //poziv na backend
+         }
+      }
 
    },
-
+   watch: {
+      dialog() {
+         this.dalogKind = "";
+      }
+   },
    created(){
+
       this.fetchVehicles();
    }
 }
+
+/*
+
+   
+*/
+
 
 </script>
 

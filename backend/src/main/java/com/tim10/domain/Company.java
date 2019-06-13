@@ -12,17 +12,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
+import org.hibernate.validator.constraints.Length;
+
 @MappedSuperclass
 public abstract class Company implements Serializable {
 	 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@Column(name = "description")
+	@Length(min = 0, max = 500)
 	private String description;
 	
 	@Column(name = "averageFeedback")	

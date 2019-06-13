@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import EditAirline from './components/EditAirline.vue'
+
 import Hotels from './views/Hotels.vue'
-import AddAirline from './components/AddAirline.vue'
-import AddRentACar from './components/AddRentACar.vue'
+
 import RentACars from './views/RentACars.vue'
 
 import RentACar from './components/rentACarComp/RentACar.vue'
@@ -14,11 +13,17 @@ import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
 import ViewUserProfile from './views/ViewUserProfile.vue'
 import EditUserProfile from './views/EditUserProfile.vue'
+import ViewAirlineProfile from './views/ViewAirlineProfile.vue'
+import EditAirlineProfile from './views/EditAirlineProfile.vue'
+import SearchFlights from './views/SearchFlights.vue'
 import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
-
+import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
+import Reserve from './components/HotelReservation/Reserve.vue'
+import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
+import HotelAdminProfile from './components/HotelAdmin/HotelAdminProfile.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -51,9 +56,19 @@ export default new Router({
       component: SearchUsers
     },
     {
-      path: '/editAirline',
-      name: 'editAirline',
-      component: EditAirline
+      path: '/airlineProfile',
+      name: 'airlineProfile',
+      component: ViewAirlineProfile
+    },
+    {
+      path: '/editAirlineProfile',
+      name: 'editAirlineProfile',
+      component: EditAirlineProfile
+    },
+    {
+      path: '/searchFlights',
+      name: 'searchFlights',
+      component: SearchFlights
     },
     {
       path: '/hotels',
@@ -95,6 +110,12 @@ export default new Router({
       name: 'logout',
       component: Logout
     },
+    
+    {
+      path: '/vehicleReservation',
+      name: 'vehicleReservation',
+      component: VehicleReservation
+    },
     //=====================================
     //=====================================
     //PRIVREMENE RUTE, NECE BITI KASNIJE - OVOME SAMO ADMIN SME DA PRISTUPA, I PRISTUPACE U VIDU KOMPONENTE
@@ -122,19 +143,20 @@ export default new Router({
     },
     */
   //=====================================
-
-
-
     {
-      path: '/addAirline',
-      name: 'addAirline',
-      component: AddAirline
+      path: '/hotelReservation',
+      name: 'hotelReservation',
+      component: Reserve
     },
-    //ubacicu kao komponentu u viewer tako da moze da se izbaci odavde
     {
-      path: '/addRentACar',
-      name: 'addRentACar',
-      component: AddRentACar
+      path: '/temp',
+      name: 'dashboard',
+      component: Dashboard
+    },
+    {
+      path: '/hotelAdminProfile',
+      name: 'hotelAdminProfile',
+      component: HotelAdminProfile
     }
     //=====================================
   ]

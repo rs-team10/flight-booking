@@ -1,7 +1,9 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,44 +15,71 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
+
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name="RoomReservations")
-public class RoomReservation {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class RoomReservation implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@Column(name="dateFrom", nullable=false)
+	@Type(type="date")
 	private Date dateFrom;
 	
 	@Column(name="dateTo", nullable=false)
+	@Type(type="date")
 	private Date dateTo;
 	
 	@Column(name="totalPrice", nullable=false)
 	private BigDecimal totalPrice;
 	
-	@OneToMany(fetch=FetchType.LAZY)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
-	//private Reservation reservation;
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private Reservation reservation;
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="room_id")
 	private Room room;
-
+	
 	public RoomReservation() {
 		super();
+		this.dateFrom = new Date();
+		this.dateTo = new Date();
+		this.additionalServices = new HashSet<>();
+		this.review = new Review();
 	}
+	
+	public RoomReservation(Date dateFrom, Date dateTo, BigDecimal totalPrice,
+			Set<PriceListItem> additionalServices, Room room) {
+		super();
+		this.dateFrom = dateFrom;
+		this.dateTo = dateTo;
+		this.totalPrice = totalPrice;
+		this.additionalServices = additionalServices;
+		this.room = room;
+	}
+	
 
 	public Long getId() {
 		return id;
@@ -72,9 +101,9 @@ public class RoomReservation {
 		return additionalServices;
 	}
 
-//	public Reservation getReservation() {
-//		return reservation;
-//	}
+	public Reservation getReservation() {
+		return reservation;
+	}
 
 	public Review getReview() {
 		return review;
@@ -104,9 +133,9 @@ public class RoomReservation {
 		this.additionalServices = additionalServices;
 	}
 
-//	public void setReservation(Reservation reservation) {
-//		this.reservation = reservation;
-//	}
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
 
 	public void setReview(Review review) {
 		this.review = review;

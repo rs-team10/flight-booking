@@ -7,18 +7,33 @@ import store from './store'
 import axios from 'axios'
 import Vuelidate from 'vuelidate'
 import VueSweetalert2 from 'vue-sweetalert2';
-import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete';
+import VueCharts from 'vue-chartjs'
+//import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete';
+import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.prototype.$axios = axios
-Vue.config.productionTip = false
+Vue.config.productionTip = false  
 
 Vue.use(Vuetify)
 Vue.use(Vuelidate)
 Vue.use(VueSweetalert2);
+Vue.use(require('vue-moment'));
 
+Vue.use(VueCharts)
+Vue.use(require('vue-moment'));
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyCoYMbcCf9ot8Dyoy5oxEFDaT5cVitKME4',
+    libraries: 'places',
+  },
+})
+
+/*
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyCoYMbcCf9ot8Dyoy5oxEFDaT5cVitKME4',
 });
+*/
 
 new Vue({
   router,

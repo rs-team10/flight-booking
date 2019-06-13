@@ -10,6 +10,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.tim10.dto.NewRentACarDTO;
+
 @Entity
 @Table(name="RentACar")
 public class RentACar extends Company {
@@ -23,7 +25,7 @@ public class RentACar extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickVehicleReservation> quickVehicleReservations;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	public PriceList additionalServicesPriceList;
 
 	public RentACar() {
@@ -31,6 +33,15 @@ public class RentACar extends Company {
 		additionalServicesPriceList = new PriceList();
 		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
 		administrators = new HashSet<RentACarAdmin>();
+	}
+	
+	public RentACar(NewRentACarDTO dto) {
+		branchOffices = new HashSet<BranchOffice>();
+		additionalServicesPriceList = new PriceList();
+		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
+		this.setName(dto.getName());
+		this.setLocation(dto.getLocation());
+		administrators = dto.getAdministrators();
 	}
 
 	public Set<BranchOffice> getBranchOffices() {

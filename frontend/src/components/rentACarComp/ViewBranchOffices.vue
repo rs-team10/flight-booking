@@ -1,84 +1,164 @@
 <template>
-  <div>
-     
-    <v-layout rowt>
-      <v-flex xs12 sm10 md10 offset-sm1>
-        <h1>Branch offices</h1>
+
+  <v-expansion-panel focusable>
+
+     <v-dialog v-model="dialog" max-width="500px"> 
         <v-card>
-          <v-expansion-panel focusable>
-            <v-expansion-panel-content
-              v-for="(branch, i) in branches"
-              :key="i"
-            >
-              <template v-slot:header>
-                <div v-on:click="branchSelected(branch)">
-                  {{ branch.location.city }}, {{ branch.location.country }}
-                  <v-menu
-                    open-on-hover
-                    offset-y
-                    :close-on-content-click="false"
-                    lazy
-                    :key="i"
-                    >
-                </div>
-              </template>
-              <v-card>
-                <ViewVehiclesA />
-              </v-card>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+          <v-card-text>
+                 <component 
+                  v-bind:is="component1"
+
+                  :rentACarId="rentACarId"
+
+                  :branchOfficeInc = "selectedBranchOffice"
+                  :currentMapCenter = "currentMapCenter"
+                 > 
+                 </component>
+          </v-card-text>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-dialog>
+
+    <v-expansion-panel-content
+      v-for="(branch, i) in branches"
+      :key="i"
+    >
+      <template v-slot:header>
+        <div >
+          {{ branch.city }}, {{ branch.country }}
+          <v-menu
+            open-on-hover
+            offset-y
+            :close-on-content-click="false"
+            lazy
+            :key="i"
+            >
+            <v-btn
+                icon
+                class="mx-0"
+                slot="activator"
+                >
+                <v-icon color="blue">label_important</v-icon>
+            </v-btn>
+            <v-list>
+                  <v-list-tile avatar>
+                    
+                    <v-btn @mouseover="branchSelected(branch)" @click = "editItem">Edit</v-btn>
+          
+
+                    <v-btn
+                      color="error"
+                      @click="removeOne(branch)"
+                    >
+                      Delete
+                    </v-btn>
+
+                      
+                  </v-list-tile>
+                </v-list>
+            </v-menu>
+        </div>
+      </template>
+
+      <v-card>
+        <component 
+          v-bind:is="component"
+          :branchOfficeId="branch.id"
+          > 
+        </component>
+      </v-card>
+    </v-expansion-panel-content>
     
-  </div>
+
+    <v-layout column  align-center>
+       <v-btn fab small dark color="primary" @click="addItem"><v-icon dark>add</v-icon></v-btn>
+    </v-layout>
+
+  </v-expansion-panel>
+
+
+
 </template>
 
 
 
 
 <script>
-import ViewVehiclesA from "@/components/rentACarComp/ViewVehiclesA.vue"
-
+import ViewVehicles from "@/components/rentACarComp/ViewVehicles.vue"
+import AddBranchOffice from "@/components/rentACarComp/AddBranchOffice.vue"
+import EditBranchOffice from "@/components/rentACarComp/EditBranchOffice.vue"
 
 export default {
+  props: ['rentACarId'],
   components: {
-        ViewVehiclesA
+      'viewVehicles' :  ViewVehicles,
+      'addBranchOffice' : AddBranchOffice,
+      'editBranchOffice': EditBranchOffice
   },
   name: 'branches',
   data(){
       return{
-          branches: [
-                    
-                      {
-                          id : 1,
-                          location : {
-                              city : 'Smederevo',
-                              country: 'Srbija'
-                          }
-                      },
-                      {
-                          id : 2,
-                          location : {
-                              city : 'Stara pazova',
-                              country: 'Srbija'
-                          }
-                      }
-            ],
-          selectedBranch: ''
+
+          
+          component: 'viewVehicles',
+          component1: 'addBranchOffice',
+
+          branches: [],
+          dialog: false,
+          selectedBranchOffice : '',
+          currentMapCenter : ''
+
       }
   },
   methods:{
       fetchBranches: function(){
           this.$axios
-          .get('http://localhost:8080/api/branchOffices')//+rentACar.id
+          .get('http://localhost:8080/api/branchOffices/'+this.rentACarId)
           .then(response => 
             this.branches = response.data)
       },
-      
+      removeOne:function(item){
+        
+        this.$axios
+          .delete('api/branchOffice/'+item.id)
+          .then(response => {
+              this.branches = this.branches.filter(i=>i !== item)
+              alert(response.data)
+            }
+          )
+          .catch(error => {
+
+                alert(error.response.data);
+                
+            }
+          )
+
+      },
+      addItem(){
+        this.component1 = 'addBranchOffice';
+        this.dialog = true;
+      },
+      editItem(){
+        this.component1 = 'editBranchOffice';
+        this.dialog = true;
+      },
+      branchSelected( branch ){
+        this.component1 = 'editBranchOffice';
+        this.selectedBranchOffice = {
+                                      id : branch.id,
+                                      location : {
+                                        latitude : branch.latitude,
+                                        longitude : branch.longitude
+                                      }
+                                    };
+        this.currentMapCenter = {
+                lat: branch.latitude,
+                lng: branch.longitude
+            }
+
+      }
   },
   mounted(){
-      //this.fetchBranches();
+      this.fetchBranches();
   }
 }
 </script>
