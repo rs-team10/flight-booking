@@ -1,11 +1,13 @@
 <template>
     
     <v-card>
-        <v-dialog v-model="dialog" max-width="500px"> 
+        <v-dialog v-model="dialog" max-width="1000px"> 
             <component 
                 :is='component'
-                :priceListItem = 'priceListItem'
+                :overview ='overview'
+                :vehicles ='vehicles'
             >
+            <!-- Treba da ide dialog sa quickvehicleom -->
             </component>
         </v-dialog>
 
@@ -16,12 +18,12 @@
         <v-list
           two-line
         >
-        <template v-for="item in this.quickReservationsTEST">
+        <template v-for="item in this.quickReservations">
           <v-list-tile :key="item.id">
               
                 <v-list-tile-content>
 
-                    <v-list-tile-title>{{item.manufacturer}} {{item.model}} €{{item.totalPrice}}</v-list-tile-title>
+                    <v-list-tile-title>{{item.vehicle.manufacturer}} {{item.vehicle.model}} €{{item.totalPrice}}</v-list-tile-title>
                     <v-list-tile-sub-title class="text--primary">Discount: {{item.discount}}%</v-list-tile-sub-title>
                     <v-list-tile-sub-title>{{item.dateFrom}} - {{item.dateTo}}</v-list-tile-sub-title>
 
@@ -59,15 +61,39 @@
 
 
 <script>
-import PriceItemDialog from "@/components/rentACarComp/PriceItemDialog.vue"
+import VehicleReservationPre from "@/components/vehicleReservation/VehicleReservationPre.vue"
+import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 export default {
-    props:['quickReservations'],
+    props:[
+            'quickReservations',
+            'rentACarId'
+        ],
+
 
     components:{
-        'priceItemDialog': PriceItemDialog
+        'pehicleReservationPre': VehicleReservationPre,
+        'vehicleForRes' : VehicleForRes
     },
     data:() => ({
-        component : 'priceItemDialog', //neki drugi dialog
+        component : 'pehicleReservationPre', //neki drugi dialog
+        overview:{
+                vehicle : '',
+                rentACarId: '',
+                rentACarName: '',
+                branchOfficeId: '',
+                country: "",
+                city    : "",
+                vehicleId: '',
+                priceList: {
+                    id: '',
+                    priceListItems: []
+                },
+                edit: false
+            },
+
+        vehicles: [],
+
+        quickVehicleSelected : '',
 
         dialog : null,
 
@@ -96,7 +122,7 @@ export default {
 	
             },
             {
-                id: 1,
+                id: 2,
                 dateFrom: '2019-03-11',
                 dateTo: '2019-04-11',
                 additionalServices: "neka lista",
@@ -107,7 +133,7 @@ export default {
                 discount: 3
             },
             {
-                id: 1,
+                id: 3,
                 dateFrom: '2019-03-11',
                 dateTo: '2019-04-11',
                 additionalServices: "neka lista",
@@ -118,7 +144,7 @@ export default {
                 discount: 3
             },
             {
-                id: 1,
+                id: 4,
                 dateFrom: '2019-03-11',
                 dateTo: '2019-04-11',
                 additionalServices: "neka lista",
@@ -129,7 +155,7 @@ export default {
                 discount: 3
             },
             {
-                id: 1,
+                id: 5,
                 dateFrom: '2019-03-11',
                 dateTo: '2019-04-11',
                 additionalServices: "neka lista",
@@ -144,26 +170,71 @@ export default {
 
     }),
     methods:{
-        editItem:function(item){
-            this.priceListItem = item;
+        getImgUrl(file) {
+            var images = require.context('@/assets/vehicles/', false, /\.jpg$/)
+            return images('./' + file)
+        },
+        fetchVehicles: function(){
 
+            this.$axios
+            .get('http://localhost:8080/api/vehiclesRentACar/'+this.rentACarId)
+            .then(response => {
+                    var vehicles = response.data
+                    this.vehicles=[];
+                    vehicles.forEach(v => this.vehicles.push({
+                                                                id                  : v.id,
+                                                                manufacturer        : v.manufacturer,
+                                                                model               : v.model,
+                                                                year                : v.year,
+                                                                fuel                : v.fuel,
+                                                                engine              : v.engine,
+                                                                transmission        : v.transmission,
+                                                                seatsCount          : v.seatsCount,
+                                                                airCondition        : v.airCondition,
+                                                                dailyRentalPrice    : v.dailyRentalPrice,
+                                                                image               : this.getImgUrl(v.image),
+                                                                totalPrice          : v.dailyRentalPrice,
+                                                                mainRentACar        : this.rentACarId
+                                                            }));
+
+                }
+          )
+          .catch(error => {
+                alert("STA!?")
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
+        },
+        editItem:function(item){
+            this.quickVehicleSelected = item;
+            this.component='pehicleReservationPre';
+
+            this.$axios
+                .get('http://localhost:8080/api/vehicleReservationPrew/'+item.id)
+                .then(respone =>{
+                    var datas = respone.data
+                    this.overview.rentACarId = datas.rentACarId;
+                    this.overview.rentACarName = datas.rentACarName;
+                    this.overview.branchOfficeId = datas.branchOfficeId;
+                    this.overview.country = datas.country;
+                    this.overview.city = datas.city;
+                    this.overview.vehicleId = datas.vehicleId;
+                    this.overview.priceList = datas.priceList;
+                })
+                
+                this.overview.vehicle = item
+                this.overview.edit = true;
             this.dialog= true;
 
         },
         deleteItem:function(item){
-            this.priceListItem = item
+            this.quickVehicleSelected = item
 
         },
         addItem:function(){
-
-            this.priceListItem = {
-                id          : 0,
-                name        : "",
-                description : "",	
-                price       : "",
-                discount    : ""
-            };
-
+            this.component='vehicleForRes';
+            this.fetchVehicles();
             this.dialog= true;
         }
     }

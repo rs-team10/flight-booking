@@ -77,7 +77,11 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
             'vehicleReservationPre': VehicleReservationPre   
         },
         
-        props: ['vehicles'],
+        props: [
+                'vehicles',
+                'from',
+                'to'
+                ],
 
         data: () => ({
 
@@ -106,24 +110,58 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
         }),
         methods:{
             showPrev:function(vehicle){
-                
-                this.$axios
-                .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id)
-                .then(respone =>{
-                    var datas = respone.data
-                    this.overview.rentACarId = datas.rentACarId;
-                    this.overview.rentACarName = datas.rentACarName;
-                    this.overview.branchOfficeId = datas.branchOfficeId;
-                    this.overview.country = datas.country;
-                    this.overview.city = datas.city;
-                    this.overview.vehicleId = datas.vehicleId;
-                    this.overview.priceList = datas.priceList;
-                })
-                
+                if(!this.quickReser){
+                    this.$axios
+                    .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id)
+                    .then(respone =>{
+                        var datas = respone.data
+                        this.overview.rentACarId = datas.rentACarId;
+                        this.overview.rentACarName = datas.rentACarName;
+                        this.overview.branchOfficeId = datas.branchOfficeId;
+                        this.overview.country = datas.country;
+                        this.overview.city = datas.city;
+                        this.overview.vehicleId = datas.vehicleId;
+                        this.overview.priceList = datas.priceList;
+                        this.overview.from = this.from;
+                        this.overview.to = this.to;
+                        this.overview.reservationId = -1;
+                        
+                    })
+                }else{
+                    
+                     this.$axios
+                    .get('http://localhost:8080/api/getQuickResFromVehicle/'+this.from+'/'+this.to  +'/'+vehicle.id)
+                    .then(respone =>{
+                        var datas = respone.data
+                        this.overview.rentACarId = datas.rentACarId;
+                        this.overview.rentACarName = datas.rentACarName;
+                        this.overview.branchOfficeId = datas.branchOfficeId;
+                        this.overview.country = datas.country;
+                        this.overview.city = datas.city;
+                        this.overview.vehicleId = datas.vehicleId;
+                        this.overview.priceList = datas.priceList;
+                        this.overview.from = this.trim(datas.from);
+                        this.overview.to = this.trim(datas.to);
+                        this.overview.reservationId = datas.reservationId;
+            
+                    })
+                }
+
 
                 this.overview.vehicle = vehicle
                 this.dialog = true;
-            }
+            },
+            trim: function(date){
+            return date.substring(0, 10);
+        }
+        },
+        computed:{
+            quickReser(){
+                if(this.vehicles.length!=0){
+                    console.log(this.vehicles[1].quick)
+                    return this.vehicles[1].quick;
+                }
+            } 
         }
     
   }

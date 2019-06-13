@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="VehicleReservations")
 public class VehicleReservation {
@@ -33,7 +35,6 @@ public class VehicleReservation {
 	
 	@Column(name="totalPrice")
 	private BigDecimal totalPrice;
-	
 	
 	@ManyToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;

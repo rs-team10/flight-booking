@@ -12,7 +12,7 @@
                     <v-flex xs6>
                         <v-layout column>
                             <v-toolbar flat>
-                                <v-toolbar-title class="font-weight-light headline">From <b>{{dateFrom}}</b> to <b>{{dateTo}}</b></v-toolbar-title>
+                                <v-toolbar-title class="font-weight-light headline">From <b>{{overview.from}}</b> to <b>{{overview.to}}</b></v-toolbar-title>
                             </v-toolbar>
                             <v-img
                                 :aspect-ratio="16/9"
@@ -100,7 +100,7 @@
                                             <v-list-tile-sub-title>{{item.description}}</v-list-tile-sub-title>
 
                                         </v-list-tile-content>
-                                        <v-list-tile-action>
+                                        <v-list-tile-action v-if="!quickReser">
                                             
                                             <v-checkbox @change="itemHandler(item)"></v-checkbox>
                                             
@@ -110,6 +110,59 @@
                                 </v-list-tile>
                             </template>
                         </v-list>
+                        <!--UBACIO -->
+                        <v-layout row v-if="quickV">
+                                <v-menu
+                                v-model="fromDPMenu"
+                                :close-on-content-click="true"
+                                :nudge-right="40"
+                                lazy
+                                transition="scale-transition"
+                                offset-y
+                                full-width
+                                min-width="290px"
+                                >
+                                <template v-slot:activator="{ on }">
+                                <v-flex xs6 md6>
+                                    <v-text-field
+                                        v-model="fromDPDate"
+                                        append-icon="event"
+                                        label="From*"
+                                        class="mx-3"
+                                        max-width="30px"
+                                        v-on="on">
+                                    </v-text-field>
+                                </v-flex>
+                                </template>
+                                <v-date-picker v-model="fromDPDate" @input="fromDPMenu=false" :max="maximalFromDate" :min="minimalFromDate"></v-date-picker>
+                                </v-menu>
+                                
+                                <!-- datum do -->
+                                <v-menu
+                                v-model="toDPMenu"
+                                :close-on-content-click="true"
+                                :nudge-right="40"
+                                lazy
+                                transition="scale-transition"
+                                offset-y
+                                full-width
+                                min-width="290px"
+                                >
+                                <template v-slot:activator="{ on }">
+                                <v-flex xs6 md6>
+                                    <v-text-field
+                                        v-model="toDPDate"
+                                        append-icon="event"
+                                        label="To*"
+                                        class="mx-3"
+                                        v-on="on">
+                                    </v-text-field>
+                                </v-flex>
+                                </template>
+                                <v-date-picker v-model="toDPDate" @input="toDPMenu=false" :min="minimalToDate"></v-date-picker>
+                                </v-menu>
+                                </v-layout>
+                            <!--UBACIO -->
                     </v-flex>
                 </v-layout>
 
@@ -139,7 +192,6 @@
 
 
 <script>
-import VehiclePriceList from "@/components/rentACarComp/VehiclePriceList.vue"
 export default {
 
 
@@ -148,9 +200,24 @@ export default {
  
 
     data:()=>({
-        dateFrom : "2019-01-01",
-        dateTo : "2019-01-11",
-        selected : []
+
+        
+        //<!--UBACIO -->
+        dateDialog: false,
+        fromDPMenu: false,
+        fromDPMenuDialog: false,
+        fromDPDate: new Date().toISOString().substr(0, 10),
+        toDPMenu: false,
+        toDPMenuDialog: false,
+        toDPDate: '',
+        minDate: new Date().toISOString().substr(0, 10),
+
+
+
+        //<!--UBACIO -->
+
+        selected : [],
+        date: '2018-03-02'
 
     }),
     methods:{
@@ -168,31 +235,119 @@ export default {
         },
 
         confirmResrvation:function(){
-            var vehicleReservationDTO = {
-                dateFrom : this.dateFrom,
-                dateTo : this.dateTo,
-                additionalServices : this.selected,
-                vehicleId : this.overview.vehicleId
-            };
 
-            this.$axios
-                .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO)
-                .then(response =>{
-                    alert(response.data);
-                    this.$router.go(0);
-                })
-                .catch(error => {
-                    alert(error.resposne)
-                });
+            if(this.quickV){
+                var vehicleReservationDTO = {
+                    dateFrom : this.fromDPDate,
+                    dateTo : this.toDPDate,
+                    additionalServices : this.selected,
+                    vehicleId : this.overview.vehicleId,
+                    rentACarId : this.rentACarId
+                };
+                if(this.overview.edit){
+                    this.$axios //mora drugi rest da se gadja 
+                    .post('http://localhost:8080/api/vehicleReservation/', vehicleReservationDTO)
+                    .then(response =>{
+                        alert(response.data);
+                        this.$router.go(0);
+                    })
+                    .catch(error => {
+                        alert(error.resposne)
+                    });
+                }else{
+                    //imas atribut toatalPrice da stavis additionalDiscount
+                    //i dodaj vraper oko boxova za datume i tu gurni neki textbox...
+                    this.$axios //mora drugi rest da se gadja 
+                    .post('http://localhost:8080/api/quickVehicleReservation/', vehicleReservationDTO) //create
+                    .then(response =>{
+                        alert(response.data);
+                        this.$router.go(0);
+                    })
+                    .catch(error => {
+                        alert(error.resposne.data)
+                    });
+                }
+            }else{
+                
+                
+
+                if(this.quickReser){
+                    
+                    this.$axios
+                    .post('http://localhost:8080/api/confirmQuickVehicle/1', this.overview.reservationId)//1 je za main rezervaciju
+                    .then(response =>{
+                        alert(response.data);
+                        this.$router.go(0);
+                    })
+                    .catch(error => {
+                        alert(error.resposne)
+                    });
+
+                }
+                else{
+
+                    var vehicleReservationDTO1 = {
+                        dateFrom : this.dateFrom,
+                        dateTo : this.dateTo,
+                        additionalServices : this.selected,
+                        vehicleId : this.overview.vehicleId
+                    };
+                    this.$axios
+                    .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO1)//1 je za main rezervaciju
+                    .then(response =>{
+                        alert(response.data);
+                        this.$router.go(0);
+                    })
+                    .catch(error => {
+                        alert(error.resposne)
+                    });
+                }
+            }
+           
                 
         },
         cancel:function(){
          
             this.$router.go(0);
            
-      
         }
+        
+
+    },
+    computed:{
+        minimalFromDate() {
+            var today = new Date();
+            var tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            return tomorrow.toISOString().substr(0, 10);
+        },
+
+        minimalToDate() {
+            return this.fromDPDate;
+        },
+        maximalFromDate(){
+            return this.toDPDate
+        },
+        quickV(){
+            var currentUrl = this.$route.path;
+            return !currentUrl.includes("vehicleReservation");
+        },
+        rentACarId(){
+            
+            var currentUrl = this.$route.path;
+            if(!currentUrl.includes("vehicleReservation")){
+                var idLast = currentUrl.split('/');
+
+                return idLast[idLast.length-1]
+            }else{
+                return null
+            }
+        },
+        quickReser(){
+            return this.overview.reservationId == -1 ? false : true;
+        } 
     }
+
     
 }
 </script>

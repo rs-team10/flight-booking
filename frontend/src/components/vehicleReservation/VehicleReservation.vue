@@ -47,6 +47,8 @@
                     <component
                         :is='component2'
                         :vehicles = vehicles
+                        :from='from'
+                        :to='to'
                     >
                     </component>
                     
@@ -57,7 +59,9 @@
                         
                     <component
                         :is='component3'
-                        :vehiclesQuick='vehiclesQuick'
+                        :vehicles='vehiclesQuick'
+                        :from='from'
+                        :to='to'
                     >
                     <!--Nekako da mu oznacis da je quic reservation-->
                     </component>
@@ -80,14 +84,13 @@
 
 import VehicleParamSearch from "@/components/vehicleReservation/VehicleParamSearch.vue"
 import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
-import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue"
+
 
     export default {
 
         components: {
             'vehicleParamSearch' : VehicleParamSearch,
             'vehicleForRes' : VehicleForRes,
-            'vehicleQuickRes' : VehicleQuickRes
         },
 
         
@@ -95,14 +98,17 @@ import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue
 
             component1:'vehicleParamSearch',
             component2: 'vehicleForRes',
-            component3: 'vehicleQuickRes',
+            component3: 'vehicleForRes',
             
             tabs : null,
 
-            
-            vehicles: [],
-            vehiclesQuick: []
 
+            vehicles: [],
+            vehiclesQuick: [],
+
+            fromInput: '2019-07-30',  //datum koji stize u komponentu (hc zbog testiranja)
+            toInput: '2019-08-30',
+            country: 'Serbia'          //takodje prop
     }),
     methods : {
         getImgUrl(file) {
@@ -111,23 +117,18 @@ import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue
         },
         priceForPeriod: function(price){
             var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-            var firstDate = Date.parse('2019-01-01'); //this.dateFrom
-            var secondDate = Date.parse('2019-01-11'); //this.dateTo (iz propertyja)
+            var firstDate = Date.parse(this.from); //this.dateFrom
+            var secondDate = Date.parse(this.to); //this.dateTo (iz propertyja)
         
             return price * (secondDate - firstDate )/(oneDay);
         },
         cancelSearch:function(){
-            var inputFrom = '2019-01-01 00:00'; //property pa compute...
-            var inputTo = '2019-01-11 00:00';
 
-            var from = this.trim(inputFrom); 
-            var to = this.trim(inputTo);
-            var country = 'Serbia';
 
             var countryDate = {
-                country : country,
-                from : from,
-                to : to
+                country : this.country,
+                from : this.from,
+                to : this.to
             };
             this.fetchVehicles(countryDate);
         },
@@ -166,13 +167,51 @@ import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue
             });
         },
 
+        fetchQuickVehicles: function(countryDate){
+         
+            this.$axios
+            .get('http://localhost:8080/api/quickResVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country)
+            .then(response => {
+                    var vehicleQuick = response.data
+                    this.vehiclesQuick=[];
+                    vehicleQuick.forEach(v => this.vehiclesQuick.push({
+                                                                id                  : v.id,
+                                                                manufacturer        : v.manufacturer,
+                                                                model               : v.model,
+                                                                year                : v.year,
+                                                                fuel                : v.fuel,
+                                                                engine              : v.engine,
+                                                                transmission        : v.transmission,
+                                                                seatsCount          : v.seatsCount,
+                                                                airCondition        : v.airCondition,
+                                                                dailyRentalPrice    : v.dailyRentalPrice,
+                                                                image               : this.getImgUrl(v.image),
+                                                                totalPrice          : v.dailyRentalPrice, //vrvtno ce da ide ocena xD
+                                                                //mainRentACar        : 'My rent-a-car service',
+                                                                quick               : true 
+  
+                                                            }));
+
+                }
+          )
+          .catch(error => {
+                alert(error.resposne)
+                this.search = 'error';
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
+        },
+
+
+
         onSearch: function(vehicleSearchDTO){
             
-            vehicleSearchDTO.dateFrom ='2019-01-01'; //uzimace iz propertyja
-            vehicleSearchDTO.dateTo =  '2019-01-11';
+            vehicleSearchDTO.dateFrom =this.from; //uzimace iz propertyja
+            vehicleSearchDTO.dateTo = this.to;
 
             this.$axios
-            .post('http://localhost:8080/api/vehicleSearch/serbia',vehicleSearchDTO)
+            .post('http://localhost:8080/api/vehicleSearch/'+this.country,vehicleSearchDTO)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -189,7 +228,7 @@ import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue
                                                                 dailyRentalPrice    : v.dailyRentalPrice,
                                                                 image               : this.getImgUrl(v.image),
                                                                 totalPrice          : this.priceForPeriod(v.dailyRentalPrice),
-                                                                mainRentACar        : 'My rent-a-car service'
+                                                                //mainRentACar        : 'My rent-a-car service'
                                                             }));
 
                 }
@@ -204,25 +243,28 @@ import VehicleQuickRes from "@/components/vehicleReservation/VehicleQuickRes.vue
         },
 
         trim: function(date){
-            return date.substring(0, date.length - 6);
+            return date.substring(0, 10);
         }
 
     },
 
     created(){
-        var inputFrom = '2019-01-01 00:00'; //property pa compute...
-        var inputTo = '2019-01-10 00:00';
-
-        var from = this.trim(inputFrom); 
-        var to = this.trim(inputTo);
-        var country = 'Serbia';             //property
 
         var countryDate = {
-            country : country,
-            from : from,
-            to : to
+            country : this.country,
+            from : this.from,
+            to : this.to
         };
         this.fetchVehicles(countryDate);
+        this.fetchQuickVehicles(countryDate);
+    },
+    computed:{
+        from(){
+            return this.fromInput.substring(0,10);
+        },
+        to(){
+            return this.toInput.substring(0,10);
+        }
     }
   }
 

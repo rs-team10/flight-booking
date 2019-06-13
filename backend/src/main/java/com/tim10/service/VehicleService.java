@@ -275,6 +275,12 @@ public class VehicleService {
 	 
 	 
 	 
+	 public Collection<Vehicle> vehiclesFromRentACar(Long rentACarId) {
+		 
+		 return vehicleRepository.getVehiclesFromRentACar(rentACarId);
+	 
+	 }
+	 
 	 
 	 
 	 

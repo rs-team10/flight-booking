@@ -27,6 +27,17 @@ public class VehicleController {
 	VehicleService vehicleService;
 	
 	
+	@RequestMapping(
+			value = "api/vehiclesRentACar/{rentACarId}",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<Vehicle>> getVehiclesRentACar( 
+			@PathVariable("rentACarId") Long rentACarId) {
+		
+		Collection<Vehicle> vehicles= vehicleService.vehiclesFromRentACar(rentACarId);
+		return new ResponseEntity<Collection<Vehicle>>(vehicles, HttpStatus.OK);
+		
+	}
 	
 	@RequestMapping(
 			value = "api/vehicles/{branchId}",

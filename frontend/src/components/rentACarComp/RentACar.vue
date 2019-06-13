@@ -109,7 +109,7 @@
 
                     <component 
                         v-bind:is="component1"
-                        :rentACarId="this.realId"
+                        :rentACarId="realId"
                     > 
                     </component>
                 </v-flex>
@@ -119,6 +119,7 @@
                     <component
                         :is="component3"
                         :quickReservations ='quickRes'
+                        :rentACarId ='realId'
                     >
                     </component>
                
@@ -194,6 +195,8 @@ export default {
         realId : 0,
 
         vehicles: [],
+
+
         quickRes: []
 
 
@@ -213,6 +216,28 @@ export default {
                                 this.additionalServicesPriceList=response.data.additionalServicesPriceList;
                                 })
         },
+        fetchQuickReservations: function(){
+            this.$axios
+            .get('http://localhost:8080/api/getQuickReservations/'+ this.rentACarId)
+            .then(response => {
+                    var quickReservations = response.data
+                    this.quickRes=[];
+                    quickReservations.forEach(v => this.quickRes.push({
+                                                    id: v.id,
+                                                    dateFrom: this.trim(v.dateFrom),
+                                                    dateTo: this.trim(v.dateTo),
+                                                    totalPrice: v.totalPrice,
+                                                    additionalServices: v.additionalServices ,
+                                                    discount: 3,//v.discount,
+                                                    vehicle: v.vehicle
+                                                }
+                                                ));
+
+                })
+        },
+        trim: function(date){
+            return date.substring(0, 10);
+        },
         noClick:function(){
             this.$refs.btn.$el.focus()
         },
@@ -227,10 +252,6 @@ export default {
             }
 
             this.isEditing = !this.isEditing;
-
-            
-            
-
         },
         save () {
             this.isEditing = !this.isEditing;
@@ -260,6 +281,7 @@ export default {
     created(){
         this.realId = this.rentACarId
         this.fetchRentACar();
+        this.fetchQuickReservations();
     }
 }
 </script>

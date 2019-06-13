@@ -10,6 +10,13 @@ import com.tim10.domain.Vehicle;
 import com.tim10.dto.VehicleDTO;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long>{
+	/*
+	FROM table1
+	LEFT JOIN table2
+	ON table1.column_name = table2.column_name;
+	*/
+	@Query(value = "SELECT * FROM vehicles v LEFT JOIN branch_office b ON v.branch_office_id = b.id WHERE main_office_id=:rentACarId", nativeQuery = true)
+	Collection<Vehicle> getVehiclesFromRentACar(@Param("rentACarId") Long rentACarId);
 
 	@Query(value = "SELECT v.id AS id,"
 			+ "v.manufacturer AS manufacturer,"
