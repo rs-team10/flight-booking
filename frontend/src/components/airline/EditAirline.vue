@@ -69,8 +69,6 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength } from 'vuelidate/lib/validators'
 
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
 export default {
     mixins: [validationMixin],
 
@@ -126,6 +124,9 @@ export default {
             
             this.$v.$touch()
             if(!this.$v.$invalid) {
+
+                var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                 yourConfig.params = { previousAirlineName: this.previousAirlineName };
                 this.$axios.put('http://localhost:8080/api/airlines/updateAirline', this.airline, yourConfig)
                     .then((response) => {
@@ -176,6 +177,9 @@ export default {
         }
     },
     created() {
+
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
             .then((response) => {
                 this.airline = response.data;

@@ -55,7 +55,7 @@ public class FlightService {
 		return new ResponseEntity<List<FlightDTO>>(flightsList, HttpStatus.OK);
 	}
 
-	public ResponseEntity<?> addFlight(FlightDTO flightDTO) {
+	public ResponseEntity<FlightDTO> addFlight(FlightDTO flightDTO) {
 
 		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
 
@@ -129,8 +129,13 @@ public class FlightService {
 
 		existingAirline.getFlights().add(newFlight);
 		airlineRepository.save(existingAirline);
+		
+		
+		
+		Flight savedFlight = flightRepository.findOneByFlightNumber(newFlight.getFlightNumber());
+		FlightDTO retval = new FlightDTO(savedFlight);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<FlightDTO>(retval, HttpStatus.OK);
 	}
 
 	public ResponseEntity<?> deleteFlight(FlightDTO flightDTO) {

@@ -1,0 +1,6 @@
+projectKey=com.tim10:flight-booking
+serverUrl=http://localhost:9000
+serverVersion=7.7.0.23042
+dashboardUrl=http://localhost:9000/dashboard?id=com.tim10%3Aflight-booking
+ceTaskId=AWtOg1DG0Q_oBIvlsn_p
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWtOg1DG0Q_oBIvlsn_p

@@ -90,8 +90,6 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
 export default {
 
     mixins: [validationMixin],
@@ -143,6 +141,8 @@ export default {
             this.$v.newPriceListItem.$touch();
             if(!this.$v.newPriceListItem.$invalid) {
 
+                var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                 this.$axios.put('http://localhost:8080/api/airlines/addPriceListItem/', this.newPriceListItem, yourConfig)
                     .then((data) => {
                         this.$swal('Success', 'Item added successfuly', 'success');
@@ -171,6 +171,8 @@ export default {
                     const index = this.priceListItems.indexOf(priceListItem);
                     this.priceListItems.splice(index, 1);
 
+                    var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                     this.$axios.put('http://localhost:8080/api/airlines/removePriceListItem/', priceListItem, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Item removed successfuly', 'success');
@@ -185,6 +187,9 @@ export default {
         }
     },
     created() {
+        
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios.get('http://localhost:8080/api/airlines/getPriceListItems', yourConfig)
         .then((response) => {
             this.priceListItems = response.data;
