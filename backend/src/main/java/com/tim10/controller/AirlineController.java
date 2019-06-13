@@ -19,6 +19,7 @@ import com.tim10.domain.Destination;
 import com.tim10.domain.PriceListItem;
 import com.tim10.dto.AirlineProfileDTO;
 import com.tim10.dto.DestinationDTO;
+import com.tim10.dto.NewAirlineDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.service.AirlineService;
 import com.tim10.service.UserService;
@@ -58,17 +59,15 @@ public class AirlineController {
 			method=RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createAirline(@RequestBody Airline airline) {
-		if(airlineService.findOneByName(airline.getName()) == null) {
-			for(AirlineAdmin admin : airline.getAdministrators()) {
-				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
-					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
-				else if(userService.findOneByEmail(admin.getEmail()).isPresent()) 
-					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
-			}
-			return new ResponseEntity<>(airlineService.registerAirline(airline), HttpStatus.CREATED);
+	public ResponseEntity<?> createAirline(@RequestBody NewAirlineDTO airlineDTO) {
+		Airline registeredAirline = null;
+		Airline airline = new Airline(airlineDTO);
+		try {
+			registeredAirline = airlineService.registerAirline(airline);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}
-		return new ResponseEntity<>("Airline with that name already exists!", HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(registeredAirline, HttpStatus.CREATED);
 	}
 	
 	

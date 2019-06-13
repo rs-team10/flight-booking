@@ -23,40 +23,39 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="User")
+@Table(name = "User")
 //svi korisnici se cuvaju u istoj tabeli, i onda mozemo da obezbedimo da usr ne budu isti
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class User implements UserDetails  {
-	
+public abstract class User implements UserDetails {
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;	
-	
-	@Column(name="username", nullable=false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(name = "username", nullable = false)
 	private String username;
-	
-	@Column(name="password")
+
+	@Column(name = "password")
 	private String password;
-	
-	@Column(name="firstName")
+
+	@Column(name = "firstName")
 	private String firstName;
-	
-	@Column(name="lastName")
+
+	@Column(name = "lastName")
 	private String lastName;
-	
-	@Column(name="email", nullable = false, unique = true)
-    @Size(min = 6, max = 50)
+
+	@Column(name = "email", nullable = false, unique = true)
+	@Size(min = 6, max = 50)
 	private String email;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Authority> authorities;
-	
+
 	public User() {
 		super();
 		authorities = new LinkedHashSet<Authority>();
 	}
-	
 
 	public Long getId() {
 		return id;
@@ -81,6 +80,7 @@ public abstract class User implements UserDetails  {
 	public String getEmail() {
 		return email;
 	}
+
 	@Override
 	public Set<Authority> getAuthorities() {
 		return authorities;
@@ -113,9 +113,9 @@ public abstract class User implements UserDetails  {
 	public void setAuthorities(Set<Authority> authorities) {
 		this.authorities = authorities;
 	}
-	
+
 	// Deo za UserDetails
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
 		// TODO Auto-generated method stub

@@ -31,7 +31,7 @@ public class Reservation {
 	private String invitationCode;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="status")
+	@Column(name="status")				
 	private RequestStatus status;
 	
 	@Column(name="distance")

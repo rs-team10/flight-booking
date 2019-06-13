@@ -5,20 +5,22 @@ import java.util.Set;
 import com.tim10.domain.Hotel;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceList;
-import com.tim10.domain.Room;
 import com.tim10.domain.RoomType;
 
 public class HotelDTO {
-
+	
+	/*
+	 * NEDOSTAJU:
+	 * Rooms, QuickRoomReservations, HotelAdmins 
+	 */
 	private Long id;
 	private String name;
 	private String description;
 	private Double averageFeedback;
 	private Location location;
-	private Set<Room> rooms;
 	private Set<RoomType> roomTypes;
 	private PriceList additionalServicesPriceList;
-
+	
 	public HotelDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -30,20 +32,18 @@ public class HotelDTO {
 		this.description = hotel.getDescription();
 		this.averageFeedback = hotel.getAverageFeedback();
 		this.location = hotel.getLocation();
-		this.rooms = hotel.getRooms();
 		this.roomTypes = hotel.getRoomTypes();
 		this.additionalServicesPriceList = hotel.getAdditionalServicesPriceList();
 	}
 	
 	public HotelDTO(Long id, String name, String description, Double averageFeedback, Location location,
-			Set<Room> rooms, Set<RoomType> roomTypes, PriceList additionalServicesPriceList) {
+			Set<RoomType> roomTypes, PriceList additionalServicesPriceList) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.averageFeedback = averageFeedback;
 		this.location = location;
-		this.rooms = rooms;
 		this.roomTypes = roomTypes;
 		this.additionalServicesPriceList = additionalServicesPriceList;
 	}
@@ -66,10 +66,6 @@ public class HotelDTO {
 
 	public Location getLocation() {
 		return location;
-	}
-
-	public Set<Room> getRooms() {
-		return rooms;
 	}
 
 	public Set<RoomType> getRoomTypes() {
@@ -100,10 +96,6 @@ public class HotelDTO {
 		this.location = location;
 	}
 
-	public void setRooms(Set<Room> rooms) {
-		this.rooms = rooms;
-	}
-
 	public void setRoomTypes(Set<RoomType> roomTypes) {
 		this.roomTypes = roomTypes;
 	}
@@ -111,5 +103,7 @@ public class HotelDTO {
 	public void setAdditionalServicesPriceList(PriceList additionalServicesPriceList) {
 		this.additionalServicesPriceList = additionalServicesPriceList;
 	}
-
+	
+	
+	
 }

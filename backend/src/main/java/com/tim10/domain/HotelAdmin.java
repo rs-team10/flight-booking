@@ -1,6 +1,5 @@
 package com.tim10.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +12,7 @@ public class HotelAdmin extends User {
 	private Boolean hasCustomPassword;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
+	//@JoinColumn(name = "hotel_id")
 	public Hotel hotel;
 
 	public HotelAdmin() {
@@ -27,6 +27,20 @@ public class HotelAdmin extends User {
 		aut.setRole(Role.ROLE_HOTEL_ADMIN);
 		this.getAuthorities().add(aut);
 
+	}
+	
+	//bezveze ali potrebno za registraciju hotela
+	public HotelAdmin(User user) {
+		this.setUsername(user.getUsername());
+		this.setPassword(user.getPassword());
+		this.setEmail(user.getEmail());
+		this.setFirstName(user.getFirstName());
+		this.setLastName(user.getLastName());
+		
+		hasCustomPassword = false;
+		Authority aut = new Authority();
+		aut.setRole(Role.ROLE_HOTEL_ADMIN);
+		this.getAuthorities().add(aut);
 	}
 	
 	public Boolean getHasCustomPassword() {

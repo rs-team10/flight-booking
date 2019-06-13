@@ -20,8 +20,14 @@
         </div>  
 
         <div id="edit-form" class="mt-3">
-            <v-flex xs12 sm6 offset-sm3> 
-                <h1 class="text-xs-center indigo--text">Edit {{selectedHotel.name}}</h1>
+            <v-flex xs12 sm10 md10 offset-sm1> 
+                <v-layout row align right>
+                    <v-btn color="indigo" outline flat @click="goToQuickReservations">
+                        Quick Room Reservations
+                        <v-icon right>arrow_forward</v-icon> 
+                    </v-btn>
+                </v-layout>
+                
                 <form>
                     <v-text-field
                         v-model.lazy="selectedHotel.name"
@@ -65,27 +71,31 @@
                                         <v-container grid-list-md>
                                             <v-layout wrap>
                                                 <v-flex xs12>
-                                                <v-text-field v-model="roomEditedItem.type" label="Type"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.type" label="Type"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.pricePerNight" label="Price per night"  type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.pricePerNight" label="Price per night"  type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.capacity" label="Capacity" type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.capacity" label="Capacity" type="number" min="1" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.singleBedCount" label="Single beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.singleBedCount" label="Single beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
                                                 <v-flex xs12 sm6 md6>
-                                                <v-text-field v-model="roomEditedItem.doubleBedCount" label="Double beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                    <v-text-field v-model="roomEditedItem.doubleBedCount" label="Double beds" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
                                                 </v-flex>
-
                                                 <v-flex xs12>
-                                                <v-textarea v-model="roomEditedItem.description" label="Description"></v-textarea>
+                                                    <v-textarea v-model="roomEditedItem.description" label="Description"></v-textarea>
                                                 </v-flex>
-
                                                 <v-flex>
-                                                    <v-checkbox v-model="roomEditedItem.hasTV" label="Has TV"></v-checkbox>
+                                                    <v-text-field v-model="roomEditedItem.squareFootage" label="Square footage" type="number" min="0" oninput="validity.valid||(value='');"></v-text-field>
+                                                </v-flex>
+                                                <v-flex>
+                                                    <v-checkbox v-model="roomEditedItem.hasTV" label="TV"></v-checkbox>
+                                                </v-flex>
+                                                <v-flex>
+                                                    <v-checkbox v-model="roomEditedItem.hasBalcony" label="Balcony"></v-checkbox>
                                                 </v-flex>
         
                                             </v-layout>
@@ -103,8 +113,17 @@
 
                             <v-dialog v-model="specialPricesDialog" max-width="800px">
                                 <component 
-                                    v-bind:is="component"
+                                    v-bind:is="specialPricesComp"
                                     v-bind:selectedRoomType="selectedRoomType"
+                                ></component>
+                            </v-dialog>
+
+                            <v-dialog v-model="editRoomsDialog" max-width="800px">
+                                <component 
+                                    v-bind:is="editRoomsComp"
+                                    v-bind:selectedRoomType="selectedRoomType"
+                                    v-bind:hotelRooms="selectedHotel.rooms"
+                                    v-bind:selectedHotel="selectedHotel"
                                 ></component>
                             </v-dialog>
 
@@ -120,26 +139,35 @@
 
                             <template v-slot:items="props">
                                 <td>{{ props.item.type }}</td>
-                                <td >{{ props.item.pricePerNight }}</td>
-                                <td >{{ props.item.capacity }}</td>
-                                <td >{{ props.item.singleBedCount }}</td>
-                                <td >{{ props.item.doubleBedCount }}</td>
-                                <td >{{ props.item.hasTV }}</td>
-                                <td >{{ props.item.averageFeedback }}</td>
+                                <td>{{ props.item.pricePerNight }}</td>
+                                <td>{{ props.item.capacity }}</td>
+                                <td>{{ props.item.singleBedCount }}</td>
+                                <td>{{ props.item.doubleBedCount }}</td>
+                                <td>{{ props.item.hasTV }}</td>
+                                <td>{{ props.item.hasBalcony }}</td>
+                                <td>{{ props.item.squareFootage }}</td>
+                                <td>{{ props.item.averageFeedback }}</td>
 
                                 <td class="justify-center layout px-0">
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                    @click="roomEditItem(props.item)">
-                                edit
-                                </v-icon>
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                    @click="roomDeleteItem(props.item)">
-                                delete
-                                </v-icon>
+                                
+                                <v-layout row v-if="isReserved(props.item.type)">
+                                    <v-icon disabled small class="mr-2" @click="roomEditItem(props.item)">
+                                        edit
+                                    </v-icon>
+                                    <v-icon disabled small class="mr-2" @click="roomDeleteItem(props.item)">
+                                        delete
+                                    </v-icon>
+                                </v-layout>
+                                
+                                <v-layout row v-else>
+                                    <v-icon small class="mr-2" @click="roomEditItem(props.item)">
+                                        edit
+                                    </v-icon>
+                                    <v-icon small class="mr-2" @click="roomDeleteItem(props.item)">
+                                        delete
+                                    </v-icon>
+                                </v-layout>
+
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on }">
                                         <v-icon
@@ -147,11 +175,23 @@
                                             class="mr-2"
                                             @click="specialRoomPrice(props.item)"
                                             v-on="on">
-                                            list 
+                                            star
                                         </v-icon>
 
                                     </template>
                                     <span>Special prices</span>
+                                </v-tooltip>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon
+                                            small
+                                            class="mr-2"
+                                            @click="editRooms(props.item)"
+                                            v-on="on">
+                                            hotel
+                                        </v-icon>
+                                    </template>
+                                    <span>Rooms</span>
                                 </v-tooltip>     
                                 </td>
                             </template>
@@ -254,7 +294,8 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
-import SpecialRoomPrices from "@/components/SpecialRoomPrices.vue"
+import SpecialRoomPrices from "./SpecialRoomPrices.vue"
+import EditRooms from "./EditRooms.vue"
 
 var yourConfig = {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") }
@@ -262,7 +303,8 @@ var yourConfig = {
 
 export default {
     components: {
-        "specialRoomPrices" : SpecialRoomPrices
+        "specialRoomPrices" : SpecialRoomPrices,
+        "editRooms" : EditRooms
     },
 
     props: ['selectedHotel'],
@@ -279,8 +321,12 @@ export default {
     },
     data(){
         return {
-            component: "specialRoomPrices",
+            specialPricesComp: "specialRoomPrices",
+            editRoomsComp: "editRooms",
             selectedRoomType: {},
+            //---------------------------------
+            rooms: [],
+
             //ZA SERVICE DATA TABLE
             //===========================================
             serviceDialog: false,
@@ -300,6 +346,7 @@ export default {
             //===========================================
             roomDialog: false,
             specialPricesDialog: false,
+            editRoomsDialog: false,
             roomPagination: {},
             roomsHeaders: [
                 //image
@@ -309,8 +356,10 @@ export default {
                 { text: 'Single beds', value: 'singleBeds', sortable: false },
                 { text: 'Double beds', value: 'doubleBeds', sortable: false },
                 { text: 'Has TV', value: 'hasTV', sortable: false },
+                { text: 'Has Balcony', value: 'hasBalcony', sortable: false },
+                { text: 'Square ft.', value: 'squareFootage', sortable: true },
                 { text: 'Average Feedback', value: 'avgFdbk'},
-                { text: '', value: 'name', sortable: false }
+                { text: '', value: 'actions', sortable: false }
             ],
             roomEditedIndex: -1,
             roomEditedItem: {},
@@ -366,20 +415,20 @@ export default {
             this.$v.$touch();
 
             if(!this.$v.$invalid){
-                console.log(this.selectedHotel);
                 this.editHotel();
             }
         },
         editHotel: function(){
             this.$axios
             .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel, yourConfig)
-            .then(response => {
+            .then(() => {
                 this.success = true;
                 setTimeout(() => {
                     this.success = false
             }, 3000)
             }).catch(error => {
-                this.error = error.response.data;
+                console.log("Edit hotel GRESKA")
+                //this.error = error.response.data;
             });
         },
         //==============================SERVICES================================================
@@ -436,15 +485,29 @@ export default {
                 //ako nijedan item nije selektovan znaci da dodajemo novi
                 //this.roomEditedItem["specialRoomPrices"] = new Array();
                 this.selectedHotel.roomTypes.push(this.roomEditedItem);
-                console.log(this.selectedHotel);
             }
             this.roomClose()
         },
         specialRoomPrice(item){
             this.selectedRoomType = item
             this.specialPricesDialog = true
-        }
+        },
         //=========================================================================================
+        editRooms(roomType){
+            this.selectedRoomType = roomType
+            this.editRoomsDialog = true
+        },
+        isReserved(type){
+            var resultArray = this.selectedHotel.rooms.filter(x => x.roomType.type == type)
+            for(var i = 0; i <  resultArray.length; i++){
+                if(resultArray[i].reserved)
+                    return true;
+            }
+            return false;
+        },
+        goToQuickReservations(){
+            this.$emit('goToQuickReservations')
+        }
     },
     created(){
         console.log(this.selectedHotel);
