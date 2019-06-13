@@ -209,7 +209,6 @@ export default {
             this.$axios
             .post('http://localhost:8080/auth/signup', this.registeredUser)
             .then(response => {
-                alert(response.data.username)
                 this.success = true;
                 this.registeredUser.passwordConfirmation = this.savePassword;
             }).catch(error => {

@@ -1,19 +1,20 @@
 package com.tim10.controller;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.User;
+import com.tim10.dto.AdminDTO;
 import com.tim10.service.UserService;
 
 
@@ -84,8 +85,31 @@ public class UserController {
 	
 	*/
 	
+	//ZA HOTEL ADMINA
+	//=================================================================================
+	@RequestMapping(value="/api/users/currentHotelAdmin", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AdminDTO> getCurrentHotelAdmin(){
+		HotelAdmin currentHotelAdmin = (HotelAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentHotelAdmin != null) {
+			AdminDTO adminDTO = new AdminDTO(currentHotelAdmin);
+			return new ResponseEntity<AdminDTO>(adminDTO, HttpStatus.OK);
+		}
+		return new ResponseEntity<AdminDTO>(HttpStatus.NOT_FOUND);
+	}
 	
-
+	@RequestMapping(value="/api/users/hotelAdmin", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateHotelAdmin(@RequestBody HotelAdmin hotelAdmin){
+		HotelAdmin updatedAdmin = null;
+		try {
+			updatedAdmin = userService.updateHotelAdmin(hotelAdmin);
+			return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
+	}
+	
+	
+	//=================================================================================
 	
 
 }

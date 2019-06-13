@@ -17,6 +17,7 @@ Vue.config.productionTip = false
 Vue.use(Vuetify)
 Vue.use(Vuelidate)
 Vue.use(VueSweetalert2);
+Vue.use(require('vue-moment'));
 
 Vue.use(VueCharts)
 Vue.use(require('vue-moment'));

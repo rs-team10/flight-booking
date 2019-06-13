@@ -110,6 +110,7 @@ public class HotelService {
 		
 	}
 	
+	//ovde treba transakcija (readonly mozda)
 	public HotelRoomsDTO getHotelRooms(Long id) throws Exception {
 		Optional<Hotel> hotel = findOne(id);
 		if(hotel.isPresent())

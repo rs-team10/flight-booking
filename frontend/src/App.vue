@@ -1,10 +1,10 @@
 <template>
   <v-app>
 
-    <Header />
+    <Header ref="header" />
 
     <v-content>
-      <router-view></router-view>
+      <router-view @logged="changeText"></router-view>
     </v-content>
 
   </v-app>
@@ -13,12 +13,18 @@
 <script>
 import Header from '@/components/Header'
 
+
 export default {
   name: 'App',
   components: { Header },        
   data () {
     return {
       //
+    }
+  },
+  methods: {
+    changeText: function(){
+      this.$refs.header.log();
     }
   }
 }

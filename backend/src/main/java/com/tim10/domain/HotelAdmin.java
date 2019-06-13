@@ -5,13 +5,17 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
+import com.tim10.dto.AdminDTO;
+
 @Entity
 public class HotelAdmin extends User {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	//@JoinColumn(name = "hotel_id")
 	public Hotel hotel;
 

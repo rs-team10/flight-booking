@@ -20,8 +20,10 @@ import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
+import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
 import Reserve from './components/HotelReservation/Reserve.vue'
 import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
+import HotelAdminProfile from './components/HotelAdmin/HotelAdminProfile.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -108,6 +110,12 @@ export default new Router({
       name: 'logout',
       component: Logout
     },
+    
+    {
+      path: '/vehicleReservation',
+      name: 'vehicleReservation',
+      component: VehicleReservation
+    },
     //=====================================
     //=====================================
     //PRIVREMENE RUTE, NECE BITI KASNIJE - OVOME SAMO ADMIN SME DA PRISTUPA, I PRISTUPACE U VIDU KOMPONENTE
@@ -144,6 +152,11 @@ export default new Router({
       path: '/temp',
       name: 'dashboard',
       component: Dashboard
+    },
+    {
+      path: '/hotelAdminProfile',
+      name: 'hotelAdminProfile',
+      component: HotelAdminProfile
     }
     //=====================================
   ]

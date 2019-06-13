@@ -1,8 +1,12 @@
 package com.tim10.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -11,7 +15,9 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.Vehicle;
 import com.tim10.dto.VehicleDTO;
+import com.tim10.dto.VehicleSearchDTO;
 import com.tim10.repository.BranchOfficeRepository;
+import com.tim10.repository.RentACarRepository;
 import com.tim10.repository.VehicleRepository;
 
 @Service
@@ -22,6 +28,10 @@ public class VehicleService {
 	
 	@Autowired
 	BranchOfficeRepository branchOfficeRepository;
+	
+	
+	@Autowired
+	RentACarRepository rentACarRepository;
 	
 /*
 	public void addAndReference(Long branchOfficeId, Long vehicleId)  throws Exception{
@@ -42,10 +52,18 @@ public class VehicleService {
 		vehicle.setBranchOffice(branchOffice);
 
 	}
-*/	
+	
 	public Collection<VehicleDTO> getVehiclesFromBranch(Long branchId){
 
 		return vehicleRepository.getVehiclesFromBranch(branchId); 
+	}
+*/	
+	
+	public Collection<Vehicle> getVehiclesFromBranch(Long branchId){
+		
+		Collection<Vehicle> vehicles = branchOfficeRepository.findById(branchId).get().getVehicle();
+
+		return vehicles; 
 	}
 	
 	
@@ -188,10 +206,88 @@ public class VehicleService {
 
 		vehicleRepository.deleteById(VehicleId);
 		
-		
-
-		
 	}
+	
+	 public Collection<Vehicle> vehiclesFromCountry(String from, String to, String country) throws ParseException {
+		 
+		 Collection<Vehicle> inCountry = vehicleRepository.vehiclesFromCountry(country);
+		 
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		 
+		 Date fromD = format.parse(from);
+		 Date toD = format.parse(to);
 
+
+		 return inCountry.stream().filter(v -> !v.isReserved(fromD, toD)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 public Collection<Vehicle> vehiclesFilter(String country, VehicleSearchDTO params) throws ParseException {
+		 
+		 String city = params.getCity();
+		 Collection<Vehicle> inCountry = null;
+		 
+		 if(city!="")
+			 inCountry = vehicleRepository.vehiclesFromCity(country, city);
+		 else
+			 inCountry = vehicleRepository.vehiclesFromCountry(country);
+		 
+			 
+		 return inCountry.stream().filter(v -> v.filter(params)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 
+	 
+	 
+	 public Collection<Vehicle> vehiclesOnQucikFromCountry(String from, String to, String country) throws ParseException {
+		 
+		 Collection<Vehicle> inCountry = vehicleRepository.vehiclesFromCountry(country);
+		 
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		 
+		 Date fromD = format.parse(from);
+		 Date toD = format.parse(to);
+
+
+		 return inCountry.stream().filter(v -> v.isQuickReserved(fromD, toD)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 public Collection<Vehicle> vehiclesQuickFilter(String country, VehicleSearchDTO params) throws ParseException {
+		 
+		 String city = params.getCity();
+		 Collection<Vehicle> inCountry = null;
+		 
+		 if(city!="")
+			 inCountry = vehicleRepository.vehiclesFromCity(country, city);
+		 else
+			 inCountry = vehicleRepository.vehiclesFromCountry(country);
+
+			 
+		 return inCountry.stream().filter(v -> v.filterQuick(params)).collect(Collectors.toList());
+	 
+	 }
+	 
+	 
+	 
+	 
+	 public Collection<Vehicle> vehiclesFromRentACar(Long rentACarId) {
+		 
+		 return vehicleRepository.getVehiclesFromRentACar(rentACarId);
+	 
+	 }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	
 }

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,25 @@ public class RentACarService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
+	
+	
 		
-	public RentACarDTO getRentACarById(@Param("rentACarId") Long rentACarId)throws ResourceNotFoundException {
+	public RentACarDTO getRentACarById(Long rentACarId)throws ResourceNotFoundException {
 		
-		RentACarDTO rac =  rentACarRepository.getRentACarById(rentACarId);
-		if(rac == null) 
+		Optional<RentACar> rac =  rentACarRepository.findById(rentACarId);
+		if(!rac.isPresent()) 
 			throw new ResourceNotFoundException("Rent-A-Car with id: "+rentACarId+" doesn't exist!");
 		
-		return rac;
+		RentACar rnc = rac.get();
+		
+		RentACarDTO rdto = new RentACarDTO();
+		rdto.setId(rnc.getId());
+		rdto.setName(rnc.getName());
+		rdto.setDescription(rnc.getDescription());
+		rdto.setAdditionalServicesPriceList(rnc.getAdditionalServicesPriceList());
+		
+		
+		return rdto;
 		
 	}
 	

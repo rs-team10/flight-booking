@@ -14,22 +14,24 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name="SpecialRoomPrices")
+@Table(name = "SpecialRoomPrices")
 public class SpecialRoomPrice implements Serializable {
-	
-	@Id	
-	@GeneratedValue(strategy=GenerationType.AUTO)
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@Column(name="price")
+
+	@Column(name = "price")
 	private BigDecimal price;
-	
-	@Column(name="validFrom")
-	@Type(type="date")
+
+	@Column(name = "validFrom")
+	@Type(type = "date")
 	private Date validFrom;
-	
-	@Column(name="validTo")
-	@Type(type="date")
+
+	@Column(name = "validTo")
+	@Type(type = "date")
 	private Date validTo;
 
 	public SpecialRoomPrice() {

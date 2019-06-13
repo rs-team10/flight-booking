@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Length;
 public abstract class Company implements Serializable {
 	 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "name", nullable = false)
