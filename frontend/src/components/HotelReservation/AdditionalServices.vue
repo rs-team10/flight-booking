@@ -126,14 +126,12 @@ export default {
     methods: {
         reserveRooms(){
             this.reservation.additionalServices = this.selected
-            console.log(this.reservation)
             this.$axios
             .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation)
             .then(response => {
                 this.$swal("Reservation successful", "", "success");
-                console.log(response.data)
             }).catch(error => {
-                console.log(error)
+                console.log(error.response.data)
             });
         }
     }

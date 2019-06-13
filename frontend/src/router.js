@@ -23,6 +23,7 @@ import Logout from './components/login&signup/logout.vue'
 import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
 import Reserve from './components/HotelReservation/Reserve.vue'
 import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
+import HotelAdminProfile from './components/HotelAdmin/HotelAdminProfile.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -151,6 +152,11 @@ export default new Router({
       path: '/temp',
       name: 'dashboard',
       component: Dashboard
+    },
+    {
+      path: '/hotelAdminProfile',
+      name: 'hotelAdminProfile',
+      component: HotelAdminProfile
     }
     //=====================================
   ]
