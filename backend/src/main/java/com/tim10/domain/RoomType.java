@@ -1,4 +1,4 @@
-package com.tim10.domain;
+	package com.tim10.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -40,6 +40,12 @@ public class RoomType implements Serializable {
 	
 	@Column(name="hasTV")
 	private Boolean hasTV;
+	
+	@Column(name="squareFootage")
+	private Integer squareFootage;
+	
+	@Column(name="hasBalcony")
+	private Boolean hasBalcony;
 	
 	@Column(name="description")
 	private String description;
@@ -135,6 +141,22 @@ public class RoomType implements Serializable {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public Integer getSquareFootage() {
+		return squareFootage;
+	}
+
+	public Boolean getHasBalcony() {
+		return hasBalcony;
+	}
+
+	public void setSquareFootage(Integer squareFootage) {
+		this.squareFootage = squareFootage;
+	}
+
+	public void setHasBalcony(Boolean hasBalcony) {
+		this.hasBalcony = hasBalcony;
 	}
 
 	public void setAverageFeedback(Double averageFeedback) {

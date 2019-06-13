@@ -1,6 +1,6 @@
 <!-- System admin -->
 <template>
-    <div id="add-airline">
+    <div id="add-hotel">
         
         <div id="alerts">
             <v-alert
@@ -8,7 +8,7 @@
                 type="success"
                 transition="scale-transition"
             >
-            Airline: <b>{{ airline.name }}</b> registered successfully.
+            Hotel: <b>{{ hotel.name }}</b> registered successfully.
             </v-alert>
 
             <v-alert
@@ -21,19 +21,19 @@
 
         </div>
         
-        <div id="add-form" >
+        <div id="add-form" class="mt-3">
             <v-flex xs12 sm6 offset-sm3>
-                <h1 class="text-xs-center indigo--text">Register new airline</h1>
+                <h1 class="text-xs-center indigo--text">Register new hotel</h1>
                 <v-form>
                     <v-text-field
-                        v-model.lazy="airline.name"
+                        v-model.lazy="hotel.name"
                         :error-messages="nameErrors"
                         label="Name"
                         required>
                     </v-text-field>
 
                     <v-text-field
-                        v-model.lazy="airline.location.street"
+                        v-model.lazy="hotel.location.street"
                         :error-messages="addressErrors"
                         label="Address"
                         required>
@@ -58,7 +58,7 @@
                         <v-form ref="adminForm">
                         <v-card>
                             <v-card-title>
-                                <span class="headline">New Airline administrator</span>
+                                <span class="headline">New Hotel administrator</span>
                             </v-card-title>
                             <v-card-text>
                                 
@@ -115,7 +115,7 @@
                         <v-flex>
                         <v-card>
                             <v-toolbar color="indigo" dark>
-                            <v-toolbar-title class="text-xs-center">Airline administrators</v-toolbar-title>
+                            <v-toolbar-title class="text-xs-center">Hotel administrators</v-toolbar-title>
                             <v-spacer></v-spacer>
                             </v-toolbar>
                                 <v-list 
@@ -123,7 +123,7 @@
                                     class="indigo darken-2 scroll-y" 
                                     dark
                                     style="height: 400px">
-                                    <template v-for="admin in this.airline.administrators"> 
+                                    <template v-for="admin in this.hotel.administrators"> 
                                         <v-list-tile :key="admin.id">
                                             <v-list-tile-content>
                                                 <v-list-tile-title class="font-weight-bold">
@@ -139,6 +139,7 @@
                                                 delete
                                             </v-icon>
                                         </v-list-tile>
+                                        
                                     </template>
                                 </v-list>
                         </v-card>
@@ -158,11 +159,15 @@
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength } from 'vuelidate/lib/validators'
 
+var yourConfig = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
+
 export default {
     mixins: [validationMixin],
 
     validations: {
-        airline: {
+        hotel: {
             name: { required },
             location: {
                 street: { required }
@@ -177,7 +182,7 @@ export default {
       
     data(){
         return {
-            airline: {
+            hotel: {
                 name: '',
                 location: {
                     street: ''
@@ -195,14 +200,14 @@ export default {
     computed: {
         nameErrors () {
             const errors = []
-            if (!this.$v.airline.name.$dirty) return errors
-            !this.$v.airline.name.required && errors.push('Name is required.')
+            if (!this.$v.hotel.name.$dirty) return errors
+            !this.$v.hotel.name.required && errors.push('Name is required.')
             return errors
         },
         addressErrors() {
             const errors = []
-            if (!this.$v.airline.location.street.$dirty) return errors
-            !this.$v.airline.location.street.required && errors.push('Address is required.')
+            if (!this.$v.hotel.location.street.$dirty) return errors
+            !this.$v.hotel.location.street.required && errors.push('Address is required.')
             return errors
         },
         usernameErrors(){
@@ -230,29 +235,29 @@ export default {
 
     methods:{
         submit () {
-            this.$v.airline.$touch();
-
-            if(!this.$v.airline.$invalid){
+            this.$v.hotel.$touch();
+            if(!this.$v.hotel.$invalid){
                 if(!this.adminEmpty()){
-                    this.addAirline();
+                    this.addHotel();
                 }else{
                     this.error = "At least one administrator must be added!";
                 }
             }
         },
-        addAirline: function(){
+        addHotel: function(){
             this.$axios
-            .post('http://localhost:8081/api/airlines', this.airline)
+            .post('http://localhost:8080/api/hotels', this.hotel, yourConfig)
             .then(() => {
                 this.success = true;
                 setTimeout(() => {
-                    this.success = false;
-                }, 3000)
+                    this.success = false
+            }, 3000)
             }).catch(error => {
                 this.error = error.response.data;
             });
         },
         close(){
+            this.$v.tempAdmin.$reset();
             this.adminDialog = false;
             this.tempAdmin = Object.assign({}, {});
         }, 
@@ -260,7 +265,7 @@ export default {
             this.$v.tempAdmin.$touch();
             if(!this.$v.tempAdmin.$invalid){
                 if(!this.adminExists(this.tempAdmin.username)){
-                    this.airline.administrators.push(this.tempAdmin);
+                    this.hotel.administrators.push(this.tempAdmin);
                     this.close();
                 }
                 else{
@@ -269,21 +274,23 @@ export default {
             }      
         },
         adminExists(usr){
-            for(var i=0; i < this.airline.administrators.length; i++){
-                if( this.airline.administrators[i].username == usr)
+            for(var i=0; i < this.hotel.administrators.length; i++){
+                if( this.hotel.administrators[i].username == usr)
                     return true
             }
             return false
         },
         adminEmpty(){
-            if(this.airline.administrators.length == 0)
+            if(this.hotel.administrators.length == 0)
                 return true;
             else
                 return false;
         },
         deleteAdmin(admin){
-            this.airline.administrators.pop(admin);
+            const index = this.hotel.administrators.indexOf(admin);
+            this.hotel.administrators.splice(index, 1);
         }
     }
 }
+
 </script>

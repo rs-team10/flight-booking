@@ -7,8 +7,11 @@
     </v-tabs>
 
     <component v-bind:is="component" 
-        v-on:hotelSelected="changeComp($event)" 
-        v-bind:selectedHotel="selectedHotel"></component>
+        @hotelSelected="changeComp($event)"
+        @generateReports="generateReports($event)" 
+        @goToQuickReservations="component = 'quick-room-reservations'"
+        @goBack="component = 'edit-hotel'"
+        :selectedHotel="selectedHotel"></component>
 
   </div>
 </template>
@@ -16,14 +19,18 @@
 <script>
 // @ is an alias to /src
 import ViewHotels from "@/components/ViewHotels.vue"
-import AddHotel from "@/components/AddHotel.vue"
-import EditHotel from "@/components/EditHotel.vue"
+import AddHotel from "@/components/SysAdmin/AddHotel.vue"
+import EditHotel from "@/components/HotelAdmin/EditHotel.vue"
+import QuickRoomReservations from "@/components/HotelAdmin/QuickRoomReservations.vue"
+import Reports from "@/components/HotelAdmin/Reports.vue"
 
 export default {
     components: {
         'hotels' : ViewHotels,
         'add-hotel' : AddHotel,
-        'edit-hotel' : EditHotel
+        'edit-hotel' : EditHotel,
+        'quick-room-reservations' : QuickRoomReservations,
+        'reports' : Reports
     },
     data(){
         return{
@@ -35,6 +42,10 @@ export default {
         changeComp: function(hotel){
             this.selectedHotel = hotel;
             this.component = 'edit-hotel';
+        },
+        generateReports(hotel){
+            this.selectedHotel = hotel;
+            this.component = 'reports';
         },
         fetchHotels: function(){
             this.$axios

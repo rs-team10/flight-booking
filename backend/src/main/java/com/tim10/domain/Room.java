@@ -1,8 +1,10 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,45 +15,48 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+
 @Entity
 @Table(name="Rooms")
-public class Room {
+public class Room implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@Column(name="roomNumber")
+	private Integer roomNumber;
+	
 	@Column(name="floor")
 	private Integer floor;
 	
-	@Column(name="squareFootage")
-	private Integer squareFootage;
-	
-	@Column(name="hasBalcony")
-	private Boolean hasBalcony;
-	
-	//KAKAV CASCADETYPE OVDE??? DA LI IKAKAV???
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private RoomType roomType;
 		
-	//mappedBy room znaci da ce se foreign key nalaziti u tabeli u kojoj 
-	//je deklarisan atribut koji se zove room (znaci bice u tabeli room reservations
-	//@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
 	
-	
-	//=====================================================
-	//ako se ne stavi bidirekciona veza, pravi medjutabelu
-	//ovako u sobu stavi hotel_id od hotela u kojem se nalazi
-	
-//	@ManyToOne
+//	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+//	@ManyToOne(fetch=FetchType.LAZY)
+//	@JoinColumn(name="hotel_id")
 //	private Hotel hotel;
-//	
-	//========================================================
+	
+	public boolean isReserved(Date checkInDate, Date checkOutDate) {
+		for(RoomReservation roomReservation: this.roomReservations) {
+			if( ((roomReservation.getDateFrom().compareTo(checkInDate) <= 0) && (roomReservation.getDateTo().compareTo(checkInDate) > 0))
+					|| ((roomReservation.getDateFrom().compareTo(checkOutDate) < 0) && (roomReservation.getDateTo().compareTo(checkOutDate) >= 0)) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public Room() {
 		super();
+		this.roomReservations = new HashSet<>();
+		//this.hotel = new Hotel();
 	}
 
 	public Long getId() {
@@ -60,14 +65,6 @@ public class Room {
 
 	public Integer getFloor() {
 		return floor;
-	}
-
-	public Integer getSquareFootage() {
-		return squareFootage;
-	}
-
-	public Boolean getHasBalcony() {
-		return hasBalcony;
 	}
 
 	public RoomType getRoomType() {
@@ -86,12 +83,12 @@ public class Room {
 		this.floor = floor;
 	}
 
-	public void setSquareFootage(Integer squareFootage) {
-		this.squareFootage = squareFootage;
+	public Integer getRoomNumber() {
+		return roomNumber;
 	}
 
-	public void setHasBalcony(Boolean hasBalcony) {
-		this.hasBalcony = hasBalcony;
+	public void setRoomNumber(Integer roomNumber) {
+		this.roomNumber = roomNumber;
 	}
 
 	public void setRoomType(RoomType roomType) {

@@ -23,10 +23,13 @@ public class FlightReservation {
 	private Long id;
 	
 	@Column(name="passengerName")
-	private String passengerName;
+	private String passengerFirstName;
+	
+	@Column(name="passengerLastName")
+	private String passengerLastName;
 	
 	@Column(name="passportNumber")
-	private Long passportNumber;
+	private String passportNumber;
 
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Seat seat;
@@ -44,11 +47,15 @@ public class FlightReservation {
 		return id;
 	}
 
-	public String getPassengerName() {
-		return passengerName;
+	public String getPassengerFirstName() {
+		return passengerFirstName;
 	}
 
-	public Long getPassportNumber() {
+	public String getPassengerLastName() {
+		return passengerLastName;
+	}
+
+	public String getPassportNumber() {
 		return passportNumber;
 	}
 
@@ -60,19 +67,19 @@ public class FlightReservation {
 		return review;
 	}
 
-//	public Reservation getReservation() {
-//		return reservation;
-//	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public void setPassengerName(String passengerName) {
-		this.passengerName = passengerName;
+	public void setPassengerFirstName(String passengerFirstName) {
+		this.passengerFirstName = passengerFirstName;
 	}
 
-	public void setPassportNumber(Long passportNumber) {
+	public void setPassengerLastName(String passengerLastName) {
+		this.passengerLastName = passengerLastName;
+	}
+
+	public void setPassportNumber(String passportNumber) {
 		this.passportNumber = passportNumber;
 	}
 
@@ -83,9 +90,4 @@ public class FlightReservation {
 	public void setReview(Review review) {
 		this.review = review;
 	}
-
-//	public void setReservation(Reservation reservation) {
-//		this.reservation = reservation;
-//	}
-
 }

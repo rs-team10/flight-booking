@@ -14,7 +14,7 @@
 <script>
 // @ is an alias to /src
 import ViewRentACars from "@/components/ViewRentACars.vue"
-import AddRentACar from "@/components/AddRentACar.vue"
+import AddRentACar from "@/components/SysAdmin/AddRentACar.vue"
 import EditRentACar from "@/components/EditRentACar.vue"
 
 export default {

@@ -75,6 +75,11 @@
                     @blur="$v.user.phone.$touch()"
                 ></v-text-field>
 
+                <GmapAutocomplete
+                    class="custom-input-field"
+                    @place_changed="getAddressData">
+                </GmapAutocomplete>
+                <!--
                 <vuetify-google-autocomplete
                     id="map"
                     classname="form-control"
@@ -83,7 +88,7 @@
                     v-on:placechanged="getAddressData"
                 >
                 </vuetify-google-autocomplete>
-
+                -->
                 <v-btn @click="editUser">submit</v-btn>
             </form>
         </v-flex>
@@ -190,6 +195,8 @@ export default {
                     
                     this.$swal('Success', 'User profile edited successfuly', 'success');
 
+                    // ToDo: fix this mess below
+
                     this.$axios
                         .post('http://localhost:8080/auth/login', this.user)
                         .then(response => {
@@ -210,9 +217,9 @@ export default {
                 });
             }
         },
-        getAddressData: function (addressData, placeResultData, id) {
-            if(placeResultData)
-                this.user.address = placeResultData.formatted_address;
+        getAddressData: function (place) {
+            if(place)
+                this.user.address = place.formatted_address;
         }
     },
     created() {
@@ -231,3 +238,24 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+.custom-input-field {
+    position: relative;
+    padding: 5px 0;
+    border: 0;
+    outline: 0;
+    margin-top: 10px;
+    border-bottom: 1px solid gray;
+    background-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+}
+
+.custom-input-field:focus {
+  border-bottom: 2px solid #5C6BC0;
+}
+
+</style>

@@ -10,11 +10,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.tim10.dto.NewAirlineDTO;
+
 @Entity
 @Table(name="Airlines")
 public class Airline extends Company {
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private static final long serialVersionUID = 1L;
+
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Destination> businessLocations;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -35,6 +39,16 @@ public class Airline extends Company {
 		administrators = new HashSet<AirlineAdmin>();
 		quickFlightReservations = new HashSet<QuickFlightReservation>();
 		luggagePriceList = new PriceList();
+	}
+	
+	public Airline(NewAirlineDTO dto) {
+		businessLocations = new HashSet<Destination>();
+		flights = new HashSet<Flight>();
+		quickFlightReservations = new HashSet<QuickFlightReservation>();
+		luggagePriceList = new PriceList();
+		this.setName(dto.getName());
+		this.setLocation(dto.getLocation());
+		administrators = dto.getAdministrators();
 	}
 
 	public Set<Destination> getBusinessLocations() {

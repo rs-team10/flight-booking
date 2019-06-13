@@ -1,11 +1,19 @@
 <template>
   <div class="hotels">
-  <v-flex xs12 sm6 offset-sm3>
+  <v-flex xs12 sm6 offset-sm3 id="search">
   <v-layout row>
     <v-text-field
-      v-model="searchParam"
+      v-model="hotelName"
       append-icon="search"
-      label="Search hotels"
+      label="Hotel name"
+      single-line
+      class="mx-3">
+    </v-text-field>
+
+    <v-text-field
+      v-model="hotelLocation"
+      append-icon="location_on"
+      label="Hotel location"
       single-line
       class="mx-3">
     </v-text-field>
@@ -65,16 +73,16 @@
 
   
   <v-item-group>
-    <v-container grid-list-md>
-      <v-layout row wrap>
+      <v-flex xs10 offset-sm1 >
+      <v-layout wrap>
         <v-flex
           v-for="hotel in hotels"
           :key="hotel.name"
-          class="d-flex align-center"
+          class="d-inline-flex"
           >
           <v-item>
             <v-card
-              class="mx-1"
+              class="mt-2 mx-1"
               width="344"
             >
             <v-img
@@ -103,16 +111,25 @@
                 </div>
               </div>
               <v-spacer></v-spacer>
-              <v-btn icon v-on:click="hotelSelected(hotel)">
-                <v-icon medium color="purple">edit</v-icon>
+              <v-btn icon @click="hotelSelected(hotel)" v-if="checkAdmin()">
+                <v-icon medium color="indigo">edit</v-icon>
               </v-btn>
+              <v-btn icon @click="generateReports(hotel)" v-if="checkAdmin()">
+                <v-icon medium color="indigo">assessment</v-icon>
+              </v-btn>
+              
+              <v-btn icon>
+                <v-icon medium color="indigo">face</v-icon>
+              </v-btn>
+              
             </v-card-title>
 
             </v-card>
           </v-item>
           </v-flex>
       </v-layout>
-    </v-container>
+      </v-flex>
+
   </v-item-group>
 
 
@@ -128,12 +145,16 @@ export default {
   data(){
       return{
           hotels: [],
-          selectedHotel: '',
+          selectedHotel: {},
+          page: 0,
+          size: 5,
           //Temporary---------
           value: 3.8,
           reviews: 356,
           //------------------
-          searchParam: '',
+          hotelName: '',
+          hotelLocation: '',
+
           startDate: new Date().toISOString().substr(0, 10),
           startDateMenu: false,
           endDate: new Date().toISOString().substr(0, 10),
@@ -145,23 +166,43 @@ export default {
           this.$axios
           .get('http://localhost:8080/api/hotels', yourConfig)
           .then(response => {
-            console.log(response.data)
             this.hotels = response.data
           })
             
       },
       hotelSelected: function(hotel){
+        this.$axios
+        .get('http://localhost:8080/api/hotels/getHotelRooms/' + hotel.id, yourConfig)
+        .then(response => {
+          //hotel.rooms = response.data
+          hotel = response.data
           this.$emit('hotelSelected', hotel);
+        })
+      },
+      generateReports(hotel){
+        this.$emit('generateReports', hotel);
       },
       searchHotels(){
         this.$axios
-        .get("http://localhost:8080/api/hotels/" + this.searchParam)
+        .get("http://localhost:8080/api/hotels/searchHotels", {
+          params: {
+            page: this.page,
+            size: this.size,
+            hotelName: this.hotelName, 
+            hotelLocation: this.hotelLocation
+          }
+        })
         .then(response => {
           console.log(response);
           this.hotels = response.data
         }).catch(error => {
           console.log(error.response.data);
         })
+      },
+      checkAdmin(){
+        if(localStorage.getItem("role") == "ROLE_HOTEL_ADMIN")
+          return true;     
+        return false;
       }
   },
   mounted(){

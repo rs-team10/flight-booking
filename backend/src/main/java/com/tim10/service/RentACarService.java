@@ -12,6 +12,7 @@ import com.tim10.domain.RentACar;
 import com.tim10.domain.RentACarAdmin;
 import com.tim10.dto.RentACarDTO;
 import com.tim10.repository.RentACarRepository;
+import com.tim10.repository.UserRepository;
 
 @Service
 public class RentACarService {
@@ -19,6 +20,8 @@ public class RentACarService {
 	@Autowired
 	private RentACarRepository rentACarRepository;
 	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -54,10 +57,15 @@ public class RentACarService {
 		return rentACarRepository.findById(id);
 	}
 	
-	public RentACar registerRentACar(RentACar rentacar) {
-		for(RentACarAdmin admin : rentacar.getAdministrators()) 
+	public RentACar registerRentACar(RentACar rentacar) throws Exception {
+		for(RentACarAdmin admin : rentacar.getAdministrators()) {
+			if(userRepository.findOneByUsername(admin.getUsername()).isPresent()) 
+				throw new Exception("User with username: " + admin.getUsername() + " already exists");
+			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
+				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		return rentACarRepository.save(rentacar);
+		}
+		return save(rentacar);
 	}
 	
 	public RentACar save(RentACar rentACar) {
