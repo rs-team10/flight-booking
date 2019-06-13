@@ -100,8 +100,6 @@
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
 export default {
     mixins: [validationMixin],
 
@@ -185,6 +183,9 @@ export default {
                 if(!this.newBusinessLocation.location.latitude) {
                     this.$swal("Error", "Location is required.", 'warning');
                 } else {
+
+                    var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                     this.$axios.put('http://localhost:8080/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Business location added successfuly', 'success');
@@ -214,6 +215,8 @@ export default {
                     const index = this.businessLocations.indexOf(businessLocation);
                     this.businessLocations.splice(index, 1);
 
+                    var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                     this.$axios.put('http://localhost:8080/api/airlines/removeBusinessLocation/', businessLocation, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Business location removed successfuly', 'success');
@@ -229,6 +232,9 @@ export default {
 
     },
     created() {
+
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)
             .then((response) => {
                 this.businessLocations = response.data;

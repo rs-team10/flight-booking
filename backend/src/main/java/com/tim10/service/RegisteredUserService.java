@@ -76,6 +76,10 @@ public class RegisteredUserService {
 		return friendshipRepository.getAllFriends(id);
 	}
 	
+	public List<UserFriendsDTO> getAllFriendsAccepted(Long id) {
+		return friendshipRepository.getAllFriendsAccepted(id);
+	}
+	
 	public List<UserFriendsDTO> getAllFriendshipRequests(Long id) {
 		return friendshipRepository.getAllFriendshipRequests(id);
 	}

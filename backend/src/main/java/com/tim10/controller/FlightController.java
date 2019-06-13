@@ -32,7 +32,7 @@ public class FlightController {
 	@RequestMapping(
 			value = "/flights/addFlight",
 			method = RequestMethod.POST)
-	public ResponseEntity<?> addFlight(@RequestBody FlightDTO flightDTO) {
+	public ResponseEntity<FlightDTO> addFlight(@RequestBody FlightDTO flightDTO) {
 		return flightService.addFlight(flightDTO);
 	}
 	

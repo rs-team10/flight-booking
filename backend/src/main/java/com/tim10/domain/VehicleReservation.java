@@ -2,6 +2,7 @@ package com.tim10.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,20 +12,19 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name="VehicleReservations")
 public class VehicleReservation {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="dateFrom")
@@ -36,7 +36,7 @@ public class VehicleReservation {
 	@Column(name="totalPrice")
 	private BigDecimal totalPrice;
 	
-	@OneToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.LAZY)
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
@@ -45,11 +45,13 @@ public class VehicleReservation {
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	private Vehicle reservedVehicle;
+	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Vehicle reservedVehicle; //pogledaj mapiranje
 
 	public VehicleReservation() {
 		super();
+		additionalServices = new HashSet<PriceListItem>();
 	}
 
 	public Long getId() {

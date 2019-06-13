@@ -1,96 +1,157 @@
 <!-- Rent a car homepage -->
 <template>
-    <div id="view-rentacar">
+ 
+    <v-container grid-list-xl text-xs-center>    
+        <v-layout row>
+         
+            <v-layout justify-space-between column fill-height >
+                <v-flex xs8>
+                    <v-toolbar>   
+                        <v-icon>info</v-icon>  
+                        <v-toolbar-title>Information</v-toolbar-title>    
+                    </v-toolbar>
+                    <v-card>
 
-            <div id="main-form" >
-                <v-flex d-flex xs12 md12>
-
-
-                    <template>
-                        <div>
-                            <v-toolbar tabs>
-                            <!--
-                            <v-toolbar-side-icon></v-toolbar-side-icon>
-                            za ovo takodje
-                            -->
-                            <v-toolbar-title>Rent a car service: <b>{{this.rentACarId}}</b></v-toolbar-title> <!-- Promeni u name kada preuzmes ceo sa backa-->
-
-                            <v-spacer></v-spacer>
-                            <!--
-                            <v-btn icon>
-                                <v-icon>search</v-icon>
-                            </v-btn>
-
-                            <v-btn icon>
-                                <v-icon>more_vert</v-icon>
-                            </v-btn>
-                            Ako mi nesto pametno padne na pamet da dodam
-                            -->
-                            <template v-slot:extension>
-                                <v-tabs
-                                v-model="tabs"
-                                fixed-tabs
-                                color="transparent"
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    ref = 'btn'
+                                    :dark = "true"
+                                    color="black"
+                                    fab
+                                    small
+                                    @click="changeCanc"
                                 >
-                                <v-tabs-slider></v-tabs-slider>
-                                <v-tab href="#mobile-tabs-5-1" class="primary--text">
-                                    <v-icon>info</v-icon>
-                                </v-tab>
+                                    <v-icon v-if="isEditing">close</v-icon>
 
-                                <v-tab href="#mobile-tabs-5-2" class="primary--text">
-                                    <v-icon>account_balance</v-icon>
-                                </v-tab>
-
-                                </v-tabs>
-                            </template>
-                            </v-toolbar>
-
-                            <v-tabs-items v-model="tabs" class="white elevation-1">
-                                <v-tab-item :value="'mobile-tabs-5-1'">
-                                    <v-card>
-                                        <!-- Ovde ce da ide komponenta sa informacijama u zavisnosti od toga ko pristupa (ako je admin
-                                        ovog rent a cara prikazace se adminska komponenta)-->
-                    
-
-                                        <component 
-                                            v-bind:is="component1"
-                                            :rentACarId="rentACarId"
-                                        > 
-                                        </component>
-
-                                    </v-card>
-                                </v-tab-item>
-                                <v-tab-item :value="'mobile-tabs-5-2'">
-
+                                    <v-icon v-else>edit</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+                                
+                            <v-card-text v-if="isEditing">
+                            
                                     
-                                    <v-card>
-                                        <!--Ovde takodje na ovaj template mogu samo komponente da se menjaju, a linkovi da ostaju isti-->
-                                        <component 
-                                            v-bind:is="component2"
-                                            :rentACarId="rentACarId"
-                                        > 
-                                        </component>
-                                    </v-card>
+                                <v-flex center xs12 sm6 md10 offset-sm1>
 
+                                    <v-text-field
+                                        v-model.lazy="rentACar.name"
+                                        label="Name"
+                                        placeholder="Rent-a-car name"
+                                        outline
+                                    ></v-text-field>
 
-                                </v-tab-item>
-                            </v-tabs-items>
-                        </div>
-                    </template>
+                                    <v-textarea
+                                        v-model.lazy="rentACar.description"
+                                        outline
+                                        label="Description"
+                                        placeholder="Rent-a-car descsriptin"
+                                        
+                                    ></v-textarea>
+                                </v-flex>
+                                    
+                            </v-card-text>
+                            <v-card-text v-else>
+                        
+                                    
+                                <v-flex center xs12 sm6 md10 offset-sm1>
 
+                                    <v-text-field
+                                        @focus.stop = "noClick"
+                                        v-model.lazy="rentACar.name"
+                                        label="Name"
+                                        placeholder="Rent-a-car name"
+                                        outline
+                                    ></v-text-field>
 
+                                    <v-textarea
+                                        @focus.stop = "noClick"
+                                        v-model.lazy="rentACar.description"
+                                        outline
+                                        label="Description"
+                                        placeholder="Rent-a-car descsriptin"
+                                        
+                                    ></v-textarea>
+                                </v-flex>
+                                
+                            </v-card-text>
+
+                            <v-card-actions>
+
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    :dark = "true"
+                                    :disabled="!isEditing"
+                                    color="black"
+                                    @click="save"
+                                >
+                                    Save
+                                </v-btn>
+                            </v-card-actions>
+                            
+                            <v-snackbar
+                                v-model="hasSaved"
+                                :timeout="2000"
+                                absolute
+                                bottom
+                                left
+                            >
+                            Rent a car profile has been updated
+                            </v-snackbar>
+
+                    </v-card>
                 </v-flex>
-            </div>
+                
+                <v-flex xs8>
+                    <v-toolbar>   
+                        <v-icon>account_balance</v-icon> 
+                        <v-toolbar-title>Branch offices</v-toolbar-title>      
+                    </v-toolbar>
 
-    </div>
+                    <component 
+                        v-bind:is="component1"
+                        :rentACarId="realId"
+                    > 
+                    </component>
+                </v-flex>
+
+                <v-flex xs8>
+                   
+                    <component
+                        :is="component3"
+                        :quickReservations ='quickRes'
+                        :rentACarId ='realId'
+                    >
+                    </component>
+               
+                </v-flex>
+                
+
+        </v-layout>
+     
+
+        <v-flex xs3> 
+           
+            <component
+                :is="component2"
+                :priceList ='additionalServicesPriceList'
+            >
+            </component>
+       
+        </v-flex>
+   
+    </v-layout>
+    </v-container>
+
 </template>
 
 
 
 
 <script>
-import ViewBranchOfficesA from "@/components/rentACarComp/ViewBranchOfficesA.vue"
-import ViewRentACarA from "@/components/rentACarComp/ViewRentACarA.vue"
+import ViewBranchOffices from "@/components/rentACarComp/ViewBranchOffices.vue"
+import VehiclePriceList from "@/components/rentACarComp/VehiclePriceList.vue"
+
+import QuickReservations from "@/components/rentACarComp/QuickReservations.vue"
 
 export default {
     props:{
@@ -100,16 +161,127 @@ export default {
         }
     },
     components: {
-        'viewBranchOfficesA' : ViewBranchOfficesA,
-        'viewRentACarA' : ViewRentACarA
+        'viewBranchOffices' : ViewBranchOffices,
+        'vehiclePriceList' : VehiclePriceList,
+
+        'quickReservations' : QuickReservations
     },
     data () {
       return {
-        component1 : 'viewRentACarA',
-        component2 : 'viewBranchOfficesA',
-        tabs: null,
-        text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu'
+
+        rentACar :{
+                id : 0,
+                name : '',
+                description : ''
+        },
+
+        additionalServicesPriceList : [],
+
+        beforeChange : {
+                         name : '',
+                         description : ''
+
+                        },
+        hasSaved: false,
+        isEditing: false,
+        no: '',
+
+        component1 : 'viewBranchOffices',
+        component2 : 'vehiclePriceList',
+
+        component3 : 'quickReservations',
+
+        text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu',
+        realId : 0,
+
+        vehicles: [],
+
+
+        quickRes: []
+
+
+
       }
+    },
+
+    methods: {
+        fetchRentACar: function(){
+            this.$axios
+            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId)
+            .then(response => {
+                                this.rentACar.id = response.data.id;
+                                this.rentACar.name  = response.data.name;
+                                this.rentACar.description = response.data.description;
+
+                                this.additionalServicesPriceList=response.data.additionalServicesPriceList;
+                                })
+        },
+        fetchQuickReservations: function(){
+            this.$axios
+            .get('http://localhost:8080/api/getQuickReservations/'+ this.rentACarId)
+            .then(response => {
+                    var quickReservations = response.data
+                    this.quickRes=[];
+                    quickReservations.forEach(v => this.quickRes.push({
+                                                    id: v.id,
+                                                    dateFrom: this.trim(v.dateFrom),
+                                                    dateTo: this.trim(v.dateTo),
+                                                    totalPrice: v.totalPrice,
+                                                    additionalServices: v.additionalServices ,
+                                                    discount: 3,//v.discount,
+                                                    vehicle: v.vehicle
+                                                }
+                                                ));
+
+                })
+        },
+        trim: function(date){
+            return date.substring(0, 10);
+        },
+        noClick:function(){
+            this.$refs.btn.$el.focus()
+        },
+        changeCanc:function(){
+
+            if(this.isEditing == false){
+                this.beforeChange.name = this.rentACar.name;
+                this.beforeChange.description = this.rentACar.description
+            }else{
+                this.rentACar.name  = this.beforeChange.name;
+                this.rentACar.description = this.beforeChange.description;
+            }
+
+            this.isEditing = !this.isEditing;
+        },
+        save () {
+            this.isEditing = !this.isEditing;
+
+            this.editOnBackend();
+            //this.hasSaved = true; //delete
+
+        },
+        editOnBackend: function(){
+            this.$axios
+            .put('http://localhost:8080/api/rentACars/',this.rentACar)
+            .then(() => {
+                this.beforeChange.name = this.rentACar.name;
+                this.beforeChange.description = this.rentACar.description;
+                this.hasSaved=true; 
+                })
+            .catch(error => {
+                alert(error.response.data.message);
+                this.rentACar.name  = this.beforeChange.name;
+                this.rentACar.description = this.beforeChange.description;
+
+            });
+            
+             
+        }
+    },
+    created(){
+        this.realId = this.rentACarId
+        this.fetchRentACar();
+        this.fetchQuickReservations();
     }
 }
 </script>

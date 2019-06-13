@@ -1,9 +1,11 @@
 package com.tim10.dto;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
 
 public class FlightSearchDTO {
@@ -43,12 +45,23 @@ public class FlightSearchDTO {
 		this.destination = f.getDestination().getName();
 		this.destinationAirport = f.getDestination().getAirportName();
 		this.destinationCode = f.getDestination().getAirportCode();
-		this.departureDate = "2019-05-20";
-		this.departureTime = "10:20";
-		this.arrivalDate = "2019-05-20";
-		this.arrivalTime = "15:33";
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		
+		this.departureDate = dateFormat.format(f.getDepartureDate());
+		this.departureTime = timeFormat.format(f.getDepartureDate());
+		this.arrivalDate = dateFormat.format(f.getArrivalDate());
+		this.arrivalTime = timeFormat.format(f.getArrivalDate());
+		
 		this.transitCount = f.getTransitCount();
-		this.transitDestinations = new ArrayList<DestinationDTO>();			// TODO
+		
+		this.transitDestinations = new ArrayList<DestinationDTO>();
+		
+		for (Destination d : f.getTransitDestinations()) {
+			this.transitDestinations.add(new DestinationDTO(d));
+		}
+		
 		this.flightDuration = f.getDuration();
 		this.flightDistance = f.getDistance();
 		this.ticketPrice = f.getTicketPrice();

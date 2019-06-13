@@ -333,6 +333,7 @@
                 :showDialog="showEditSeatsLayoutDialog"
                 :receivedSeats="seats"
                 :flight="idToEditSeats"
+                @isClosed="handleEditSeatsDialogClose"
             />
 
 
@@ -385,8 +386,6 @@ import { required, numeric, between } from 'vuelidate/lib/validators'
 import EditSeatsLayout from "@/components/airline/EditSeatsLayout.vue"
 
 const haversine = require('haversine');
-
-var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 const flightNumberFormat = (value, vm) => {
     var regex = /^[A-Z]{2}\d{3,4}$/g;
@@ -708,9 +707,12 @@ export default {
                     newFlightToSend.transitDestinations.push(this.transitDestinations[i].name);
                 }
 
+                var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
                 this.$axios.post('http://localhost:8080/api/flights/addFlight/', newFlightToSend, yourConfig)
                     .then((response) => {
                         this.$swal('Successfull', 'New flight created successfully.', 'success');
+                        newFlightToSend.id = response.data.id;
                         this.flights.push(newFlightToSend);
                         this.close();
                     }).catch((error) => {
@@ -727,22 +729,33 @@ export default {
         },
         editSeatsLayout(flight) {
 
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
             this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
                 .then((response) => {
+                    
                     this.seats = response.data;
                     this.idToEditSeats = flight.id;
                     this.showEditSeatsLayoutDialog = true;
+                    
                 }).catch((error) => {
                     this.$swal("Error", error.response.data.message, 'error');
                 });
+        },
+        handleEditSeatsDialogClose(event) {
+            this.showEditSeatsLayoutDialog = event;
         }
     },
     created() {
+
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios.get('http://localhost:8080/api/flights/getFlights', yourConfig)
             .then((response) => {
 
                 this.flights = response.data;
+
+                var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
                 // TODO: PREMESTITI OVO KAD SE OTVORI DIJALOG
                 this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)

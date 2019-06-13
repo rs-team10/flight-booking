@@ -59,7 +59,7 @@ public class RegisteredUserController {
 
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		if(currentUser != null && currentUser.getId() == registeredUser.getId()) {
+		if(currentUser != null && currentUser.getId().equals(registeredUser.getId())) {
 
 			if(!currentUser.getEmail().equalsIgnoreCase(registeredUser.getEmail()) && registeredUserService.findOneByEmail(registeredUser.getEmail()) != null)
 				return new ResponseEntity<>("Email taken.", HttpStatus.FORBIDDEN);
@@ -107,6 +107,21 @@ public class RegisteredUserController {
 		
 		if(currentUser != null) {
 			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriends(currentUser.getId());
+			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
+		}
+		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@RequestMapping(
+			value = "/getAllFriendsAccepted",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<UserFriendsDTO>> getAllFriendsAccepted() {
+		
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		if(currentUser != null) {
+			List<UserFriendsDTO> friends = this.registeredUserService.getAllFriendsAccepted(currentUser.getId());
 			return new ResponseEntity<List<UserFriendsDTO>>(friends, HttpStatus.OK);
 		}
 		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

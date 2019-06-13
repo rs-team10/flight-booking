@@ -20,6 +20,7 @@ import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
+import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
 import Reserve from './components/HotelReservation/Reserve.vue'
 import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
 import HotelAdminProfile from './components/HotelAdmin/HotelAdminProfile.vue'
@@ -108,6 +109,12 @@ export default new Router({
       path: '/logout',
       name: 'logout',
       component: Logout
+    },
+    
+    {
+      path: '/vehicleReservation',
+      name: 'vehicleReservation',
+      component: VehicleReservation
     },
     //=====================================
     //=====================================

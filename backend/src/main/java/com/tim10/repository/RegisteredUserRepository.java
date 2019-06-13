@@ -19,7 +19,7 @@ public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, 
 			"WHERE u.id NOT IN " + 
 				"(SELECT f.sender_id FROM Friendship f WHERE f.receiver_id = :currentUserId UNION ALL SELECT f.receiver_id FROM Friendship f WHERE f.sender_id = :currentUserId) " +
 			"AND lower(concat(u.first_name, ' ', u.last_name)) LIKE concat('%', lower(:parameter), '%') " +
-			"AND u.id != :currentUserId", nativeQuery = true)
+			"AND u.id != :currentUserId AND u.dType = 'RegisteredUser'", nativeQuery = true)
 	List<RegisteredUserSearchDTO> findByParameter(@Param("parameter") String parameter, @Param("currentUserId") Long currentUserId);
 	
 	
