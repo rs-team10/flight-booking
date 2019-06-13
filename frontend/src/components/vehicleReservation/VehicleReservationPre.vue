@@ -287,8 +287,8 @@ export default {
                 else{
 
                     var vehicleReservationDTO1 = {
-                        dateFrom : this.dateFrom,
-                        dateTo : this.dateTo,
+                        dateFrom : this.overview.from,
+                        dateTo : this.overview.to,
                         additionalServices : this.selected,
                         vehicleId : this.overview.vehicleId
                     };

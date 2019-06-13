@@ -269,10 +269,13 @@ public class VehicleReservationService {
 		Date from = vehicleResDTO.getDateFrom();
 		Date to = vehicleResDTO.getDateTo();
 		
+		System.out.println(from);
+		
 		VehicleReservation vehicleRes = new VehicleReservation();
 		
 		vehicleRes.setDateFrom(from);
 		vehicleRes.setDateTo(to);
+		
 		
 		
 		LocalDate cFrom = from.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
