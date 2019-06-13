@@ -15,7 +15,7 @@ public class HotelAdmin extends User {
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	//@JoinColumn(name = "hotel_id")
 	public Hotel hotel;
 
