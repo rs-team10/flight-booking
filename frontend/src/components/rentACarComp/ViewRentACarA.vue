@@ -135,7 +135,7 @@
             this.$axios
             .get('http://localhost:8080/api/rentACar/'+ this.rentACarId)
             .then(response => {
-                                this.rentACar.id = response.data.company_id;
+                                this.rentACar.id = response.data.id;
                                 this.rentACar.name  = response.data.name;
                                 this.rentACar.description = response.data.description;
                                 })
@@ -170,22 +170,26 @@
         save () {
             this.isEditing = !this.isEditing;
 
-            this.beforeChange.name = this.rentACar.name;
-            this.beforeChange.description = this.rentACar.description
-
-            //this.editOnBackend();
-            this.hasSaved = true; //delete
+            this.editOnBackend();
+            //this.hasSaved = true; //delete
 
         },
         editOnBackend: function(){
             this.$axios
             .put('http://localhost:8080/api/rentACars/',this.rentACar)
-            .then(function(response){
-                this.hasSaved = true;
-                alert("Rent-a-car with name "+ response.data.name+" is edited");
-            }).catch(function(error) {
+            .then(response => {
+                this.beforeChange.name = this.rentACar.name;
+            this.beforeChange.description = this.rentACar.description;
+                this.hasSaved=true; 
+                })
+            .catch(error => {
                 alert(error.response.data.message);
+                this.rentACar.name  = this.beforeChange.name;
+                this.rentACar.description = this.beforeChange.description;
+
             });
+            
+             
         }
     },
     created(){
