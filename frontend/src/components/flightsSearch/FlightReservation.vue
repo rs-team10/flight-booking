@@ -683,10 +683,11 @@ export default {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-            this.$axios.post('http://localhost:8080/api/reserveFlight', this.flightReservation, yourConfig)
+            this.$axios.post('http://localhost:8080/api/reservations/reserveFlight', this.flightReservation, yourConfig)
                 .then((response) => {
                     this.groupReservationId = response.data;
-                    this.$swal.fire({
+                    
+                    this.$swal({
                             title: 'Success', 
                             html: 'Flight reservation successfull',
                             type: 'success',
@@ -694,15 +695,13 @@ export default {
                             timer: 2000,
                             allowOutsideClick: false
                         }).then((result) => {
-                            if (result.dismiss === this.$swal.DismissReason.timer) {
-                                this.currentStep = 5;
-                            }
+                            this.currentStep = 5;
                         });
                 }).catch((error) => {
+                   
                     this.$swal("Error", "Unsuccessfull reservation. The selected seats are probably already reserved. Please select other seats.", 'error');
 
-
-                    // TODO 5 : Ako ne uspe rezervacija, vratiti ga na korak 1 da izabere druga sedista
+                    // Ako ne uspe rezervacija, vratiti ga na korak 1 da izabere druga sedista
                     
                     this.getSeatsData();
                     this.selectedSeatsCount = 0;
@@ -718,6 +717,9 @@ export default {
             //       Na kraju tih rezervacija, potrebno je poslati mail korisniku da je rezervisao let + nesto dodatno (hotel, rentacar ili oba)
 
 
+            // local storage
+
+
         },
         continueToRentACarReservation() {
 
@@ -726,13 +728,15 @@ export default {
             // TODO: Korisnik nastavlja sa rezervacijom vozila na destinaciji za koju je rezervisao let
             //       Na kraju tih rezervacija, potrebno je poslati mail korisniku da je rezervisao let + nesto dodatno (hotel, rentacar ili oba)
 
+            // local storage
+
 
         },
         redirectToHomePage() {
 
-            // TODO 1: Korisnik je rezervisao samo let, i sada mu treba poslati mail o potvrdi rezervacije leta
+            // Korisnik je rezervisao samo let, i sada mu treba poslati mail o potvrdi rezervacije leta
 
-            this.$swal.fire({
+            this.$swal({
                 title: 'Payment confirmation',
                 text: "If you proceed your credit card will be charged.",
                 showCancelButton: true,
@@ -742,33 +746,28 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    return this.$axios.post("http://localhost:8080/api/sendEmails/" + this.groupReservationId, yourConfig)
+                    return this.$axios.post("http://localhost:8080/api/reservations/sendEmails/" + this.groupReservationId, yourConfig)
                         .then(response => {
                             if(!response) {
                                 throw new Error(response.statusText)
                             }
+                            
                             return response
                         }).catch(error => {
-                            this.$swal.showValidationMessage(
-                                "Request failed: " + error
-                            )
+                            this.$swal("Error", "Request failed: " + error, 'error');
                         })
                 },
-                allowOutsideClick: () => !this.$swal.isLoading()
+                allowOutsideClick: false
             }).then((result_1) => {
-                if(result_1) {
-                    this.$swal.fire({
+                if(!result_1.dismiss) {
+                    this.$swal({
                         title: "Confirmation e-mail sent",
                         type: "success",
                         timer: 2000,
                         showConfirmButton: false,
                         allowOutsideClick: false
                     }).then((result) => {
-                         if (result.dismiss === this.$swal.DismissReason.timer) {
-                    
-                            // TODO 2: Nakon toga redirect na pocetnu stranicu.
-                            this.$router.replace({ path: '/' });
-                        }
+                        this.$router.replace({ path: '/' });
                     })
                 }
             });

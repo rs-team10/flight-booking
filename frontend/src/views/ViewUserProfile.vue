@@ -22,6 +22,7 @@
                     </v-tabs>
                 </v-layout>
             </v-layout>
+            <invitations/>
         </v-container>
     </div>
 </template>
@@ -30,12 +31,14 @@
 import UserProfile from "@/components/userProfile/UserProfile.vue"
 import Friendships from "@/components/userProfile/Friendships.vue"
 import FriendRequests from "@/components/userProfile/FriendRequests.vue"
+import Invitations from "@/components/userProfile/Invitations.vue"
 
 export default {
     components: {
         'user-profile': UserProfile,
         'friendships': Friendships,
-        'friend-requests': FriendRequests
+        'friend-requests': FriendRequests,
+        'invitations': Invitations
     },
     data() {
         return {

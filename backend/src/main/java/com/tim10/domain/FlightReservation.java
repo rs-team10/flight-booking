@@ -42,6 +42,12 @@ public class FlightReservation {
 
 	public FlightReservation() {
 	}
+	
+	public FlightReservation(String firstName, String lastName, String passportNumber) {
+		this.passengerFirstName = firstName;
+		this.passengerLastName = lastName;
+		this.passportNumber = passportNumber;
+	}
 
 	public Long getId() {
 		return id;

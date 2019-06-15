@@ -94,7 +94,7 @@ public class AirlineService {
 		}
 		if(editedAirline.getDescription() != null)
 			existingAirline.setDescription(editedAirline.getDescription());
-		if(editedAirline.getLocation().getLatitude() != null && editedAirline.getLocation().getLongitude() != null) {
+		if(editedAirline.getLocation().getCountry() != null && editedAirline.getLocation().getCity() != null && editedAirline.getLocation().getStreet() != null) {
 			Location updatedLocation = editedAirline.getLocation();
 			existingAirline.getLocation().setCountry(updatedLocation.getCountry());
 			existingAirline.getLocation().setCity(updatedLocation.getCity());
