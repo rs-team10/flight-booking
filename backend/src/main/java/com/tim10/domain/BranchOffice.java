@@ -34,7 +34,6 @@ public class BranchOffice {
 	
 	@JsonIgnore
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "mainOfficeId")
 	private RentACar mainOffice;
 
 	public BranchOffice() {
