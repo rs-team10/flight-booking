@@ -29,4 +29,3 @@ HELP.md
 .vscode/
 *.MF
 backend/target/classes/META-INF/maven/com.tim10/flight-booking/pom.properties
-*.class

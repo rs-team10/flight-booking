@@ -104,7 +104,7 @@ public class RentACarService {
 		//RentACarReportDTO.setNumberOfFeedbacks(rentACarRepository.getNumberOfFeedbacks(rentACarId));
 		
 		String todayString = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-		racReportDTO.setDailyReports(getDailyReport(rentACarId, todayString));	//od danasnjeg datuma
+		//racReportDTO.setDailyReports(getDailyReport(rentACarId, todayString));	//nisam upisvao vreme kreiranja rezervacije
 		racReportDTO.setWeeklyReports(getWeeklyReport(rentACarId, todayString));
 		racReportDTO.setYearlyReport(getYearlyReport(rentACarId, 0));
 		return racReportDTO;

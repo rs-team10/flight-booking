@@ -344,7 +344,10 @@ export default {
         this.$axios
             .get('http://localhost:8080/api/rentACarReport/' + this.rentACarId)
             .then(response => {
+                
                 this.report = response.data;
+
+                /*
                 this.dailyReport.labels = Array.from(Object.keys(this.report.dailyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5));
                 this.dailyReport.datasets = [
 					{
@@ -355,6 +358,7 @@ export default {
 						data: Object.values(this.report.dailyReports)
 					}
                 ]
+                */
 
                 this.weeklyReport.labels = (Array.from(Object.keys(this.report.weeklyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/')));
                 this.weeklyReport.datasets = [
