@@ -177,10 +177,10 @@ public class ReservationService {
 		
 		GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
 		
-		for (Reservation r : savedGroupReservation.getReservations()) {
-			r.setGroupReservation(savedGroupReservation);
+		//for (Reservation r : savedGroupReservation.getReservations()) {
+		//	r.setGroupReservation(savedGroupReservation);
 			//reservationRepository.save(r);
-		}
+		//}
 		
 		return savedGroupReservation.getId();
 	}

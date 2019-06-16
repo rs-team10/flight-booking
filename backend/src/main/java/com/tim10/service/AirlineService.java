@@ -17,10 +17,13 @@ import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceListItem;
+import com.tim10.domain.QuickFlightReservation;
 import com.tim10.dto.AirlineProfileDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.repository.AirlineRepository;
+import com.tim10.repository.QuickFlightReservationRepository;
 import com.tim10.repository.UserRepository;
 
 @Service
@@ -28,6 +31,9 @@ public class AirlineService {
 	
 	@Autowired
 	private AirlineRepository airlineRepository;
+	
+	@Autowired
+	private QuickFlightReservationRepository quickFlightReservationRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -225,6 +231,67 @@ public class AirlineService {
 		// TODO: Proveriti da li postoje rezervacije koje referenciraju ovaj price list item, ukoliko ne postoje, obrisati
 		if(itemToRemove != null)
 			airline.getLuggagePriceList().getPriceListItems().remove(itemToRemove);
+		
+		try {
+			airlineRepository.save(airline);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (PersistenceException e) {
+			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<List<QuickFlightReservationDTO>> getQuickFlightReservations() {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		Airline airline = airlineRepository.findById(1L).get();
+		
+		if(airline == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		List<QuickFlightReservationDTO> dtos = new ArrayList<QuickFlightReservationDTO>();
+		
+		for (QuickFlightReservation item : airline.getQuickFlightReservations()) {
+			
+			QuickFlightReservationDTO dto = new QuickFlightReservationDTO();
+			
+			dto.setId(item.getId());
+			dto.setSeatId(item.getSeat().getId());
+			dto.setSeatNumber(item.getSeat().getRed().toString() + (char)(item.getSeat().getKolona() + 64));
+			dto.setDiscount(item.getDiscount());
+			
+			dto.setFlightNumber(item.getSeat().getFlight().getFlightNumber());
+			dto.setDeparture(item.getSeat().getFlight().getDeparture().getName());
+			dto.setDestination(item.getSeat().getFlight().getDestination().getName());
+			dto.setDate(item.getSeat().getFlight().getDepartureDate().toString());
+			dto.setOriginalPrice(item.getSeat().getFlight().getTicketPrice());
+			
+			dtos.add(dto);
+		}
+		
+		return new ResponseEntity<List<QuickFlightReservationDTO>>(dtos, HttpStatus.OK);
+		
+	}
+
+	public ResponseEntity<?> deleteQuickFlightReservation(QuickFlightReservationDTO dto) {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		Airline airline = airlineRepository.findById(1L).get();
+		
+		if(airline == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		// TODO : Mora da postoji neki drugi nacin za ovo
+		QuickFlightReservation itemToRemove = null;
+		for (QuickFlightReservation i : airline.getQuickFlightReservations()) {
+			if(i.getId().equals(dto.getId()))
+				itemToRemove = i;
+		}
+		
+		// TODO: Proveriti !!!
+		if(itemToRemove != null) {
+			if(itemToRemove.getPassengerFirstName().equals(null) && itemToRemove.getPassengerLastName().equals(null) && itemToRemove.getPassportNumber().equals(null)) {
+				airline.getQuickFlightReservations().remove(itemToRemove);
+				quickFlightReservationRepository.delete(itemToRemove);
+			}
+		}
 		
 		try {
 			airlineRepository.save(airline);

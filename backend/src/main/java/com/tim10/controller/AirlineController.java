@@ -21,6 +21,7 @@ import com.tim10.dto.AirlineProfileDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.NewAirlineDTO;
 import com.tim10.dto.PriceListItemDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.service.AirlineService;
 import com.tim10.service.UserService;
 
@@ -144,4 +145,22 @@ public class AirlineController {
 	public ResponseEntity<?> removePriceListItem(@RequestBody PriceListItemDTO itemDTO) {
 		return airlineService.removePriceListItem(itemDTO);
 	}
+	
+	@RequestMapping(
+			value = "/airlines/getQuickFlightReservations",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<QuickFlightReservationDTO>> getQuickFlightReservations() {
+		return airlineService.getQuickFlightReservations();
+	}
+	
+	@RequestMapping(
+			value="/airlines/deleteQuickFlightReservation",
+			method=RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> deleteQuickFlightReservation(@RequestBody QuickFlightReservationDTO dto) {
+		return airlineService.deleteQuickFlightReservation(dto);
+	}
+
 }
