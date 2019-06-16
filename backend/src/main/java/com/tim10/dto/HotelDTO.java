@@ -8,10 +8,9 @@ import com.tim10.domain.PriceList;
 import com.tim10.domain.RoomType;
 
 public class HotelDTO {
-	
+
 	/*
-	 * NEDOSTAJU:
-	 * Rooms, QuickRoomReservations, HotelAdmins 
+	 * NEDOSTAJU: Rooms, QuickRoomReservations, HotelAdmins
 	 */
 	private Long id;
 	private String name;
@@ -20,12 +19,21 @@ public class HotelDTO {
 	private Location location;
 	private Set<RoomType> roomTypes;
 	private PriceList additionalServicesPriceList;
-	
+	private int numberOfFeedbacks;
+
+	public int getNumberOfFeedbacks() {
+		return numberOfFeedbacks;
+	}
+
+	public void setNumberOfFeedbacks(int numberOfFeedbacks) {
+		this.numberOfFeedbacks = numberOfFeedbacks;
+	}
+
 	public HotelDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public HotelDTO(Hotel hotel) {
 		this.id = hotel.getId();
 		this.name = hotel.getName();
@@ -35,7 +43,7 @@ public class HotelDTO {
 		this.roomTypes = hotel.getRoomTypes();
 		this.additionalServicesPriceList = hotel.getAdditionalServicesPriceList();
 	}
-	
+
 	public HotelDTO(Long id, String name, String description, Double averageFeedback, Location location,
 			Set<RoomType> roomTypes, PriceList additionalServicesPriceList) {
 		super();
@@ -103,7 +111,5 @@ public class HotelDTO {
 	public void setAdditionalServicesPriceList(PriceList additionalServicesPriceList) {
 		this.additionalServicesPriceList = additionalServicesPriceList;
 	}
-	
-	
-	
+
 }

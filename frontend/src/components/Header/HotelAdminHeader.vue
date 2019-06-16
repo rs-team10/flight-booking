@@ -1,8 +1,12 @@
 <template>
     <v-toolbar-items>
-        <v-btn flat router to="/hotels" blur>
-            <v-icon left>hotel</v-icon>
-            <span>Hotels</span>
+        <v-btn flat blur router to="/editHotel">
+            <span>Edit hotel</span>
+        </v-btn>
+
+        <v-btn flat blur router to="/hotelReport">
+            <v-icon left>assessment</v-icon>
+            <span>Hotel report</span>
         </v-btn>
 
         <v-btn flat router to="/hotelAdminProfile">

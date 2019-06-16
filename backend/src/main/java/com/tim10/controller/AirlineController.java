@@ -1,8 +1,10 @@
 package com.tim10.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
-import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.PriceListItem;
+import com.tim10.dto.AirlineDTO;
 import com.tim10.dto.AirlineProfileDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.NewAirlineDTO;
@@ -41,6 +43,18 @@ public class AirlineController {
 	public ResponseEntity<List<Airline>> getAirlines() {
 		List<Airline> airlines = airlineService.findAll();
 		return new ResponseEntity<List<Airline>>(airlines, HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value = "/airlines/airlinePage",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AirlineDTO>> getAirlines(Pageable page){
+		List<AirlineDTO> dtos = new ArrayList<AirlineDTO>();
+		for(Airline airline : airlineService.findAll()) {
+			dtos.add(new AirlineDTO(airline));
+		}
+		return new ResponseEntity<List<AirlineDTO>>(dtos, HttpStatus.OK);
 	}
 	
 	@RequestMapping(

@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +39,10 @@ public class AirlineService {
 	
 	public List<Airline> findAll() {
 		return airlineRepository.findAll();
+	}
+	
+	public Page<Airline> findAll(Pageable page){
+		return airlineRepository.findAll(page);
 	}
 	
 	public Airline registerAirline(Airline airline) throws Exception {

@@ -13,7 +13,8 @@ public class RoomReservationDTO {
 	private Date dateTo;
 	private BigDecimal totalPrice;
 	private Set<PriceListItem> additionalServices;
-	private List<RoomDTO> listOfRooms;
+	//private List<RoomDTO> listOfRooms;
+	private List<RoomTypesDTO> listOfRooms;
 	
 	/*Mislim da je nepotrebno al ajde da ne brisem za sad, mozda zatreba*/
 	private HotelDTO hotelReservationDTO;
@@ -25,15 +26,6 @@ public class RoomReservationDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public RoomReservationDTO(Date dateFrom, Date dateTo, BigDecimal totalPrice, Set<PriceListItem> additionalServices, List<RoomDTO> listOfRooms, HotelDTO hotelReservationDTO) {
-		super();
-		this.dateFrom = dateFrom;
-		this.dateTo = dateTo;
-		this.totalPrice = totalPrice;
-		this.listOfRooms = listOfRooms;
-		this.hotelReservationDTO = hotelReservationDTO;
-		this.additionalServices = additionalServices;
-	}
 	
 
 	public Date getDateFrom() {
@@ -48,7 +40,7 @@ public class RoomReservationDTO {
 		return totalPrice;
 	}
 
-	public List<RoomDTO> getListOfRooms() {
+	public List<RoomTypesDTO> getListOfRooms() {
 		return listOfRooms;
 	}
 
@@ -64,7 +56,7 @@ public class RoomReservationDTO {
 		this.totalPrice = totalPrice;
 	}
 
-	public void setListOfRooms(List<RoomDTO> listOfRooms) {
+	public void setListOfRooms(List<RoomTypesDTO> listOfRooms) {
 		this.listOfRooms = listOfRooms;
 	}
 

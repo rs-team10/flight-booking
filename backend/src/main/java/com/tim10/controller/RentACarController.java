@@ -1,9 +1,12 @@
 package com.tim10.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RentACar;
-import com.tim10.domain.RentACarAdmin;
 import com.tim10.dto.NewRentACarDTO;
+import com.tim10.dto.RcsDTO;
 import com.tim10.dto.RentACarDTO;
 import com.tim10.service.RentACarService;
 import com.tim10.service.UserService;
@@ -43,7 +46,15 @@ public class RentACarController {
 		return new ResponseEntity<Collection<RentACar>>(rentACars, HttpStatus.OK);
 	}
 		
-		
+	
+	@RequestMapping(value="api/rentACars/rentACarPage", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<RcsDTO>> getRentACars(Pageable page){
+		List<RcsDTO> dtos = new ArrayList<RcsDTO>();
+		for(RentACar rcs : rentACarService.findAll(page))
+			dtos.add(new RcsDTO(rcs));
+		return new ResponseEntity<List<RcsDTO>>(dtos, HttpStatus.OK);
+	}
+	
 	@RequestMapping(
 			value = "/api/rentACars/{id}",
 			method = RequestMethod.GET,

@@ -24,12 +24,14 @@
 import HotelAdminHeader from "@/components/Header/HotelAdminHeader.vue"
 import UnregisteredUserHeader from "@/components/Header/UnregisteredUserHeader.vue"
 import SysAdminHeader from "@/components/Header/SysAdminHeader.vue"
+import RegisteredUserHeader from "@/components/Header/RegisteredUserHeader.vue"
 
 export default {
     components: {
         "hotel-admin-header" : HotelAdminHeader,
         "unregistered-user-header" : UnregisteredUserHeader,
-        "sys-admin-header" : SysAdminHeader
+        "sys-admin-header" : SysAdminHeader,
+        "registered-user-header" : RegisteredUserHeader
     },
 
     data(){ 
@@ -48,6 +50,8 @@ export default {
                     return 'hotel-admin-header'
                 else if(localStorage.getItem("role") == "ROLE_SYSTEM_ADMIN")
                     return 'sys-admin-header'
+                else if(localStorage.getItem('role') == "ROLE_REGISTERED_USER")
+                    return 'registered-user-header'
             }
         },
     },

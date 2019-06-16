@@ -66,11 +66,10 @@ router.beforeEach((to, from, next) => {
       }
       //zeli da pristupi stranici za sys admina
       else if(to.matched.some(record => record.meta.is_sys_admin)){
-        // if(localStorage.getItem("role") == "ROLE_SYSTEM_ADMIN")
-        //   next()
-        // else
-        //   next(false)
-        next()    //TODO: ubaciti sys admina u bazu
+        if(localStorage.getItem("role") == "ROLE_SYSTEM_ADMIN")
+          next()
+        else
+          next(false)    
       }
     }
   } else if(to.matched.some(record => record.meta.guest)){

@@ -26,9 +26,6 @@ export default {
     changeText: function(){
       this.$refs.header.log();
     }
-  },
-  mounted(){
-    console.log(localStorage.getItem("token"))
   }
 }
 </script>

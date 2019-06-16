@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-
-import Hotels from './views/Hotels.vue'
 
 import RentACars from './views/RentACars.vue'
 
@@ -21,7 +18,6 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
-import Reserve from './components/HotelReservation/Reserve.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -36,7 +32,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('./components/UnregisteredUser/HomePage.vue')
     },
     {
       path: '/userProfile',
@@ -112,12 +108,30 @@ export default new Router({
     {
       path: '/hotelReservation',
       name: 'hotelReservation',
-      component: Reserve
+      component: () => import('./components/HotelReservation/Reserve.vue'),
+      meta: {
+        //TODO
+      }
     },
     {
       path: '/hotels',
       name: 'hotels',
-      component: Hotels
+      component: () => import('./components/ViewHotels.vue'),
+      meta: {
+        //TODO 
+        //ne zahteva atentifikaciju? svi mogu da vide?
+      },
+    },
+    {
+      path: '/airlines',
+      name: 'airlines',
+      component: () => import('./components/UnregisteredUser/Airlines.vue')
+      //svi mogu da vide??
+    },
+    {
+      path: '/rcs',
+      name: 'rcs',
+      component: () => import('./components/UnregisteredUser/RentACarCompanies.vue')
     },
     //==================================================
 
@@ -131,7 +145,22 @@ export default new Router({
         is_hotel_admin : true
       }
     },
-    //treba i ruta za editovanje hotela njegovog
+    {
+      path: '/editHotel',
+      name: 'editHotel',
+      component: () => import('./components/HotelAdmin/HotelEditing.vue'),
+      meta: {
+        is_hotel_admin: true
+      }
+    },
+    {
+      path: '/hotelReport',
+      name: 'hotelReport',
+      component: () => import('./components/HotelAdmin/Reports.vue'),
+      meta: {
+        is_hotel_admin: true
+      }
+    },
     //==================================================
 
     //===============SYS ADMIN==========================
@@ -140,9 +169,13 @@ export default new Router({
       name: 'sysAdminDashboard',
       component: () => import('./components/SysAdmin/SysAdminDashboard.vue'),
       meta: {
-        requiresAuth : true
+        requiresAuth : true,
+        is_sys_admin : true
       }
-    }
+    },
     //==================================================
+    
+    //==================================================
+
   ]
 })

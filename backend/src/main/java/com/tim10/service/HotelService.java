@@ -27,6 +27,7 @@ import com.tim10.dto.HotelReportDTO;
 import com.tim10.dto.HotelRoomsDTO;
 import com.tim10.dto.QuickRoomResDTO;
 import com.tim10.dto.RoomDTO;
+import com.tim10.repository.HotelAdminRepository;
 import com.tim10.repository.HotelRepository;
 import com.tim10.repository.UserRepository;
 
@@ -38,6 +39,9 @@ public class HotelService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private HotelAdminRepository hotelAdminRepository;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -67,13 +71,13 @@ public class HotelService {
 	}
 	
 	public Hotel registerHotel(Hotel hotel) throws Exception {
-		//dozvoljeno je registrovanje hotela sa istim imenom
 		for(HotelAdmin admin : hotel.getAdministrators()) {
 			if(userRepository.findOneByUsername(admin.getUsername()).isPresent()) 
 				throw new Exception("User with username: " + admin.getUsername() + " already exists");
 			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
 				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+			admin.setHotel(hotel);
 		}
 		return save(hotel);
 	}
@@ -83,15 +87,35 @@ public class HotelService {
 		if(h.isPresent()) {
 			hotel.setAdministrators(h.get().getAdministrators());
 			hotel.setQuickRoomReservations(h.get().getQuickRoomReservations());
+				
 			return save(hotel);
 		}
 		throw new Exception("Hotel doesn't exist");
 	}
 	
+	public HotelRoomsDTO getHotelToEdit(String username) {
+		HotelAdmin hotelAdmin = hotelAdminRepository.findOneByUsername(username).get();
+		return new HotelRoomsDTO(hotelAdmin.getHotel());
+//		Hotel hotel = hotelRepository.getHotelToEdit(username).get();
+//		return new HotelRoomsDTO(hotel);
+		
+	}
+	
+	//ovde treba transakcija (readonly mozda)
+//	public HotelRoomsDTO getHotelRooms(Long id) throws Exception {
+//		Optional<Hotel> hotel = findOne(id);
+//		if(hotel.isPresent())
+//			return new HotelRoomsDTO(hotel.get());
+//		throw new Exception("Hotel doesn't exist");
+//	}
+	
 	public List<HotelDTO> searchHotels(Pageable page, String hotelName, String hotelLocation) {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
-		for(Hotel h : findByParameter(page, hotelName, hotelLocation))
-			dtos.add(new HotelDTO(h));
+		for(Hotel h : findByParameter(page, hotelName, hotelLocation)) {
+			HotelDTO dto = new HotelDTO(h);
+			dto.setNumberOfFeedbacks(hotelRepository.getNumberOfFeedbacks(h.getId()));
+			dtos.add(dto);
+		}
 		return dtos;
 	}
 	
@@ -110,13 +134,7 @@ public class HotelService {
 		
 	}
 	
-	//ovde treba transakcija (readonly mozda)
-	public HotelRoomsDTO getHotelRooms(Long id) throws Exception {
-		Optional<Hotel> hotel = findOne(id);
-		if(hotel.isPresent())
-			return new HotelRoomsDTO(hotel.get());
-		throw new Exception("Hotel doesn't exist");
-	}
+
 	
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId) {
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
@@ -149,19 +167,23 @@ public class HotelService {
 		return responseList;
 	}
 	
-	public HotelReportDTO getReports(Long hotelId) throws ParseException {
-		Hotel hotel = findOne(hotelId).get();
+	public HotelReportDTO getReports(String adminUsername) throws ParseException {
+		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+
+		//Hotel hotel = findOne(hotelId).get();
 		HotelReportDTO hotelReportDTO = new HotelReportDTO(hotel);
-		hotelReportDTO.setNumberOfFeedbacks(hotelRepository.getNumberOfFeedbacks(hotelId));
+		hotelReportDTO.setNumberOfFeedbacks(hotelRepository.getNumberOfFeedbacks(hotel.getId()));
 		
 		String todayString = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-		hotelReportDTO.setDailyReports(getDailyReport(hotel, todayString));	//od danasnjeg datuma
-		hotelReportDTO.setWeeklyReports(getWeeklyReport(hotel, todayString));
-		hotelReportDTO.setYearlyReport(getYearlyReport(hotel, 0));
+		hotelReportDTO.setDailyReports(getDailyReport(adminUsername, todayString));	//od danasnjeg datuma
+		hotelReportDTO.setWeeklyReports(getWeeklyReport(adminUsername, todayString));
+		hotelReportDTO.setYearlyReport(getYearlyReport(adminUsername, 0));
 		return hotelReportDTO;
 	}
 	
-	public Map<Long, Integer> getDailyReport(Hotel hotel, String fromDate) throws ParseException{
+	public Map<Long, Integer> getDailyReport(String adminUsername, String fromDate) throws ParseException{
+		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		
 		//8 prethodnih dana
 		Map<Long, Integer> dailyReport = new TreeMap<Long, Integer>();
 		Calendar cal = Calendar.getInstance();
@@ -188,7 +210,9 @@ public class HotelService {
 		return dailyReport;
 	}
 	
-	public Map<Long, Integer> getWeeklyReport(Hotel hotel, String fromDate) throws ParseException {
+	public Map<Long, Integer> getWeeklyReport(String adminUsername, String fromDate) throws ParseException {
+		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		
 		Map<Long, Integer> weeklyReport = new TreeMap<Long, Integer>();
 	    Calendar c = Calendar.getInstance();
 		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(fromDate);
@@ -220,7 +244,9 @@ public class HotelService {
 		return weeklyReport;
 	}
 	
-	public Map<Long, Integer> getYearlyReport(Hotel hotel, int numberOfYears){
+	public Map<Long, Integer> getYearlyReport(String adminUsername, int numberOfYears){
+		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		
 		Map<Long, Integer> yearlyReport = new TreeMap<Long, Integer>();
 		
 		Calendar cal = Calendar.getInstance();
@@ -244,7 +270,8 @@ public class HotelService {
 		return yearlyReport;
 	}
 
-	public BigDecimal getIncomeReport(Long hotelId, String stringFrom, String stringTo) throws ParseException {
-		return hotelRepository.getIncomeReport(hotelId, stringFrom, stringTo);
+	public BigDecimal getIncomeReport(String adminUsername, String stringFrom, String stringTo) throws ParseException {
+		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		return hotelRepository.getIncomeReport(hotel.getId(), stringFrom, stringTo);
 	}
 }
