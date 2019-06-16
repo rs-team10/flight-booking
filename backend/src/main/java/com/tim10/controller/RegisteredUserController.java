@@ -1,8 +1,10 @@
 package com.tim10.controller;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.dto.RegisteredUserDTO;
 import com.tim10.dto.RegisteredUserSearchDTO;
+import com.tim10.dto.ReservationHistoryDTO;
 import com.tim10.dto.SearchUsersDTO;
 import com.tim10.dto.UserFriendsDTO;
 import com.tim10.service.RegisteredUserService;
@@ -245,6 +248,27 @@ public class RegisteredUserController {
 	        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	    }
 	    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	// =====================================================================
+	// RESERVATIONS HISTORY
+	// =====================================================================
+	@RequestMapping(
+            value = "/reservationHistory",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getReservationsHistory(){
+		
+		Collection<ReservationHistoryDTO> reservationsHistoryDTO;
+		
+		try {
+			reservationsHistoryDTO = registeredUserService.getReservationsHistory();
+		}catch(ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(reservationsHistoryDTO, HttpStatus.OK);
+			
+
 	}
 
 }
