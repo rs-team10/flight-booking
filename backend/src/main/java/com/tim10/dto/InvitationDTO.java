@@ -8,6 +8,7 @@ public class InvitationDTO {
 	private String departure;
 	private String destination;
 	private String date;
+	private String by;
 	private RequestStatus status;
 	
 	public InvitationDTO() {
@@ -53,4 +54,14 @@ public class InvitationDTO {
 	public void setStatus(RequestStatus status) {
 		this.status = status;
 	}
+
+	public String getBy() {
+		return by;
+	}
+
+	public void setBy(String by) {
+		this.by = by;
+	}
+	
+	
 }

@@ -11,22 +11,6 @@
             <v-layout column>
                 <v-btn @click="redirectToEdit()" round small flat color="primary" dark>Edit Profile</v-btn>
                 <v-divider/>
-                <v-layout column  align-baseline>
-                    <v-btn flat router to="/editAirline">
-                        <v-icon left>flight</v-icon>
-                        <span>Airlines</span>
-                    </v-btn>
-
-                    <v-btn flat router to="/hotels" blur>
-                        <v-icon left>hotel</v-icon>
-                        <span>Hotels</span>
-                    </v-btn>
-                        
-                    <v-btn flat router to="/rentACars">
-                        <v-icon left>directions_car</v-icon>
-                        <span>Rent a cars</span>
-                    </v-btn>
-                </v-layout>
             </v-layout>
         </div>
         <v-spacer></v-spacer>

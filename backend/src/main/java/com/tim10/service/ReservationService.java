@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -52,6 +57,7 @@ public class ReservationService {
     @Autowired
 	EmailService mailSender;
     
+    @Transactional(readOnly = true)
     public boolean sendEmails(Long groupReservationId) {
     	
     	GroupReservation groupReservation = groupReservationRepository.getOne(groupReservationId);
@@ -67,7 +73,11 @@ public class ReservationService {
     	    	String departureDate = reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString();
     	    	Seat reservedSeat = reservation.getFlightReservation().getSeat();
 
-    			mailSender.sendFlightReservationEmail(reservation, emailAddress, departure, destination, departureDate, reservedSeat);
+    			try {
+					mailSender.sendFlightReservationEmail(reservation, emailAddress, departure, destination, departureDate, reservedSeat);
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
     		} else {
     			
     			String emailAddress = reservation.getRegisteredUser().getEmail();
@@ -77,7 +87,11 @@ public class ReservationService {
     	    	String departureDate = reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString();
     	    	Seat reservedSeat = reservation.getFlightReservation().getSeat();
     			
-    			mailSender.sendInvitationEmail(reservation, emailAddress, invitationCode, departure, destination, departureDate, reservedSeat);
+    			try {
+					mailSender.sendInvitationEmail(reservation, emailAddress, invitationCode, departure, destination, departureDate, reservedSeat);
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
     		}
     	}
 	
@@ -89,16 +103,17 @@ public class ReservationService {
 	public Long reserveFlight(FlightReservationDTO flightReservationDTO) {
 		
 		Optional<Flight> repoFlight = flightRepository.findById(flightReservationDTO.getFlightId());
-		if (!repoFlight.isPresent()) {
-			return null;
-		}
+		if (!repoFlight.isPresent())
+			throw new EntityNotFoundException("Flight not found.");
 		Flight flight = repoFlight.get();
 
-		GroupReservation groupReservation = new GroupReservation();
-		groupReservation.setCreationDateTime(new Date());
-
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
+		
+		GroupReservation groupReservation = new GroupReservation(new Date());
 		
 		for(SeatReservationDTO dto : flightReservationDTO.getSeatReservationDTOList()) {
 			
@@ -107,35 +122,30 @@ public class ReservationService {
 			Optional<Seat> repoSeat = seatRepository.findById(dto.getSeatId());
 			if(repoSeat.isPresent()) {
 				Seat seat = repoSeat.get();
-				
 				if(seat.getVersion().equals(dto.getSeatVersion())) {
 					seat.setIsReserved(true);
 					flightReservation.setSeat(seat);
 				} else {
-					return null;
+					throw new OptimisticLockException("Selected seat is taken.");
 				}
+			} else {
+				throw new EntityNotFoundException("Seat not found.");
 			}
 
 			Reservation reservation = new Reservation();
 			reservation.setFlightReservation(flightReservation);
 			
-			if(dto.getUserId() == null) {
-				
-				// Nije korisnik aplikacije
-				
+			if(dto.getUserId() == null) {								// Nije korisnik aplikacije
+
 				reservation.setIsHost(false);
 				reservation.setInvitationCode(null);
 				reservation.setStatus(RequestStatus.ACCEPTED);
 				reservation.setRegisteredUser(null);
 				
-			} else {
-				
-				// Jeste korisnik aplikacije
-				
-				if(dto.getUserId().equals(currentUser.getId())) {
-					
-					// Trenutni korisnik
-					
+			} else {													// Jeste korisnik aplikacije
+
+				if(dto.getUserId().equals(currentUser.getId())) {		// Trenutni korisnik
+
 					reservation.setIsHost(true);
 					reservation.setInvitationCode(null);
 					reservation.setStatus(RequestStatus.ACCEPTED);
@@ -143,9 +153,7 @@ public class ReservationService {
 					currentUser.getReservations().add(reservation);
 					currentUser.setBonusPoints(currentUser.getBonusPoints() + flight.getDistance());
 					
-				} else {
-					
-					// Prijatelj
+				} else {												// Prijatelj
 					
 					UUID uuid = UUID.randomUUID();
 			        String randomUUIDString = uuid.toString();
@@ -155,8 +163,6 @@ public class ReservationService {
 					reservation.setStatus(RequestStatus.WAITING);
 					RegisteredUser friend = registeredUserRepository.getOne(dto.getUserId());
 					reservation.setRegisteredUser(friend);
-					friend.getReservations().add(reservation);
-					
 				}
 			}
 			
@@ -170,10 +176,16 @@ public class ReservationService {
 		
 		
 		GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+		
+		for (Reservation r : savedGroupReservation.getReservations()) {
+			r.setGroupReservation(savedGroupReservation);
+			//reservationRepository.save(r);
+		}
+		
 		return savedGroupReservation.getId();
-
 	}
 
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
 	public boolean acceptInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -182,40 +194,57 @@ public class ReservationService {
 		Reservation r = reservationRepository.findByInvitationCode(invitationCode);
 		
 		if(r.getStatus() == RequestStatus.ACCEPTED || r.getStatus() == RequestStatus.DENIED)
-			return false;
+			throw new PersistenceException("Invitation already accepted/declined.");
+
+		Date current = new Date();
+		Date threeDaysBefore = new Date(current.getTime() - (3 * 24 * 60 * 60 * 1000));
+		if(r.getGroupReservation().getCreationDateTime().before(threeDaysBefore))
+			throw new PersistenceException("Invitation has expired (3 days passed).");
+		
+		Date departureDate = r.getFlightReservation().getSeat().getFlight().getDepartureDate();
+		Date threeHoursBefore = new Date(departureDate.getTime() - (3 * 60 * 60 * 1000));
+		if(threeHoursBefore.before(current))
+			throw new PersistenceException("Invitation has expired (3 hours before flight).");
 		
 
+		currentUser.setBonusPoints(currentUser.getBonusPoints() + r.getDistance());
+		currentUser.getReservations().add(r);
+		
 		r.setStatus(RequestStatus.ACCEPTED);
-		
-		// TODO: dodati mu poene i dodati u njegovu kolekciju rezervacija?
-		
 		reservationRepository.save(r);
 		
 		return true;
 	}
 	
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
 	public boolean declineInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
 
 		Reservation r = reservationRepository.findByInvitationCode(invitationCode);
-				
+		
 		if(r.getStatus() == RequestStatus.ACCEPTED || r.getStatus() == RequestStatus.DENIED)
-			return false;
+			throw new PersistenceException("Invitation already accepted/declined.");
+
+		Date current = new Date();
+		Date threeDaysBefore = new Date(current.getTime() - (3 * 24 * 60 * 60 * 1000));
+		if(r.getGroupReservation().getCreationDateTime().before(threeDaysBefore))
+			throw new PersistenceException("Invitation has expired (3 days passed).");
+		
+		Date departureDate = r.getFlightReservation().getSeat().getFlight().getDepartureDate();
+		Date threeHoursBefore = new Date(departureDate.getTime() - (3 * 60 * 60 * 1000));
+		if(threeHoursBefore.before(current))
+			throw new PersistenceException("Invitation has expired (3 hours before flight).");
 		
 		r.setStatus(RequestStatus.DENIED);
-		
-		// 4. Oslobodi rezervisano sediste i razvezi ga od rezervacije 
 		r.getFlightReservation().getSeat().setIsReserved(false);
-
-		
 		reservationRepository.save(r);
 		
 		return true;
 	}
 	
-	
+	@Transactional(readOnly = true)
 	public List<InvitationDTO> getAllInvitations() {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -231,13 +260,18 @@ public class ReservationService {
 			dto.setDeparture(reservation.getFlightReservation().getSeat().getFlight().getDeparture().getName());
 			dto.setDestination(reservation.getFlightReservation().getSeat().getFlight().getDestination().getName());
 			dto.setDate(reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString());
+			
+			GroupReservation gr = reservation.getGroupReservation();
+			for (Reservation r : gr.getReservations()) {
+				if (r.getIsHost()) {
+					dto.setBy(r.getRegisteredUser().getFirstName() + " " + r.getRegisteredUser().getLastName());
+				}
+			}			
+
 			dto.setStatus(reservation.getStatus());
 			invitations.add(dto);
 		}
-		
-		
+			
 		return invitations;
 	}
-
-
 }

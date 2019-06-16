@@ -1,5 +1,7 @@
 <template>
+    
     <v-layout column ma-4>
+        <h1 class="mx-3">Invitations</h1>
         <v-data-table
             :headers="headers"
             :items="invitations"
@@ -9,6 +11,7 @@
                 <td>{{ props.item.departure }}</td>
                 <td>{{ props.item.destination }}</td>
                 <td>{{ props.item.date }}</td>
+                <td>{{ props.item.by }}</td>
                 <td class="text-xs-right disable-events">              
                     <v-btn depressed :color="computeButtonColor(props.item.status)">
                         <span>{{ props.item.status }}</span>
@@ -53,6 +56,12 @@ export default {
                     align: 'left',
                     sortable: true,
                     value: 'date'
+                },
+                {
+                    text: "Invited by",
+                    align: 'left',
+                    sortable: true,
+                    value: 'by'
                 },
                 {
                     text: "Status",
