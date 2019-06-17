@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -38,10 +39,10 @@ public class Room implements Serializable{
 	@OneToMany(mappedBy="room", fetch=FetchType.LAZY)
 	private Set<RoomReservation> roomReservations;
 	
-//	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-//	@ManyToOne(fetch=FetchType.LAZY)
-//	@JoinColumn(name="hotel_id")
-//	private Hotel hotel;
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="hotel_id")
+	private Hotel hotel;
 	
 	public boolean isReserved(Date checkInDate, Date checkOutDate) {
 		for(RoomReservation roomReservation: this.roomReservations) {
@@ -97,6 +98,14 @@ public class Room implements Serializable{
 
 	public void setRoomReservations(Set<RoomReservation> roomReservations) {
 		this.roomReservations = roomReservations;
+	}
+	
+	public Hotel getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(Hotel hotel) {
+		this.hotel = hotel;
 	}
 
 }

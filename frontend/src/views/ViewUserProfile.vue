@@ -22,18 +22,26 @@
                     </v-tabs>
 
 
-                    
-                    <v-toolbar color="light blue" dark height="48px" mu-4>   
-                        <v-icon>history</v-icon> 
-                        <v-toolbar-title class="font-weight-light">Reservations history</v-toolbar-title>      
-                    </v-toolbar>
-                    
-
-                    <v-card ma-4>
-                        <reservationsHistory/>
-                    </v-card>
-                    
-                    
+                    <v-tabs color="light blue" dark slider-color="black" ma-4>
+                        <v-tab>Current reservations</v-tab>
+                        <v-tab ripple>Reservations history</v-tab>
+                        <v-tab-item>
+                            <v-card
+                                id="scroll-target"
+                                style="max-height: 400px"
+                                class="scroll-y">
+                                <currentReservations/>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card
+                                id="scroll-target"
+                                style="max-height: 400px"
+                                class="scroll-y">
+                                <reservationsHistory/>
+                            </v-card>
+                        </v-tab-item>   
+                    </v-tabs>
 
                 </v-layout>
             </v-layout>
@@ -46,13 +54,15 @@ import UserProfile from "@/components/userProfile/UserProfile.vue"
 import Friendships from "@/components/userProfile/Friendships.vue"
 import FriendRequests from "@/components/userProfile/FriendRequests.vue"
 import ReservationsHistory from "@/components/userProfile/ReservationsHistory.vue"
+import CurrentReservations from "@/components/userProfile/CurrentReservations.vue"
 
 export default {
     components: {
         'user-profile': UserProfile,
         'friendships': Friendships,
         'friend-requests': FriendRequests,
-        'reservationsHistory' : ReservationsHistory
+        'reservationsHistory' : ReservationsHistory,
+        'currentReservations' : CurrentReservations
     },
     data() {
         return {

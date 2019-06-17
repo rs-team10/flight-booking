@@ -1,13 +1,12 @@
 <template>
     <v-layout>
-        
         <v-dialog v-model="dialog" max-width="700px"> 
-            <reservation 
+            <reservation
                 :overview = 'overview'
-                :rate = 'rate'
             />
         </v-dialog>
-
+        
+        
         <v-list two-line style="width:100%;">
         <template v-for="(reservation, index) in this.reservations" >
 
@@ -18,6 +17,7 @@
 
             <v-list-tile
             :key="reservation.reservationId + reservation.departureName"
+            @click="showDialog(reservation)"
             >
                 <v-list-tile-avatar>
                     <v-icon>flight</v-icon>
@@ -28,15 +28,13 @@
                     <v-list-tile-sub-title>{{reservation.departureDate.substring(0,10)}}</v-list-tile-sub-title>
                 </v-list-tile-content>
 
-                <v-list-tile-action>  
-                    <v-icon color="yellow" @click="showDialog(reservation)">star</v-icon>  
-                </v-list-tile-action>
 
             </v-list-tile> 
         </template>
         </v-list>
-
+        
     </v-layout>
+ 
 </template>
 
 
@@ -46,14 +44,15 @@ export default {
     components: {
         'reservation': Reservation,
     },
+
     data(){
         return{
             
             overview:{},
-            rate : true,
-            dialog: false, 
-            
+            dialog : false,
+
             reservations:[],
+
 
         }
     },
@@ -64,7 +63,7 @@ export default {
             }
         };
 
-        this.$axios.get('http://localhost:8080/api/reservationHistory/', yourConfig).then((response) => {
+        this.$axios.get('http://localhost:8080/api/currentReservations/', yourConfig).then((response) => {
             this.reservations = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');
@@ -83,6 +82,7 @@ export default {
             }).catch((error) => {
                 this.$swal("Error", error.response.data.message, 'error');
             });
+            this.reservation = reservation;
             this.dialog = true;
         }
     }

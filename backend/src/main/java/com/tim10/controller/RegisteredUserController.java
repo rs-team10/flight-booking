@@ -270,5 +270,26 @@ public class RegisteredUserController {
 			
 
 	}
+	
+	// =====================================================================
+	// CURRENT RESERVATIONS
+	// =====================================================================
+	@RequestMapping(
+            value = "/currentReservations",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getCurrentReservations(){
+		
+		Collection<ReservationHistoryDTO> reservationsHistoryDTO;
+		
+		try {
+			reservationsHistoryDTO = registeredUserService.getCurrentReservations();
+		}catch(ResourceNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(reservationsHistoryDTO, HttpStatus.OK);
+			
+
+	}
 
 }
