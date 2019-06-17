@@ -184,6 +184,38 @@ public class ReservationService {
 		
 		return savedGroupReservation.getId();
 	}
+	
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
+	public boolean cancelFlightReservation(Long groupReservationId) {
+		
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		
+		GroupReservation gr = groupReservationRepository.findById(groupReservationId).get();
+		
+		for (Reservation r : gr.getReservations()) {
+			
+			Flight f = r.getFlightReservation().getSeat().getFlight();
+			
+			Date current = new Date();
+			Date threeHoursBefore = new Date(f.getDepartureDate().getTime() - (3 * 60 * 60 * 1000));
+			if(threeHoursBefore.before(current))
+				throw new PersistenceException("It is no longer possible to cancel the reservation.");
+			
+			r.getFlightReservation().getSeat().setIsReserved(false);
+			r.setStatus(RequestStatus.DENIED);
+			r.setFlightReservation(null);
+			
+			currentUser.setBonusPoints(currentUser.getBonusPoints() - f.getDistance());
+		}
+		
+		groupReservationRepository.save(gr);
+
+		return true;
+		
+		// TODO: Otkazati i rezervaciju hotela i rentacar-a ukoliko postoji
+	}
+
 
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
 	public boolean acceptInvitation(String invitationCode) {
@@ -274,4 +306,5 @@ public class ReservationService {
 			
 		return invitations;
 	}
+
 }

@@ -68,6 +68,21 @@ public class ReservationController {
 	}
 	
 	@RequestMapping(
+			value = "/cancelFlightReservation/{id}",
+			method = RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long groupReservationId) {
+		
+		boolean success = reservationService.cancelFlightReservation(groupReservationId);
+		
+		if(success)
+			return new ResponseEntity<>(HttpStatus.OK);
+		else
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@RequestMapping(
 			value = "/acceptInvitation/{code}",
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
