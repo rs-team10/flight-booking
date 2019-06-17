@@ -12,5 +12,5 @@ public interface RoomRepository extends JpaRepository<Room, Long>{
 	//List<Room> findByRoomTypeId(Long id);
 	
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Room findOneByRoomTypeId(Long id);
+	Room findOneById(Long id);
 }

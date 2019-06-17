@@ -16,6 +16,10 @@ public class AirlineAdmin extends User {
 	
 	public AirlineAdmin() {
 		super();
+		hasCustomPassword = false;
+		Authority aut = new Authority();
+		aut.setRole(Role.ROLE_AIRLINE_ADMIN);
+		this.getAuthorities().add(aut);
 	}
 
 	public Boolean getHasCustomPassword() {

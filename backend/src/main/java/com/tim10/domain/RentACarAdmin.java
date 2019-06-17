@@ -19,6 +19,10 @@ public class RentACarAdmin extends User {
 
 	public RentACarAdmin() {
 		super();
+		hasCustomPassword = false;
+		Authority aut = new Authority();
+		aut.setRole(Role.ROLE_RENT_A_CAR_ADMIN);
+		this.getAuthorities().add(aut);
 	}
 
 	public Boolean getHasCustomPassword() {

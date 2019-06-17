@@ -686,6 +686,9 @@ export default {
             this.$axios.post('http://localhost:8080/api/reserveFlight', this.flightReservation, yourConfig)
                 .then((response) => {
                     this.groupReservationId = response.data;
+                    //DODATO KK
+                    localStorage.setItem('groupResId', this.groupReservationId)
+
                     this.$swal.fire({
                             title: 'Success', 
                             html: 'Flight reservation successfull',
@@ -711,6 +714,7 @@ export default {
                 });
         },
         continueToHotelReservation() {
+            this.$router.push('hotelReservation')
             
             // KATARINA
 

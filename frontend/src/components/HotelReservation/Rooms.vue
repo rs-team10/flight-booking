@@ -34,7 +34,7 @@
                                                 </v-flex>
                                             </v-card-text>
                                         </v-flex>
-                                        <v-flex xs4 md4>
+                                        <v-flex xs4 sm4 md4>
                                             <v-layout row >
                                                 <v-flex xs5>
                                                 <v-layout column align left class="mt-1 ml-2 indigo--text font-weight-regular subheading">
@@ -62,7 +62,7 @@
                                                             </div>
                                                         </v-card-title>
                                                         <v-card-actions>
-                                                            <v-layout row align right class="mt-3">
+                                                            <!-- <v-layout row align right class="mt-3">
 
                                                                 <v-select
                                                                     v-model.lazy="room.numberOfRooms"
@@ -74,7 +74,9 @@
                                                                     background-color="indigo lighten-4"
                                                                 >
                                                                 </v-select>   
-                                                            </v-layout>
+                                                            </v-layout> -->
+
+                                                            <v-btn @click="openRoomsDialog(room)" flat dark outline block>Choose rooms</v-btn>
                                                         </v-card-actions>
                                                         </v-card>    
                                             </v-layout>
@@ -154,6 +156,40 @@
             <v-btn  flat outline color="indigo" @click="reserveHotelRoom">Reserve</v-btn>
             <v-btn flat @click="goBack">Back</v-btn>
         </v-layout>
+
+        <v-dialog >
+            <v-card>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="chooseRoomsDialog" max-width="300px">
+            <v-card height="500px">
+            <v-layout column style="height: 500px">
+            <v-flex style="overflow: auto">
+                <v-data-table
+                    v-model="selectedRooms"
+                    :items="roomsToShow"
+                    :headers="roomHeaders"
+                    :headers-length="headersLength"
+                    item-key="roomNumber"
+                    hide-actions>
+                    <template v-slot:items="props">
+                        <td>{{ props.item.roomNumber }}</td>
+                        <td>{{ props.item.floor }}</td>
+                        <td>
+                            <v-checkbox
+                                v-model="props.selected"
+                                hide-details   
+                                color="indigo">
+                            </v-checkbox>
+                        </td>
+                    </template>
+                </v-data-table>
+            </v-flex>
+            </v-layout>
+            </v-card>
+        </v-dialog>
+
     </div>
 </template>
 
@@ -185,17 +221,31 @@ export default {
                 { name: "Laundry service",  pricePerNight: 10, description: "OPIS"}
             ],
             selected: [],
-            headersLength: 3
+            headersLength: 3,
+            roomsHeadersLength: 2,
+            
+            chooseRoomsDialog: false,
+            roomsToShow: [],
+            selectedRooms: [],
+            roomHeaders: [
+                { text: 'Room number', align: 'left', sortable: false, value: 'roomNumber'},
+                { text: 'Floor', align: 'left', sortable: false, value: 'floor'},
+                { text: '', align: 'left', sortable: false, value: 'check'},
+            ],
         }
     },
     methods: {
+        openRoomsDialog(roomType){
+            this.roomsToShow = this.rooms.filter(x => x.roomType.type == roomType.type)
+            this.chooseRoomsDialog = true
+        },
+
         reserveHotelRoom(){
             //saljemo broj soba kog tipa hoce i za koji period
             //saljemo additional services sve standard
             //nazad selektujemo iz baze jednu po jednu sobu
-            
 
-            //{ tipSobe: brojSoba }
+            //{ tipSobe: brojSoba }         NE TREBA
             var lista = [];
 
             for(var i = 0; i < this.selectedHotel.roomTypes.length; i++){
@@ -205,23 +255,24 @@ export default {
                     lista.push(objekat);
                 }
             }
-            this.reservation.listOfRooms = lista;
-
+            this.reservation.listOfRooms = this.selectedRooms;
+            this.reservation.dateFrom = this.checkInDate
+            this.reservation.dateTo = this.checkOutDate
             //ukupna cena
             this.reservation.totalPrice = this.calculateTotalPrice(lista);
 
             //dodatne usluge
             this.reservation.additionalServices = this.selected
 
-            console.log(this.reservation)
             this.$axios
-            .post('http://localhost:8080/api/reservations/reserveRoom/' + this.checkInDate, + '/' + this.checkOutDate, this.reservation)
+            .post('http://localhost:8080/api/reservations/reserveRoom/' + this.checkInDate + '/' + this.checkOutDate, this.reservation)
             .then(response => {
                 this.$swal("Reservation successful", "", "success");
             }).catch(error => {
-                console.log(error.response.data)
+                console.log(this.reservation)
+                this.$swal(error.response.message, "Please pick another room", "error")
             });
-
+            
         },
 
         reserve(){

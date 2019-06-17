@@ -112,17 +112,6 @@ public class RentACarController {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}
 		return new ResponseEntity<>(registeredRentACar, HttpStatus.CREATED);
-
-//		if(!rentACarService.findOneByName(rentACar.getName()).isPresent()) {
-//			for(RentACarAdmin admin : rentACar.getAdministrators()) {
-//				if(userService.findOneByUsername(admin.getUsername()).isPresent()) 
-//					return new ResponseEntity<>("User with username: " + admin.getUsername() + " already exists!", HttpStatus.FORBIDDEN);
-//				else if(userService.findOneByEmail(admin.getEmail()).isPresent())
-//					return new ResponseEntity<>("User with email: " + admin.getEmail() + " already exists!", HttpStatus.FORBIDDEN);
-//			}
-//			return new ResponseEntity<RentACar>(rentACarService.registerRentACar(rentACar), HttpStatus.CREATED);
-//		}
-//		return new ResponseEntity<>("Rent-a-car service with that name already exists!", HttpStatus.CONFLICT);
 	}
 	
 	

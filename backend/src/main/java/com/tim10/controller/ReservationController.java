@@ -93,7 +93,11 @@ public class ReservationController {
 	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO,
 											@PathVariable("dateFrom") String dateFrom,
 											@PathVariable("dateTo") String dateTo) throws ParseException {
-		roomReservationService.reserveRooms(reservationDTO, dateFrom, dateTo);
+		try{
+			roomReservationService.reserveRooms(reservationDTO, dateFrom, dateTo);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
