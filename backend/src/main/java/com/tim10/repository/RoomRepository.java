@@ -1,5 +1,7 @@
 package com.tim10.repository;
 
+import java.util.Optional;
+
 import javax.persistence.LockModeType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +14,5 @@ public interface RoomRepository extends JpaRepository<Room, Long>{
 	//List<Room> findByRoomTypeId(Long id);
 	
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Room findOneById(Long id);
+	Optional<Room> findOneById(Long id);
 }

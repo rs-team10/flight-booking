@@ -254,25 +254,30 @@ export default {
             this.$emit('goBack')
         },
         addQuickReservation(){
+            
             var additionalServicesPrice = this.calculateAdditionalService();
             if(!this.validateData()){
                 return;
             }
             //TODO: POTREBNO DODATI PROVERU DA LI BRZA REZERVACIJA VEC POSTOJI ZA SOBU
-            var quickRoomReservation =  {    
+             
+
+            for(var i = 0; i < this.selectedRooms.length; i++){
+                var quickRoomReservation =  {    
                                         dateFrom : this.dateFrom,
                                         dateTo : this.dateTo,
                                         additionalServices : this.selected,
                                         discount: this.discount,
                                         totalPrice : additionalServicesPrice
-                                        } 
-
-            for(var i = 0; i < this.selectedRooms.length; i++){
+                                        }
                 var room = this.selectedRooms[i];
                 quickRoomReservation.room = room;
                 quickRoomReservation.totalPrice += this.calculateRoomPrice(room.roomType.pricePerNight);
+                quickRoomReservation.totalPrice = Math.floor(quickRoomReservation.totalPrice)
                 this.quickRoomReservations.push(quickRoomReservation)
             } 
+
+            
         },
         calculateAdditionalService(){
             var total = 0;
@@ -297,7 +302,7 @@ export default {
             });
         },
         calcDiscountedPrice(totalPrice, discount){
-            return totalPrice - (totalPrice * (discount / 100));
+            return Math.floor(totalPrice - (totalPrice * (discount / 100)));
         },
         validateData(){
             if((this.dateFrom == this.dateTo) || (this.dateTo < this.dateFrom)){
@@ -317,7 +322,7 @@ export default {
         this.$axios
             .get('http://localhost:8080/api/hotels/quickRoomReservations/' + this.selectedHotel.id)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
                 this.quickRoomReservations = response.data;
             })
     }

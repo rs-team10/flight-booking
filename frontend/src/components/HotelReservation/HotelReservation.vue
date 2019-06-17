@@ -28,7 +28,7 @@
                     <v-card-text>
                         <!-- datum od -->
                         <v-layout row>
-                        <v-menu
+                        <v-menu 
                         v-model="checkInMenuDialog"
                         :close-on-content-click="true"
                         :nudge-right="40"
@@ -40,7 +40,7 @@
                         >
                         <template v-slot:activator="{ on }">
                         <v-flex xs6 md6>
-                            <v-text-field
+                            <v-text-field readonly
                                 v-model="checkInDate"
                                 append-icon="event"
                                 label="Check-in*"
@@ -50,7 +50,7 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkInDate" @input="checkInMenuDialog=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker disabled v-model="checkInDate" @input="checkInMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         
                         <!-- datum do -->
@@ -75,7 +75,7 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkOutDate" @input="checkOutMenuDialog=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker :min="checkInDate" v-model="checkOutDate" @input="checkOutMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         </v-layout>
 
@@ -149,7 +149,7 @@
                                 >
                                 <template v-slot:activator="{ on }">
                                 <v-flex xs6 md6>
-                                    <v-text-field
+                                    <v-text-field readonly
                                         v-model="checkInDate"
                                         append-icon="event"
                                         label="Check-in*"
@@ -159,7 +159,7 @@
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
+                                <v-date-picker disabled v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 
                                 <!-- datum do -->
@@ -184,7 +184,7 @@
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
+                                <v-date-picker :min="checkInDate" v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 </v-layout>
 
@@ -389,14 +389,16 @@ export default {
             //Search params-------------------
             hotelName: '',
             hotelLocation: '',
-            guests: '',
+            // guests: localStorage.getItem('guests'),
 
             checkInMenu: false,
             checkInMenuDialog: false,
-            checkInDate: new Date().toISOString().substr(0, 10),
+            //checkInDate: new Date().toISOString().substr(0, 10),
+            checkInDate: localStorage.getItem('arrivalDate'),
             checkOutMenu: false,
             checkOutMenuDialog: false,
-            checkOutDate: new Date().toISOString().substr(0, 10),
+            checkOutDate: localStorage.getItem('arrivalDate'),
+            
             minDate: new Date().toISOString().substr(0, 10),
 
             days: '',
@@ -524,7 +526,6 @@ export default {
     mounted(){
         this.dateDialog = true;
         this.fetchHotels();
-        console.log(localStorage.getItem('groupResId'))
     }
 }
 </script>

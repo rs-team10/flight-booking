@@ -5,14 +5,14 @@
         <v-flex xs8 sm8 md8>
             <v-item-group>
                 <v-layout column>
-                    <v-list class="scroll-y pt-0" style="height: 700px">
+                    <v-list class="scroll-y pt-0" style="height: 700px; background: #FAFAFA;">
                     <v-flex
                         v-for="room in this.selectedHotel.roomTypes"
                         :key="room.type"
                         class="d-inline align-center">
                     <v-item v-if="proveraSoba(room)" width="100%">
                         <div style="margin: auto;">
-                            <v-card flat>
+                            <v-card flat color="grey lighten-5">
                             <v-container fluid class="pt-0">
                                 <v-layout row wrap justify-center>
                                 <v-flex>
@@ -54,7 +54,7 @@
                                                 </v-flex>
 
                                                 <v-layout column align right>
-                                                    <v-card height="216px" color="indigo lighten-3" class="white--text">
+                                                    <v-card flat height="216px" color="indigo lighten-3" class="white--text">
                                                         <v-card-title primary-title>
                                                             <div>
                                                                 <div class="text-xs-center headline font-weight-light">Price for {{ days }} nights:</div> 
@@ -87,7 +87,7 @@
                                             <span class="headline indigo--text">{{ room.type }}</span>
                                             <v-spacer></v-spacer>
                                             <v-rating
-                                                :value="averageFeedback"
+                                                :value="room.averageFeedback"
                                                 color="indigo"
                                                 dense
                                                 half-increments
@@ -108,8 +108,8 @@
         </v-flex>
 
         <v-flex xs4 sm4 md4>
-            <v-card>
-                <v-toolbar color="indigo lighten-3" class="elevation-10">
+            <v-card flat>
+                <v-toolbar tile color="indigo lighten-3" flat >
                     <v-toolbar-title class="text-uppercase white--text font-weight-light">Additional services</v-toolbar-title>
                 </v-toolbar>
             </v-card>
@@ -118,7 +118,6 @@
                     <v-data-table v-if="canRender"
                         v-model="selected"
                         :items="selectedHotel.additionalServicesPriceList.priceListItems"
-                        class="elevation-3"
                         item-key="name"
                         hide-actions
                         hide-headers
@@ -157,8 +156,48 @@
             <v-btn flat @click="goBack">Back</v-btn>
         </v-layout>
 
-        <v-dialog >
+        <v-dialog v-model="confirmResDialog" width="550px">
             <v-card>
+                <v-toolbar>
+                    <v-toolbar-title class="text-uppercase grey--text">
+                        <span class="font-weight-light">Flight</span>
+                        <span>Booking</span>
+                    </v-toolbar-title>
+                        <v-spacer></v-spacer>   
+                        <span class="title text-uppercase grey--text font-weight-light">Hotel Reservation</span>
+                </v-toolbar>
+                <v-card-text>
+                    <v-layout column>
+                        <v-layout row class="title font-weight-light indigo--text">
+                            <span>Room price:</span>
+                            <v-spacer></v-spacer>
+                            <span>{{ totalRoomsPrice(reservation.listOfRooms) }}€</span>
+                        </v-layout><br>
+
+                        <v-layout row class="title font-weight-light indigo--text">
+                            <span>Additional services:</span>
+                            <v-spacer></v-spacer>
+                            <span>{{ additionalServicesPrice }}€</span>
+                        </v-layout><br>
+
+                        <v-divider light></v-divider><br>
+
+                        <v-layout row class="headline font-weight-medium indigo--text text-uppercase">
+                            <span>Total</span>
+                            <v-spacer></v-spacer>
+                            <span>{{ reservation.totalPrice }}€</span>
+                        </v-layout>
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat>Cancel</v-btn>
+                    <v-btn outline color="success" flat @click="confirmReservation">
+                        Confirm reservation 
+                        <v-icon right>done_outline</v-icon>
+                    </v-btn>
+                
+                </v-card-actions>
             </v-card>
         </v-dialog>
 
@@ -232,6 +271,9 @@ export default {
                 { text: 'Floor', align: 'left', sortable: false, value: 'floor'},
                 { text: '', align: 'left', sortable: false, value: 'check'},
             ],
+
+            guests: localStorage.getItem('guests'),
+            confirmResDialog: false
         }
     },
     methods: {
@@ -241,83 +283,56 @@ export default {
         },
 
         reserveHotelRoom(){
-            //saljemo broj soba kog tipa hoce i za koji period
-            //saljemo additional services sve standard
-            //nazad selektujemo iz baze jednu po jednu sobu
-
-            //{ tipSobe: brojSoba }         NE TREBA
-            var lista = [];
-
-            for(var i = 0; i < this.selectedHotel.roomTypes.length; i++){
-                var roomType = this.selectedHotel.roomTypes[i];
-                if(roomType.numberOfRooms != 0 && roomType.numberOfRooms != undefined){
-                    var objekat = { "roomType" : roomType, "numberOfRooms" : roomType.numberOfRooms};
-                    lista.push(objekat);
-                }
+            //provera da li broj kreveta prevazilazi broj gostiju
+            var numberOfBeds = 0;
+            for(var i = 0; i < this.selectedRooms.length; i++)
+                numberOfBeds += this.selectedRooms[i].roomType.capacity;
+            
+            if(numberOfBeds == 0){
+                this.$swal("No rooms selected", "", "warning");
+                return;
+            }else if(numberOfBeds > this.guests){
+                this.$swal("We're sorry", "You want to reserve more beds than you need to. Please try again", "warning")
+                return;
+            }else if(numberOfBeds < this.guests){
+                this.$swal("We're sorry", "You'l need more beds'. Please try again", "warning")
+                return;
             }
+
             this.reservation.listOfRooms = this.selectedRooms;
             this.reservation.dateFrom = this.checkInDate
             this.reservation.dateTo = this.checkOutDate
-            //ukupna cena
-            this.reservation.totalPrice = this.calculateTotalPrice(lista);
-
-            //dodatne usluge
+            this.reservation.totalPrice = this.calculateTotalPrice(this.reservation.listOfRooms)
             this.reservation.additionalServices = this.selected
 
+            this.confirmResDialog = true
+            
+        },
+        confirmReservation(){
             this.$axios
-            .post('http://localhost:8080/api/reservations/reserveRoom/' + this.checkInDate + '/' + this.checkOutDate, this.reservation)
+            .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation)
             .then(response => {
                 this.$swal("Reservation successful", "", "success");
             }).catch(error => {
-                console.log(this.reservation)
                 this.$swal(error.response.message, "Please pick another room", "error")
             });
-            
         },
-
-        reserve(){
-            var lista = [];
-
-            for(var i = 0; i < this.selectedHotel.roomTypes.length; i++){
-                var roomType = this.selectedHotel.roomTypes[i];
-                if(roomType.numberOfRooms != 0 && roomType.numberOfRooms != undefined){
-                    var objekat = { "roomType" : roomType, "numberOfRooms" : roomType.numberOfRooms};
-                    lista.push(objekat);
-                }
-            }
-            this.$axios
-                .post('http://localhost:8080/api/rooms/getRooms/' + this.checkInDate + '/' + this.checkOutDate, lista)
-                .then(response => {
-                    if(response.data.length == 0){
-                        this.$swal("At least one room must be chosen.", "", "info");
-                        return;
-                    }
-                    this.reservation.listOfRooms = response.data;
-                    this.reservation.totalPrice = this.calculateTotalPrice(this.reservation.listOfRooms);
-                    this.$emit('continueReservation', this.reservation);
-                }).catch(error => {
-                    //nema dovoljno soba tog tipa   
-                    this.$swal(error.response.data, "", "info");
-                })
-            //Treba proveriti da li broj gostiju prevazilazi broj kreveta, da li su dostupne sobe
+        
+        calculateTotalPrice(listOfRooms){
+            var total = 0;
+            for(var i = 0; i < listOfRooms.length; i++)
+                total += listOfRooms[i].roomType.pricePerNight * this.days
+            total += this.additionalServicesPrice
+            return total;
+        },
+        totalRoomsPrice(listOfRooms){
+            var total = 0;
+            for(var i = 0; i < listOfRooms.length; i++)
+                total += listOfRooms[i].roomType.pricePerNight * this.days
+            return total;
         },
         totalPrice(price){
             return this.days * price;
-        },
-        // calculateTotalPrice(listOfRooms){
-        //     var total = 0;
-        //     for(var i = 0; i < listOfRooms.length; i++)
-        //         total += this.totalPrice(listOfRooms[i].roomType.pricePerNight);
-        //     return total;
-        // },
-        calculateTotalPrice(roomTypes){
-            var total = 0;
-
-            for(var i = 0; i < roomTypes.length; i++){
-                total += (parseInt(roomTypes[i].roomType.pricePerNight) * parseInt(this.days)) * parseInt(roomTypes[i].numberOfRooms);
-            }
-            total += parseInt(this.additionalServicesPrice);
-            return total;
         },
         proveraSoba(room){
             if(room.pricePerNight > this.priceRange[0] && room.pricePerNight < this.priceRange[1])
@@ -335,7 +350,9 @@ export default {
                 total += this.selected[i].price * this.days;
             }
             return total;
-        }
+        }, 
+
+        
     },
 }
 </script>
