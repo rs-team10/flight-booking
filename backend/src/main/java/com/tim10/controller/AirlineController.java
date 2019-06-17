@@ -1,6 +1,10 @@
 package com.tim10.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
-import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.PriceListItem;
 import com.tim10.dto.AirlineProfileDTO;
+import com.tim10.dto.AirlineReportDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.NewAirlineDTO;
 import com.tim10.dto.PriceListItemDTO;
@@ -161,6 +165,50 @@ public class AirlineController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteQuickFlightReservation(@RequestBody QuickFlightReservationDTO dto) {
 		return airlineService.deleteQuickFlightReservation(dto);
+	}
+	
+	// ==============================================================================
+	// REPORTS
+	// ==============================================================================
+	
+	@RequestMapping(
+			value="airlines/getReport/",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AirlineReportDTO> getReport() {
+		return new ResponseEntity<>(airlineService.getReports(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value="airlines/getIncomeReport",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<BigDecimal> getIncomeReport(@PathParam("dateFrom") String dateFrom, @PathParam("dateTo") String dateTo) {
+		return new ResponseEntity<>(airlineService.getIncomeReport(dateFrom,  dateTo), HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value="airlines/dailyReport",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getDailyReport(@PathParam("dateFrom") String dateFrom) {
+		return new ResponseEntity<>(airlineService.getDailyReport(dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value="airlines/weeklyReport",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> gteWeeklyReport(@PathParam("dateFrom") String dateFrom) {
+		return new ResponseEntity<>(airlineService.getWeeklyReport(dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(
+			value="airlines/monthlyReport",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getYearlyReport(@PathParam("numberOfYears") int numberOfYears) {
+		return new ResponseEntity<>(airlineService.getYearlyReport(numberOfYears), HttpStatus.OK);
 	}
 
 }

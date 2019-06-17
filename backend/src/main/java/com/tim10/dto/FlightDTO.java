@@ -2,6 +2,7 @@ package com.tim10.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class FlightDTO implements Serializable {
 	private Integer firstClassSeatsCount;
 	private Integer businessClassSeatsCount;
 	private Integer ecoClassSeatsCount;
+	private Double averageFeedback;
 	
 	public FlightDTO() {
 	}
@@ -45,11 +47,16 @@ public class FlightDTO implements Serializable {
 			this.transitDestinations.add(d.getName());
 		}
 		
+		this.departureDate = new SimpleDateFormat("yyyy-MM-dd").format(flight.getDepartureDate());
+		this.arrivalDate = new SimpleDateFormat("yyyy-MM-dd").format(flight.getArrivalDate());
+		
 		this.ticketPrice = flight.getTicketPrice();
 		this.duration = flight.getDuration();
 		this.distance = flight.getDistance();
 		
 		// todo seats
+		
+		this.averageFeedback = flight.getAverageFeedback();
 	}
 
 	public Long getId() {
@@ -178,5 +185,13 @@ public class FlightDTO implements Serializable {
 
 	public void setEcoClassSeatsCount(Integer ecoClassSeatsCount) {
 		this.ecoClassSeatsCount = ecoClassSeatsCount;
+	}
+
+	public Double getAverageFeedback() {
+		return averageFeedback;
+	}
+
+	public void setAverageFeedback(Double averageFeedback) {
+		this.averageFeedback = averageFeedback;
 	}
 }

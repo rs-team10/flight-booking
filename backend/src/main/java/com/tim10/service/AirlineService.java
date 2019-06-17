@@ -1,8 +1,15 @@
 package com.tim10.service;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import javax.persistence.PersistenceException;
 
@@ -19,6 +26,7 @@ import com.tim10.domain.Location;
 import com.tim10.domain.PriceListItem;
 import com.tim10.domain.QuickFlightReservation;
 import com.tim10.dto.AirlineProfileDTO;
+import com.tim10.dto.AirlineReportDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
@@ -300,6 +308,210 @@ public class AirlineService {
 			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
 
+	
+	// ==============================================================================
+	// REPORTS
+	// ==============================================================================
+	
+
+	public AirlineReportDTO getReports() {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			Airline airline = repoAirline.get();
+			
+			AirlineReportDTO dto = new AirlineReportDTO(airline);
+			dto.setNumberOfFeedbacks(airlineRepository.getNumberOfFeedbacks(airline.getId()));
+			
+			String todayString = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+			dto.setAverageFeedback(getAverageFeedback());
+			dto.setDailyReports(getDailyReport(todayString));
+			dto.setWeeklyReports(getWeeklyReport(todayString));
+			dto.setYearlyReports(getYearlyReport(0));
+			
+			return dto;
+		}
+		
+		return null;
+	}
+	
+	public Double getAverageFeedback() {
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			Airline airline = repoAirline.get();
+			
+			return airlineRepository.getAverageFeedback(airline.getId());
+		}
+		return null;
+		
+	}
+
+	public BigDecimal getIncomeReport(String dateFrom, String dateTo) {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			Airline airline = repoAirline.get();
+			
+			return airlineRepository.getIncomeReport(airline.getId(), dateFrom, dateTo);
+		}
+		return null;
+	}
+
+	public Map<Long, Integer> getDailyReport(String dateFrom) {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			
+			Airline airline = repoAirline.get();
+			
+			Map<Long, Integer> dailyReport = new TreeMap<Long, Integer>();
+			Calendar calendar = Calendar.getInstance();
+			
+			Date date;
+			try {
+				date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			calendar.setTime(date);
+
+			calendar.add(Calendar.DATE, -12);
+			String previousString = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+			
+			
+			Calendar newCalendar = Calendar.getInstance();
+			newCalendar.setTime(date);
+			for(int i = 0; i < 12; i++) {
+
+				newCalendar.add(Calendar.DATE, -1);
+				String dateString = new SimpleDateFormat("yyyy-MM-dd").format(newCalendar.getTime());
+				
+				Date newDate;
+				try {
+					newDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+				} catch (ParseException e) {
+					e.printStackTrace();
+					return null;
+				}
+				
+				dailyReport.put(newDate.getTime(), 0);
+				
+			}
+			
+			List<Date> datesList = airlineRepository.getFlightReservations(airline.getId(), previousString, dateFrom);
+			
+			for(Date d : datesList) {
+				
+				String tempDateString = new SimpleDateFormat("yyyy-MM-dd").format(d);
+				Date tempDate = null;
+				try {
+					tempDate = new SimpleDateFormat("yyyy-MM-dd").parse(tempDateString);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				
+				Integer value = dailyReport.get(tempDate.getTime());
+				dailyReport.put(tempDate.getTime(), ++value);
+			}
+			
+			return dailyReport;
+		}
+		
+		return null;
+	}
+
+	public Map<Long, Integer> getWeeklyReport(String dateFrom) {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			
+			Airline airline = repoAirline.get();
+			
+			Map<Long, Integer> weeklyReport = new TreeMap<Long, Integer>();
+			Calendar calendar = Calendar.getInstance();
+			
+			Date date;
+			try {
+				date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			calendar.setTime(date);
+			int diff = calendar.get(Calendar.DAY_OF_WEEK) - calendar.getFirstDayOfWeek();
+			
+			List<Date> listOfReservations;
+			String start, end;
+			
+			calendar.add(Calendar.DATE, -diff);
+			String temp = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+			
+			for(int i = 0; i < 12; i++) {
+				
+				calendar.add(Calendar.DATE, -7);
+				
+				start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+				Date monday = calendar.getTime();
+
+				calendar.add(Calendar.DATE, 6);
+			    end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+			    
+			    listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
+			    weeklyReport.put(monday.getTime(), listOfReservations.size());
+			    	 
+			    calendar.add(Calendar.DATE, -6);
+			}
+			
+			return weeklyReport;
+	
+		}
+		
+		return null;
+	}
+
+	public Map<Long, Integer> getYearlyReport(int numberOfYears) {
+		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(1L);
+		if(repoAirline.isPresent()) {
+			Airline airline = repoAirline.get();
+			
+			Map<Long, Integer> yearlyReport = new TreeMap<Long, Integer>();
+			Calendar calendar = Calendar.getInstance();
+			String start, end;
+			List<Date> listOfReservations;
+			
+			calendar.add(Calendar.YEAR, -numberOfYears);
+			
+			for(int i = 0; i < 12; i++) {
+				calendar.set(Calendar.MONTH, i);
+				start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+				
+				calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
+				end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+				
+				listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
+			    yearlyReport.put(calendar.getTime().getTime(), listOfReservations.size());
+				
+			    calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE));
+			}
+			
+			return yearlyReport;
+		}
+		
+		return null;
+	}
+
+
+
+	
 	
 }

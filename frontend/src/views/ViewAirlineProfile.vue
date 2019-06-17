@@ -23,7 +23,7 @@ export default {
         'business-locations': BusinessLocations,
         'flights': Flights,
         'price-list': PriceList,
-        "quick-flight-reservations": QuickFlightReservations
+        "quick-flight-reservations": QuickFlightReservations,
     },
     data() {
         return {

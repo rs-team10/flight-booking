@@ -27,6 +27,8 @@
             <p class="text-xs-center ma-1">{{ airline.description }}</p>
             <div class="text-xs-center">
                 <v-btn @click="redirectToEdit()" round small flat color="primary" dark>Edit Airline Profile</v-btn>
+                <v-divider></v-divider>
+                <v-btn @click="redirectToReports()" round small flat color="primary" dark>Reports overview</v-btn>
             </div>
         </v-layout>
 
@@ -84,6 +86,9 @@ export default {
     methods: {
         redirectToEdit() {
             this.$router.push('editAirlineProfile');
+        },
+        redirectToReports() {
+            this.$router.push('airlineReports');
         }
     },
     created() {
