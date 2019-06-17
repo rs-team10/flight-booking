@@ -274,18 +274,18 @@ export default {
                 if(this.quickReser){
                     
                     this.$axios
-                    .post('http://localhost:8080/api/confirmQuickVehicle/1', this.overview.reservationId)//1 je za main rezervaciju
+                    .post('http://localhost:8080/api/confirmQuickVehicle/1/'+this.overview.reservationId)//1 je za main rezervaciju
                     .then(response =>{
-                        alert(response.data);
-                        this.$router.go(0);
+                        this.$swal("Yoohoo!", response.data, 'success');
+                        //this.$router.go(0);
                     })
                     .catch(error => {
-                        alert(error.resposne)
+                        this.$swal("Error", "Something went wrong.", 'error');
                     });
 
                 }
                 else{
-
+                    
                     var vehicleReservationDTO1 = {
                         dateFrom : this.overview.from,
                         dateTo : this.overview.to,
@@ -295,11 +295,11 @@ export default {
                     this.$axios
                     .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO1)//1 je za main rezervaciju
                     .then(response =>{
-                        alert(response.data);
-                        this.$router.go(0);
+                        this.$swal("Yoohoo!", response.data, 'success');
+                        //this.$router.go(0);
                     })
                     .catch(error => {
-                        alert(error.resposne)
+                        this.$swal("Error", "You can't make reservation right now!", 'error');
                     });
                 }
             }
@@ -310,6 +310,10 @@ export default {
          
             this.$router.go(0);
            
+        },
+
+        confirmAsync: async function (){
+            
         }
         
 

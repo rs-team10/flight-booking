@@ -4,12 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Version;
 
 @Entity
 public class QuickVehicleReservation extends VehicleReservation {
 
 	@Column(name="discount")
 	private Double discount;
+	
+	
 
 	public QuickVehicleReservation() {
 		super();
