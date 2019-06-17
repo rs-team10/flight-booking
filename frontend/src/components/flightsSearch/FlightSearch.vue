@@ -756,7 +756,7 @@ export default {
                             this.searchResults = response.data;
                         } else {
                             this.page -= 1;
-                            this.$swal.fire({
+                            this.$swal({
                                 title: 'No results', 
                                 html: 'There are no more flight that satisfy the given search criteria.',
                                 type: 'info',

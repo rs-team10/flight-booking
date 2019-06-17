@@ -2,25 +2,35 @@ package com.tim10.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.RollbackException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
+import com.tim10.domain.QuickFlightReservation;
 import com.tim10.domain.Seat;
 import com.tim10.domain.SegmentClass;
 import com.tim10.dto.FlightDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatDTO;
 import com.tim10.dto.SeatsUpdateDTO;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.DestinationRepository;
 import com.tim10.repository.FlightRepository;
+import com.tim10.repository.SeatRepository;
 
 @Service
 public class FlightService {
@@ -33,6 +43,9 @@ public class FlightService {
 
 	@Autowired
 	FlightRepository flightRepository;
+	
+	@Autowired
+	SeatRepository seatRespository;
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -218,6 +231,41 @@ public class FlightService {
 		flightRepository.save(flight);
 		 
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public QuickFlightReservation createQuickFlightReservation(QuickFlightReservationDTO dto) {
+		
+		Optional<Seat> repoSeat = seatRespository.findById(dto.getSeatId());
+		if(repoSeat.isPresent()) {
+			
+			Seat seat = repoSeat.get();
+			if(!seat.getIsActive() || seat.getIsReserved())
+				throw new RollbackException("Seat is reserved.");
+			
+			if(!seat.getFlight().getDepartureDate().before(new Date()))
+				throw new RollbackException("Flight has already passed.");
+			
+			seat.setIsReserved(true);
+			QuickFlightReservation qfr = new QuickFlightReservation();
+
+			qfr.setDiscount(dto.getDiscount());
+			qfr.setSeat(seat);
+
+			Optional<Airline> repoAirline = airlineRepository.findById(seat.getFlight().getAirline().getId());
+			if(repoAirline.isPresent()) {
+				Airline airline = repoAirline.get();
+				airline.getQuickFlightReservations().add(qfr);
+				
+				airlineRepository.save(airline);
+				
+				return qfr;
+			} else {
+				throw new EntityNotFoundException("Airline not found");
+			}
+		} else {
+			throw new EntityNotFoundException("Seat not found.");
+		}
 	}
 
 }

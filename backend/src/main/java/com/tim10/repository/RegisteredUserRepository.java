@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tim10.domain.RegisteredUser;
+import com.tim10.domain.Reservation;
 import com.tim10.dto.RegisteredUserSearchDTO;
 
 public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, Long>{
@@ -21,7 +22,7 @@ public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, 
 			"AND lower(concat(u.first_name, ' ', u.last_name)) LIKE concat('%', lower(:parameter), '%') " +
 			"AND u.id != :currentUserId AND u.dType = 'RegisteredUser'", nativeQuery = true)
 	List<RegisteredUserSearchDTO> findByParameter(@Param("parameter") String parameter, @Param("currentUserId") Long currentUserId);
-	
+
 	
 	RegisteredUser findOneByUsername(String username);
 
