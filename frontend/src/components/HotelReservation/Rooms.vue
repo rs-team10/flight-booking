@@ -306,16 +306,6 @@ export default {
             this.reservation.additionalServices = this.selected
 
             this.confirmResDialog = true
-
-            this.$swal({
-                title: "Reservation successful",
-                text: 'Do you want to continue to vehicle reservation?',
-                type: 'success',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, continue',
-                cancelButtonText: "No, I don't"
-            })
-            //.then(() => this.$router.push('hotels'))
             
         },
         confirmReservation(){
@@ -323,8 +313,28 @@ export default {
             .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation)
             .then(response => {
                 this.confirmResDialog = false;
-                this.$swal("Reservation successful", "", "success")
-                    .then(() => this.$router.push('hotels'))
+
+                this.$swal({
+                title: "Reservation successful",
+                text: 'Do you want to continue to vehicle reservation?',
+                type: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: "No, I don't"
+                }).then(result => {
+                    if(result.value){
+                        //zeli da nastavi na car reservation (promeni ovo)
+                        this.$router.push('hotels')
+                    }
+                    else{
+                        //ocisti local storage
+                        localStorage.removeItem('groupResId')
+                        localStorage.removeItem('arrivalDate')
+                        localStorage.removeItem('guests')
+                        //idi na pocetnu stranicu
+                        this.$router.push('/')
+                    }
+                })
             }).catch(error => {
                 this.$swal("Please try again", "One or more rooms have been reserved in the meantime", "error")
             });
