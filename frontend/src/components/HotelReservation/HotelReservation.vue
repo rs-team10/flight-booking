@@ -203,10 +203,10 @@
                     </div>
                 </v-flex>
 
-                <div id="hotelList">
+                <div id="hotelList" >
                     <v-item-group>
                         <v-layout column>
-                            <v-list class="scroll-y pt-0" style="height: 700px">
+                            <v-list class="scroll-y pt-0" style="height: 700px" >
                             <v-flex
                                 v-for="hotel in this.hotels"
                                 :key="hotel.name"
@@ -220,11 +220,12 @@
                                             <v-card>
                                             <v-layout>
                                                 <v-flex xs4 md4>
-                                                <v-img
-                                                    :src="image"
+                                                <v-img v-once
+                                                    :src="mockPics[Math.floor(Math.random()*mockPics.length)]"
                                                     height="100%"
                                                     max-height="170px"
                                                     max-width="372px"
+                                                    
                                                 ></v-img>
                                                 </v-flex>
                                                 <v-flex xs5 md5>
@@ -296,6 +297,7 @@
                     :checkOutDate="checkOutDate"
                     :rooms="rooms"
                     :priceRange="priceRange"
+                    :canRender="canRender"
                     @continueReservation="finishReservation($event)"
                     @goBack="goBack($event)"
                 ></component>
@@ -329,6 +331,7 @@ export default {
     },
     data(){
         return{
+            canRender: false,
             dateDialog: false,
             showCard: false,
             component2 : 'rooms',
@@ -365,7 +368,23 @@ export default {
             priceListItems: [],
             priceRange: [0, 5000],
             //--------------------------------
-            rooms: []
+            rooms: [],
+            mockPics: [
+            'https://www.realestate.com.au/blog/images/2000x1500-fit,progressive/2018/01/08153753/Pic-1.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/01/MIRACLE-GENERAL-15_preview-1.jpeg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/96725900-1.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/47165351-1.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/RAAS-Devigarh-all-suites-resort-Udaipur-India-1.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/01/54365905.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/Low_VSEP_59917408_Sunset.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/01/Low_AKIH_61614149_Front_pool_view.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/Gili-Lankanfushi-Resort-Maldives-2.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/1-Baros-Resort-Maldives-5-Star-Luxury-Resort.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/01/52508017.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/6-Soneva-Jani-Resort-Maldives.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/01/68482593-1.jpg',
+            'https://beautiful-hotels.com/wp-content/uploads/2018/02/hpc_1141425020-1.jpg'
+          ]
         }
     },
     methods:{
@@ -394,7 +413,7 @@ export default {
             }})
             .then(response => {
                 if(response.data.length > 0){
-                    this.hotels = response.data;  
+                    this.hotels = response.data; 
                 }else{
                     this.page -= 1;
                     this.empty = true; 
@@ -414,8 +433,9 @@ export default {
             this.$axios
             .get('http://localhost:8080/api/hotels/getHotelRooms/' + this.selectedHotel.id + '/' + this.checkInDate + '/' + this.checkOutDate)
             .then(response => {
-                console.log(response.data)  
+                console.log(this.selectedHotel)
                 this.rooms = response.data
+                this.canRender = true
                 this.e6 = 2;
             })
         },

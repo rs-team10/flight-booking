@@ -8,24 +8,6 @@
             </v-toolbar-title>  
         </v-toolbar>
 
-        <!-- <div id="alerts">
-            <v-alert
-                :value="success"
-                type="success"
-                transition="scale-transition"
-            >
-            service: <b>{{ service.name }}</b> registered successfully.
-            </v-alert>
-
-            <v-alert
-                :value="error"
-                type="error"T
-                dismissible
-                >
-                {{this.error}}
-            </v-alert>
-        </div> -->
-
             <v-layout row justify-center>
                 <v-dialog v-model="adminDialog" persistent max-width="600px">
                     <div>
@@ -37,10 +19,6 @@
                             {{this.adminError}}
                         </v-alert>
                     </div>
-
-                    <!-- <template v-slot:activator="{ on }">
-                        <v-btn block color="indigo darken-2" dark v-on="on">Add administrator</v-btn>
-                    </template> -->
                     
                     <v-form ref="adminForm">
                     <v-card>
@@ -175,7 +153,7 @@
                                         delete
                                     </v-icon>    
                                 </v-list-tile>
-                                <v-divider></v-divider>
+                                <v-divider :key="admin.id"></v-divider>
                             </template>
                         </v-list>
                     </v-card>
@@ -300,7 +278,7 @@ export default {
                 // setTimeout(() => {
                 //     this.success = false;
                 // }, 3000)
-                this.$swal("Registration successfull", "Hotel " + response.data.name + " registered successfully", "success");
+                this.$swal("Registration successfull", "Airline " + response.data.name + " registered successfully", "success");
             }).catch(error => {
                 //this.error = error.response.data;
                 this.$swal(error.response.data, "", "error");
@@ -319,7 +297,7 @@ export default {
             this.$axios
             .post('http://localhost:8080/api/rentACars', this.service)
             .then(response => {
-                this.$swal("Registration successfull", "Hotel " + response.data.name + " registered successfully", "success");
+                this.$swal("Registration successfull", "Rent-a-car service " + response.data.name + " registered successfully", "success");
             }).catch(error => {
                 this.$swal(error.response.data, "", "error");
             });
@@ -363,7 +341,6 @@ export default {
                     lat: this.service.location.latitude,
                     lng: this.service.location.longitude
                 }
-                console.log(place)
             }
         },
         extractLocationData(place) {

@@ -1,11 +1,10 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-
-import com.tim10.dto.AdminDTO;
 
 @Entity
 public class HotelAdmin extends User {
@@ -15,7 +14,7 @@ public class HotelAdmin extends User {
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	//@JoinColumn(name = "hotel_id")
 	public Hotel hotel;
 

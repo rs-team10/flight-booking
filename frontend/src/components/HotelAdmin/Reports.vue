@@ -336,7 +336,7 @@ export default {
             this.$axios
                 .get('http://localhost:8080/api/hotels/getIncomeReport/', {
                     params: {
-                        hotelId : this.selectedHotel.id,
+                        adminUsername : localStorage.getItem("username"),
                         dateFrom : this.dateFrom,
                         dateTo: this.dateTo
                     }
@@ -351,7 +351,7 @@ export default {
             this.$axios
                 .get('http://localhost:8080/api/hotels/monthlyReport/', {
                     params: {
-                        hotelId : this.selectedHotel.id,
+                        adminUsername : localStorage.getItem("username"),
                         numberOfYears : new Date().getFullYear() - this.year
                     }
                 }).then(response => {
@@ -374,7 +374,7 @@ export default {
             this.$axios
                 .get('http://localhost:8080/api/hotels/weeklyReport/', {
                     params: {
-                        hotelId : this.selectedHotel.id,
+                        adminUsername : localStorage.getItem("username"),
                         dateFrom : this.weeklyDate
                     }
                 }).then(response => {
@@ -396,7 +396,7 @@ export default {
             this.$axios
                 .get('http://localhost:8080/api/hotels/dailyReport/', {
                     params: {
-                        hotelId : this.selectedHotel.id,
+                        adminUsername : localStorage.getItem("username"),
                         dateFrom : this.dailyDate
                     }
                 }).then(response => {
@@ -425,7 +425,7 @@ export default {
     },
     created(){
         this.$axios
-            .get('http://localhost:8080/api/hotels/getReport/' + this.selectedHotel.id)
+            .get('http://localhost:8080/api/hotels/getReport/' + localStorage.getItem('username'))
             .then(response => {
                 this.report = response.data;
                 this.dailyReport.labels = Array.from(Object.keys(this.report.dailyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5));

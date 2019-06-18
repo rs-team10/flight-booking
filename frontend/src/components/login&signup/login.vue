@@ -119,6 +119,7 @@ export default {
                     localStorage.setItem("role", response.data.role);
                     this.success=true;
                     this.$emit("logged");
+                    
                 }
             }).catch(error => {
                 this.error = "Wrong username or password!";

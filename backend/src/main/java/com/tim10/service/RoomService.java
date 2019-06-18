@@ -15,11 +15,13 @@ public class RoomService {
 	@Autowired 
 	private RoomRepository roomRepository;
 	
-	public List<Room> getRooms(Long id){
-		return roomRepository.findByRoomTypeId(id);
-	}
+//	public List<Room> getRooms(Long id){
+//		return roomRepository.findByRoomTypeId(id);
+//	}
 	
 	public Optional<Room> getRoom(Long id) {
 		return roomRepository.findById(id);
 	}
+	
+	
 }

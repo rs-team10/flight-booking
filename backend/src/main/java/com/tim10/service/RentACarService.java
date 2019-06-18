@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,10 @@ public class RentACarService {
 	
 	public List<RentACar> findAll(){
 		return rentACarRepository.findAll();
+	}
+	
+	public Page<RentACar> findAll(Pageable page){
+		return rentACarRepository.findAll(page);
 	}
 	
 	public Optional<RentACar> findById(Long id) {

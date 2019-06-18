@@ -2,6 +2,8 @@ package com.tim10.dto;
 
 import java.math.BigDecimal;
 
+import com.tim10.domain.Vehicle;
+
 public class VehicleDTO {
 		
 	private Long id;
@@ -44,7 +46,20 @@ public class VehicleDTO {
 		this.image = image;
 	}
 
-
+	public VehicleDTO(Vehicle v) {
+		id = v.getId();
+		manufacturer = v.getManufacturer();
+		model = v.getModel();
+		year = v.getYear();
+		fuel = v.getFuel();
+		engine = v.getEngine();
+		transmission = v.getTransmission();
+		seatsCount = v.getSeatsCount();
+		airCondition = v.getAirCondition();
+		dailyRentalPrice = v.getDailyRentalPrice();
+		averageFeedback = v.getAverageFeedback();
+		image = v.getImage();
+	}
 
 	public Long getId() {
 		return id;

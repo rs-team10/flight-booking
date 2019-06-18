@@ -8,60 +8,69 @@
                 </router-link>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-toolbar-items>
-                <v-btn flat router to="/userProfile">
-                    <v-icon left>account_circle</v-icon>
-                    <span>My profile</span>
-                </v-btn>
-                <v-btn flat router to="/airlineProfile">
-                    <v-icon left>flight</v-icon>
-                    <span>Airlines</span>
-                </v-btn>
-                <v-btn flat router to="/searchFlights">
-                    <v-icon left>search</v-icon>
-                    <span>Search Flights</span>
-                </v-btn>
-
-                <v-btn flat router to="/hotels" blur>
-                    <v-icon left>hotel</v-icon>
-                    <span>Hotels</span>
-                </v-btn>
-                    
-                <v-btn flat router to="/rentACars">
-                    <v-icon left>directions_car</v-icon>
-                    <span>Rent a cars</span>
-                </v-btn>
-                
-                <v-btn flat router to="/rentACar/1">
-                    <v-icon left>directions_boat</v-icon>
-                    <span>RentACar flow</span>
-                </v-btn>
-
-                <v-btn flat router v-bind:to = "route" @click = "log()">
-                    <v-icon left>rowing</v-icon>
-                    <span>{{this.title}}</span>
-                </v-btn>
-
-                <v-btn v-if="showSignUp" flat router to="/signup">
-                    <span>Sign up</span>
-                </v-btn>
             
+            <component 
+                :is="currentUser" 
+                @logIn="logIn()"
+                @logOut="logOut()"
+                @signUp="signUp()">
+            </component>
                 
-            </v-toolbar-items>
         </v-toolbar>
     </nav>
 </template>
 
 <script>
+import HotelAdminHeader from "@/components/Header/HotelAdminHeader.vue"
+import UnregisteredUserHeader from "@/components/Header/UnregisteredUserHeader.vue"
+import SysAdminHeader from "@/components/Header/SysAdminHeader.vue"
+import RegisteredUserHeader from "@/components/Header/RegisteredUserHeader.vue"
+
 export default {
+    components: {
+        "hotel-admin-header" : HotelAdminHeader,
+        "unregistered-user-header" : UnregisteredUserHeader,
+        "sys-admin-header" : SysAdminHeader,
+        "registered-user-header" : RegisteredUserHeader
+    },
+
     data(){ 
         return{
             title:'login',
-            route: '/login'
+            route: '/login',
+
         }
     },
-
+    computed: {
+        currentUser(){
+            if(localStorage.getItem("token") == null){
+                return 'unregistered-user-header'
+            }else{
+                if(localStorage.getItem("role") == "ROLE_HOTEL_ADMIN")
+                    return 'hotel-admin-header'
+                else if(localStorage.getItem("role") == "ROLE_SYSTEM_ADMIN")
+                    return 'sys-admin-header'
+                else if(localStorage.getItem('role') == "ROLE_REGISTERED_USER")
+                    return 'registered-user-header'
+            }
+        },
+    },
     methods: { 
+        logIn(){
+            this.$router.push("login");
+        },
+
+        logOut(){
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("role");
+            this.$router.push("login");
+            this.$router.go();
+        },
+        signUp(){
+            this.$router.push("signup")
+        },
+
 
         log: function(){
 
@@ -77,20 +86,52 @@ export default {
         }
 
 
-    },
-    computed: {
-        showSignUp(){
-            if(localStorage.getItem("token") === null)
-                return true
-            return false
-        }
-    },
-    mounted(){
-        this.log();
     }
+    // ,
+    // mounted(){
+    //     this.log();
+    // }
 
 
 }
+
+
+// <v-btn flat router to="/userProfile">
+//                     <v-icon left>account_circle</v-icon>
+//                     <span>My profile</span>
+//                 </v-btn>
+//                 <v-btn flat router to="/airlineProfile">
+//                     <v-icon left>flight</v-icon>
+//                     <span>Airlines</span>
+//                 </v-btn>
+//                 <v-btn flat router to="/searchFlights">
+//                     <v-icon left>search</v-icon>
+//                     <span>Search Flights</span>
+//                 </v-btn>
+
+//                 <v-btn flat router to="/hotels" blur>
+//                     <v-icon left>hotel</v-icon>
+//                     <span>Hotels</span>
+//                 </v-btn>
+                    
+//                 <v-btn flat router to="/rentACars">
+//                     <v-icon left>directions_car</v-icon>
+//                     <span>Rent a cars</span>
+//                 </v-btn>
+                
+//                 <v-btn flat router to="/rentACar/1">
+//                     <v-icon left>directions_boat</v-icon>
+//                     <span>RentACar flow</span>
+//                 </v-btn>
+
+//                 <v-btn flat router v-bind:to = "route" @click = "log()">
+//                     <v-icon left>rowing</v-icon>
+//                     <span>{{this.title}}</span>
+//                 </v-btn>
+
+//                 <v-btn v-if="showSignUp" flat router to="/signup">
+//                     <span>Sign up</span>
+//                 </v-btn>
 </script>
 
 <style scoped>
@@ -99,3 +140,5 @@ export default {
   text-decoration: none;
 }
 </style>
+
+

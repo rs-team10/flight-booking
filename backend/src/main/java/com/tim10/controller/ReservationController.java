@@ -1,5 +1,9 @@
 package com.tim10.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.domain.Room;
 import com.tim10.domain.RoomReservation;
+import com.tim10.domain.RoomType;
 import com.tim10.dto.FlightReservationDTO;
-import com.tim10.dto.RoomDTO;
 import com.tim10.dto.RoomReservationDTO;
+import com.tim10.dto.RoomTypesDTO;
 import com.tim10.service.ReservationService;
 import com.tim10.service.RoomReservationService;
 import com.tim10.service.RoomService;
@@ -72,16 +76,26 @@ public class ReservationController {
 	/*
 	 * Rezervisanje sobe/soba
 	 */
-	@RequestMapping(value = "/reserveRoom", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO) {
-
-		for (RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
-			Room room = roomService.getRoom(roomDTO.getId()).get();
-			RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
-					reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(),
-					room);
-			roomReservationService.save(roomReservation);
-		}
+//	@RequestMapping(value = "/reserveRoom", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO) {
+//
+//		for (RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
+//			Room room = roomService.getRoom(roomDTO.getId()).get();
+//			RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
+//					reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(),
+//					room);
+//			roomReservationService.save(roomReservation);
+//		}
+//		return new ResponseEntity<>(HttpStatus.OK);
+//	}
+	
+	@RequestMapping(value = "/reserveRoom/{dateFrom}/{dateTo}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO,
+											@PathVariable("dateFrom") String dateFrom,
+											@PathVariable("dateTo") String dateTo) throws ParseException {
+		roomReservationService.reserveRooms(reservationDTO, dateFrom, dateTo);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	
 }

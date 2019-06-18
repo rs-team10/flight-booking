@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-
-import Hotels from './views/Hotels.vue'
 
 import RentACars from './views/RentACars.vue'
 
@@ -21,9 +18,6 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
-import Reserve from './components/HotelReservation/Reserve.vue'
-import Dashboard from './components/SysAdmin/SysAdminDashboard.vue'
-import HotelAdminProfile from './components/HotelAdmin/HotelAdminProfile.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -38,7 +32,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('./components/UnregisteredUser/HomePage.vue')
     },
     {
       path: '/userProfile',
@@ -70,19 +64,12 @@ export default new Router({
       name: 'searchFlights',
       component: SearchFlights
     },
-    {
-      path: '/hotels',
-      name: 'hotels',
-      component: Hotels
-    },
+
     {
       path: '/rentACars',
       name: 'rentACars',
       component: RentACars
     },
-    //=====================================
-    //TEST
-    
     {
       props: true,
       path: '/rentACar/:rentACarId',
@@ -116,48 +103,79 @@ export default new Router({
       name: 'vehicleReservation',
       component: VehicleReservation
     },
-    //=====================================
-    //=====================================
-    //PRIVREMENE RUTE, NECE BITI KASNIJE - OVOME SAMO ADMIN SME DA PRISTUPA, I PRISTUPACE U VIDU KOMPONENTE
-    /*
-    {
-      path: '/addVehicle',
-      name: 'addVehicle',
-      component: AddVehicle
-    },
-    {
-      path: '/editVehicle',
-      name: 'editVehicle',
-      component: EditVehicle
-    },
- 
-    {
-      path: '/viewVehiclesA',
-      name: 'viewVehiclesA',
-      component: ViewVehiclesA
-    },
-     {
-      path: '/viewBranchOfficesA',
-      name: 'viewBranchOfficesA',
-      component: ViewBranchOfficesA
-    },
-    */
-  //=====================================
+
+    //===============REGISTERED USER====================
     {
       path: '/hotelReservation',
       name: 'hotelReservation',
-      component: Reserve
+      component: () => import('./components/HotelReservation/Reserve.vue'),
+      meta: {
+        //TODO
+      }
     },
     {
-      path: '/temp',
-      name: 'dashboard',
-      component: Dashboard
+      path: '/hotels',
+      name: 'hotels',
+      component: () => import('./components/ViewHotels.vue'),
+      meta: {
+        //TODO 
+        //ne zahteva atentifikaciju? svi mogu da vide?
+      },
     },
+    {
+      path: '/airlines',
+      name: 'airlines',
+      component: () => import('./components/UnregisteredUser/Airlines.vue')
+      //svi mogu da vide??
+    },
+    {
+      path: '/rcs',
+      name: 'rcs',
+      component: () => import('./components/UnregisteredUser/RentACarCompanies.vue')
+    },
+    //==================================================
+
+    //===============HOTEL ADMIN========================
     {
       path: '/hotelAdminProfile',
       name: 'hotelAdminProfile',
-      component: HotelAdminProfile
-    }
-    //=====================================
+      component: () => import('./components/HotelAdmin/HotelAdminProfile.vue'),
+      meta: {
+        requiresAuth : true,
+        is_hotel_admin : true
+      }
+    },
+    {
+      path: '/editHotel',
+      name: 'editHotel',
+      component: () => import('./components/HotelAdmin/HotelEditing.vue'),
+      meta: {
+        is_hotel_admin: true
+      }
+    },
+    {
+      path: '/hotelReport',
+      name: 'hotelReport',
+      component: () => import('./components/HotelAdmin/Reports.vue'),
+      meta: {
+        is_hotel_admin: true
+      }
+    },
+    //==================================================
+
+    //===============SYS ADMIN==========================
+    {
+      path : '/sysAdmin',
+      name: 'sysAdminDashboard',
+      component: () => import('./components/SysAdmin/SysAdminDashboard.vue'),
+      meta: {
+        requiresAuth : true,
+        is_sys_admin : true
+      }
+    },
+    //==================================================
+    
+    //==================================================
+
   ]
 })
