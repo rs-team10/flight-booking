@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.RentACarAdmin;
 import com.tim10.domain.User;
 import com.tim10.dto.AdminDTO;
 import com.tim10.service.UserService;
@@ -102,6 +103,33 @@ public class UserController {
 		HotelAdmin updatedAdmin = null;
 		try {
 			updatedAdmin = userService.updateHotelAdmin(hotelAdmin);
+			return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
+	}
+	
+	
+	//=================================================================================
+	
+	
+	//ZA RentACar ADMINA
+	//=================================================================================
+	@RequestMapping(value="/api/users/currentRentACarAdmin", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AdminDTO> getCurrentRentACarAdmin(){
+		RentACarAdmin currentRentACar = (RentACarAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentRentACar != null) {
+			AdminDTO adminDTO = new AdminDTO(currentRentACar);
+			return new ResponseEntity<AdminDTO>(adminDTO, HttpStatus.OK);
+		}
+		return new ResponseEntity<AdminDTO>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(value="/api/users/rentACarAdmin", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateRentACarAdmin(@RequestBody RentACarAdmin rentACarAdmin){
+		RentACarAdmin updatedAdmin = null;
+		try {
+			updatedAdmin = userService.updateRentACarAdmin(rentACarAdmin);
 			return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
 		}catch(Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);

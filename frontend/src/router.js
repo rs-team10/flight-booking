@@ -18,6 +18,7 @@ import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
 
 import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
+import RentACarAdminProfile from './components/rentACarComp/RentACarAdminProfile.vue'
 /*
 import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
 import AddVehicle from './components/rentACarComp/AddVehicle.vue'
@@ -134,6 +135,18 @@ export default new Router({
       component: () => import('./components/UnregisteredUser/RentACarCompanies.vue')
     },
     //==================================================
+
+    //===============RENTACAR ADMIN========================
+    {
+      path: '/rentACarAdminProfile',
+      name: 'rentACarAdminProfile',
+      component: () => import('./components/rentACarComp/RentACarAdminProfile.vue'),
+      meta: {
+        requiresAuth : true,
+        is_rentacar_admin : true
+      }
+    },
+     //==================================================
 
     //===============HOTEL ADMIN========================
     {

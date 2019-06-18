@@ -192,6 +192,8 @@
 
 
 <script>
+
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
 
 
@@ -246,7 +248,7 @@ export default {
                 };
                 if(this.overview.edit){
                     this.$axios //mora drugi rest da se gadja 
-                    .post('http://localhost:8080/api/vehicleReservation/', vehicleReservationDTO)
+                    .post('http://localhost:8080/api/vehicleReservation/', vehicleReservationDTO, yourConfig)
                     .then(response =>{
                         alert(response.data);
                         this.$router.go(0);
@@ -258,13 +260,13 @@ export default {
                     //imas atribut toatalPrice da stavis additionalDiscount
                     //i dodaj vraper oko boxova za datume i tu gurni neki textbox...
                     this.$axios //mora drugi rest da se gadja 
-                    .post('http://localhost:8080/api/quickVehicleReservation/', vehicleReservationDTO) //create
+                    .post('http://localhost:8080/api/quickVehicleReservation/', vehicleReservationDTO, yourConfig) //create
                     .then(response =>{
-                        alert(response.data);
+                        this.$swal("Yoohoo!", response.data, 'success');
                         this.$router.go(0);
                     })
                     .catch(error => {
-                        alert(error.resposne.data)
+                        this.$swal("Error", error.resposne.data, 'error');
                     });
                 }
             }else{
@@ -274,10 +276,9 @@ export default {
                 if(this.quickReser){
                     
                     this.$axios
-                    .post('http://localhost:8080/api/confirmQuickVehicle/1/'+this.overview.reservationId)//1 je za main rezervaciju
+                    .post('http://localhost:8080/api/confirmQuickVehicle/1/'+this.overview.reservationId, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
-                        //this.$router.go(0);
                     })
                     .catch(error => {
                         this.$swal("Error", "Something went wrong.", 'error');
@@ -293,7 +294,7 @@ export default {
                         vehicleId : this.overview.vehicleId
                     };
                     this.$axios
-                    .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO1)//1 je za main rezervaciju
+                    .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO1, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
                         //this.$router.go(0);

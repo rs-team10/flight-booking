@@ -3,13 +3,6 @@
         <h2>Add branch office</h2>
         <form>
 
-            <!--
-            <v-text-field
-                v-model="formattedAddress"
-                label="Current headquarters address"
-                disabled
-            ></v-text-field>
-            -->
             <GmapAutocomplete
                 class="custom-input-field"
                 @place_changed="getLocationData">
@@ -69,17 +62,7 @@ export default {
             location: { required }
         }
     },
-    /*
-    computed: {
- 
-        locationErrors () {
-            const errors = []
-            if (!this.$v.branchOffice.location.$dirty) return errors
-            !this.$v.branchOffice.location.required && errors.push('Location is required.')
-            return errors
-        }
-    },
-    */
+
     methods: {
         addBranchOffice: function() {
             /*
@@ -95,22 +78,11 @@ export default {
                 this.$axios.post('http://localhost:8080/api/branchOffice/'+this.rentACarId, this.branchOffice) //, yourConfig
                 .then(response => {
                     
-                    this.$swal.fire({
-                        title: 'Success', 
-                        html: response.data,
-                        type: 'success',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }
-                )
-                .then((result) => {
-                    if (result.dismiss === this.$swal.DismissReason.timer) {
-                        this.$router.go(0);
-                    }
-                });
-                
-                }).catch((error) => {
-                    this.$swal("Error", error.response.data.message, 'error');
+                    this.$swal("Yoohoo!",response.data, 'success');
+                    this.$router.go(0);
+                })
+                .catch((error) => {
+                    this.$swal("Error", error.response.data, 'error');
                 });
             //}
         },
@@ -144,11 +116,6 @@ export default {
             return locationToReturn;
         }
     }
-/* ,
-    created() {
-        #TODO posalji lokaciju iz rentacara u headq        
-    }
-*/
 }
 </script>
 

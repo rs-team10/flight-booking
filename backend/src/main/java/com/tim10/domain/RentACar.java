@@ -19,7 +19,7 @@ public class RentACar extends Company {
 	@OneToMany(mappedBy="mainOffice", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<BranchOffice> branchOffices;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY) //mappedBy="admin"
 	private Set<RentACarAdmin> administrators;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -41,7 +41,15 @@ public class RentACar extends Company {
 		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
 		this.setName(dto.getName());
 		this.setLocation(dto.getLocation());
-		administrators = dto.getAdministrators();
+		Set<RentACarAdmin> tempAdm = dto.getAdministrators();
+		HashSet<RentACarAdmin> admins = new HashSet<RentACarAdmin>();
+		for(RentACarAdmin rca : tempAdm) {
+			Set<Authority> autoriteti = new HashSet<Authority>();
+			autoriteti.add(new Authority(Role.ROLE_RENT_A_CAR_ADMIN));
+			rca.setAuthorities(autoriteti);
+			admins.add(rca);
+		}
+		this.setAdministrators(admins);
 	}
 
 	public Set<BranchOffice> getBranchOffices() {

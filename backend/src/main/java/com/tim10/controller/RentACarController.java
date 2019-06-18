@@ -2,11 +2,10 @@ package com.tim10.controller;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.websocket.server.PathParam;
@@ -29,7 +28,6 @@ import com.tim10.dto.RcsDTO;
 import com.tim10.dto.RentACarDTO;
 import com.tim10.dto.RentACarReportDTO;
 import com.tim10.service.RentACarService;
-import com.tim10.service.UserService;
 
 @RestController
 public class RentACarController {
@@ -38,11 +36,27 @@ public class RentACarController {
 	private RentACarService rentACarService;
 	
 	//UZMI RENT A CAR SERVICE od LOGOVANOG RENT A CAR ADMINA
+	@RequestMapping(
+			value = "api/getRentACarFromAdmin",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getRentACarFromAdmin() {
+		
+		Long id;
+		
+		try {
+			id = rentACarService.getRentACarFromAdmin();
+		}catch(ClassCastException e) {
+			 e.printStackTrace();
+			 return new ResponseEntity<String>("Current user isn't RentACarAdmin!", HttpStatus.FORBIDDEN);
+		}catch(Exception e) {
+			 e.printStackTrace();
+			 return new ResponseEntity<String>("You are unauthorized to do this!", HttpStatus.FORBIDDEN);
+		}
+		
+		return new ResponseEntity<Long>(id, HttpStatus.OK);
+	}
 	
-	
-	
-	@Autowired
-	private UserService userService;
 	
 	@RequestMapping(
 			value = "api/rentACars",

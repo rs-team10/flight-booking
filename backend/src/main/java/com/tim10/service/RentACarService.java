@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import javax.naming.NoPermissionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -204,6 +207,29 @@ public class RentACarService {
 	}
 		
 	//-----------------------------
+	
+	
+	public Long getRentACarFromAdmin() throws ClassCastException, Exception {
+		
+		RentACarAdmin currentRentACarAdmin;
+		try {
+			currentRentACarAdmin = (RentACarAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		} catch (ClassCastException e) {
+			
+			throw new ClassCastException("Current user isn't RentACarAdmin");
+		}
+		
+		
+		
+		if(currentRentACarAdmin == null ) {
+			throw new NoPermissionException("You are unauthorized to do this.");
+		}
+		Long rentACarId = userRepository.getRentACarIdFromUser(currentRentACarAdmin.getId());
+		
+		return rentACarId;
+		
+		
+	}
 	
 
 }

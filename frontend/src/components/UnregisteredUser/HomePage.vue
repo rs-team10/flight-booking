@@ -54,7 +54,7 @@
                                 >
                             </v-img>
                             </v-flex>
-                            <v-btn router to="/rcs" flat block color="red lighten-2">view all</v-btn>
+                            <v-btn router to="/rentACars" flat block color="red lighten-2">view all</v-btn>
                         </v-card-text>
                         </v-layout>
 

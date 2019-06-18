@@ -160,6 +160,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, numeric } from 'vuelidate/lib/validators'
 
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     
     props: ['selectedVehicle'],
@@ -261,7 +262,7 @@ export default {
         },
         editVehicle: function(){
             this.$axios
-            .post('http://localhost:8080/api/vehicles', this.selectedVehicle)
+            .post('http://localhost:8080/api/vehicles', this.selectedVehicle, yourConfig)
             .then(response => {
                 alert(response.data);
             }).catch(function(error) {

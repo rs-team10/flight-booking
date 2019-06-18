@@ -7,9 +7,7 @@
           <v-card-text>
                  <component 
                   v-bind:is="component1"
-
                   :rentACarId="rentACarId"
-
                   :branchOfficeInc = "selectedBranchOffice"
                   :currentMapCenter = "currentMapCenter"
                  > 
@@ -26,6 +24,7 @@
         <div >
           {{ branch.city }}, {{ branch.country }}
           <v-menu
+            v-if = 'adminsPage'
             open-on-hover
             offset-y
             :close-on-content-click="false"
@@ -62,6 +61,7 @@
       <v-card>
         <component 
           v-bind:is="component"
+          :rentACarId="rentACarId"
           :branchOfficeId="branch.id"
           > 
         </component>
@@ -69,7 +69,7 @@
     </v-expansion-panel-content>
     
 
-    <v-layout column  align-center>
+    <v-layout column  align-center v-if = 'adminsPage'>
        <v-btn fab small dark color="primary" @click="addItem"><v-icon dark>add</v-icon></v-btn>
     </v-layout>
 
@@ -87,6 +87,7 @@ import ViewVehicles from "@/components/rentACarComp/ViewVehicles.vue"
 import AddBranchOffice from "@/components/rentACarComp/AddBranchOffice.vue"
 import EditBranchOffice from "@/components/rentACarComp/EditBranchOffice.vue"
 
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
   props: ['rentACarId'],
   components: {
@@ -112,7 +113,7 @@ export default {
   methods:{
       fetchBranches: function(){
           this.$axios
-          .get('http://localhost:8080/api/branchOffices/'+this.rentACarId)
+          .get('http://localhost:8080/api/branchOffices/'+this.rentACarId, yourConfig)
           .then(response => 
             this.branches = response.data)
       },
@@ -159,6 +160,11 @@ export default {
   },
   mounted(){
       this.fetchBranches();
-  }
+  },
+    computed: {
+        adminsPage(){
+            return localStorage.getItem("rentACarId") == this.rentACarId
+        }
+    }
 }
 </script>
