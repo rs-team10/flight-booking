@@ -101,14 +101,6 @@ public class HotelService {
 		
 	}
 	
-	//ovde treba transakcija (readonly mozda)
-//	public HotelRoomsDTO getHotelRooms(Long id) throws Exception {
-//		Optional<Hotel> hotel = findOne(id);
-//		if(hotel.isPresent())
-//			return new HotelRoomsDTO(hotel.get());
-//		throw new Exception("Hotel doesn't exist");
-//	}
-	
 	public List<HotelDTO> searchHotels(Pageable page, String hotelName, String hotelLocation) {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
 		for(Hotel h : findByParameter(page, hotelName, hotelLocation)) {
@@ -133,9 +125,7 @@ public class HotelService {
 		return responseRooms;
 		
 	}
-	
 
-	
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId) {
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
 		Set<QuickRoomReservation> quickRoomReservations = findOne(hotelId).get().getQuickRoomReservations();

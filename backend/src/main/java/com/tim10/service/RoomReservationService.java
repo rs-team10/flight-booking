@@ -39,7 +39,7 @@ public class RoomReservationService {
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public Long reserveRooms(RoomReservationDTO reservationDTO, Long groupResId) {
+	public Long reserveRooms(RoomReservationDTO reservationDTO, Long groupResId){
 		
 		GroupReservation groupReservation = groupReservationRepository.getOne(groupResId);
 		Set<Reservation> reservations = groupReservation.getReservations();
@@ -47,11 +47,22 @@ public class RoomReservationService {
 			for(RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
 				
 				Optional<Room> optionalRoom = roomRepository.findOneById(roomDTO.getId());
+//				try {
+//					Thread.sleep(5000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
+				
 				if(!optionalRoom.isPresent())
 					throw new EntityNotFoundException("Room not found");
 				Room room = optionalRoom.get();
-				if(room.isReserved(reservationDTO.getDateFrom(), reservationDTO.getDateTo()))
+				if(room.isReserved(reservationDTO.getDateFrom(), reservationDTO.getDateTo())) {
+					System.out.println("USAO OVDE GDE TREBA");
 					throw new PersistenceException("vec rezervisano u tom periodu");
+				}
+					
 				
 				for(int i = 0; i < room.getRoomType().getCapacity(); i++) {
 					RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
@@ -60,15 +71,16 @@ public class RoomReservationService {
 					
 					room.getRoomReservations().add(roomReservation);
 					
-					for(Reservation reservation : reservations) {
+					for(Reservation reservation : groupReservation.getReservations()) {
 						if(reservation.getRoomReservation() == null) {
 							reservation.setRoomReservation(roomReservation);
-							groupReservation.add(reservation);
+							//groupReservation.add(reservation);
 							break;
 						}
 					}
 				}
 			}
+			
 			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
 			return savedGroupReservation.getId();
 	}

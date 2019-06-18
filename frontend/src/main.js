@@ -47,7 +47,20 @@ router.beforeEach((to, from, next) => {
       //korisnik je ulogovan
       //zeli da pristupi stranici za registrovanog korisnika
       if(to.matched.some(record => record.meta.is_registered_user)){
-        next()
+        //proveriti da li je registrovani korisnik
+
+
+          //zeli da rezervise hotel ili auto
+          if(to.matched.some(record => record.meta.is_reservation_active)){
+            //mora se proveriti da li je rezervacija aktivna (da li je rezervisao let pre toga)
+            if(localStorage.getItem('groupResId') != null)
+              next()
+            else
+              next(false)     //mozda da se preusmeri na flight res???
+          }else{
+            next()
+          }
+        
       }
       //zeli da pristupi stranici za airline admina
       else if(to.matched.some(record => record.meta.is_airline_admin)){

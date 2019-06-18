@@ -18,7 +18,7 @@
                                 <v-flex>
                                     <v-card color="grey lighten-4">
                                     <v-layout>
-                                        <v-flex xs3 md3>
+                                        <v-flex xs3 sm3 md3>
                                         <v-img
                                             :src="image"
                                             height="100%"
@@ -27,7 +27,7 @@
                                             class="elevation-4"
                                         ></v-img>
                                         </v-flex>
-                                        <v-flex xs5 md5 >
+                                        <v-flex xs5 sm5 md5>
                                             <v-card-text class="indigo--text font-weight-light subheading">
                                                 <v-flex id="description">
                                                     {{ room.description }} <!--650 karaktera opis da ima max -->
@@ -107,7 +107,7 @@
             </v-item-group>
         </v-flex>
 
-        <v-flex xs4 sm4 md4>
+        <v-flex xs4 sm4 md4 class="ml-3">
             <v-card flat>
                 <v-toolbar tile color="indigo lighten-3" flat >
                     <v-toolbar-title class="text-uppercase white--text font-weight-light">Additional services</v-toolbar-title>
@@ -295,7 +295,7 @@ export default {
                 this.$swal("We're sorry", "You want to reserve more beds than you need to. Please try again", "warning")
                 return;
             }else if(numberOfBeds < this.guests){
-                this.$swal("We're sorry", "You'l need more beds'. Please try again", "warning")
+                this.$swal("We're sorry", "You're gonna need more beds'. Please try again", "warning")
                 return;
             }
 
@@ -306,15 +306,27 @@ export default {
             this.reservation.additionalServices = this.selected
 
             this.confirmResDialog = true
+
+            this.$swal({
+                title: "Reservation successful",
+                text: 'Do you want to continue to vehicle reservation?',
+                type: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: "No, I don't"
+            })
+            //.then(() => this.$router.push('hotels'))
             
         },
         confirmReservation(){
             this.$axios
             .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation)
             .then(response => {
-                this.$swal("Reservation successful", "", "success");
+                this.confirmResDialog = false;
+                this.$swal("Reservation successful", "", "success")
+                    .then(() => this.$router.push('hotels'))
             }).catch(error => {
-                this.$swal(error.response.message, "Please pick another room", "error")
+                this.$swal("Please try again", "One or more rooms have been reserved in the meantime", "error")
             });
         },
         
