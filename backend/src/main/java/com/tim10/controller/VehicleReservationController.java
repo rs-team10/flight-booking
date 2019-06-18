@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
 
+import javax.persistence.OptimisticLockException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -168,7 +171,14 @@ public class VehicleReservationController {
 			
 		}catch(ResourceNotFoundException e){
 			
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (IOException e) {
+			return new ResponseEntity<String>("Vozilo je tada zauzeto", HttpStatus.BAD_REQUEST);
+		} catch (InterruptedException e) {
+			return new ResponseEntity<String>("pa ti vidi", HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>("Nesto sasvim trece", HttpStatus.BAD_REQUEST);
 		}
 		
 		
@@ -204,11 +214,11 @@ public class VehicleReservationController {
 	
 	@RequestMapping(
 			value = "api/confirmQuickVehicle/{mainResId}/{vehicleResId}",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
+			method = RequestMethod.POST)
 	public ResponseEntity<?> confirQuickVehicleRes( 
 			@PathVariable("mainResId") Long mainResId,
 			@PathVariable("vehicleResId") Long vehicleResId) {
+		
 		
 		try {
 			
@@ -217,10 +227,18 @@ public class VehicleReservationController {
 		}catch(ResourceNotFoundException e){
 			
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(ObjectOptimisticLockingFailureException e) {
+			return new ResponseEntity<>("Already reserved", HttpStatus.NOT_FOUND);
 		}
 		//add u main reservation
 		
-		return new ResponseEntity<>("Successfully saved!", HttpStatus.OK);
+		//dell
+		catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		
+		return new ResponseEntity<String>("Successfully saved!", HttpStatus.OK);
 	}
 	
 	

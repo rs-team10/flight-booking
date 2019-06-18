@@ -50,6 +50,8 @@
 
 import  required from 'vuelidate/lib/validators'
 
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
+
 export default {
     props:['branchOfficeInc'
             ],
@@ -87,38 +89,16 @@ export default {
         },
 
         addBranchOffice: function() {
-            /*
-            this.$v.$touch()
-            if(!this.$v.$invalid) {
-                
-                var yourConfig = {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token")
-                    }
-                };
-                */
                 this.branchOffice.id = this.branchOfficeInc.id;
-                this.$axios.put('http://localhost:8080/api/branchOffice/', this.branchOffice) //, yourConfig
+                this.$axios.put('http://localhost:8080/api/branchOffice/', this.branchOffice, yourConfig)
                 .then(response => {
                     
-                    this.$swal.fire({
-                        title: 'Success', 
-                        html: response.data,
-                        type: 'success',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }
-                )
-                .then((result) => {
-                    if (result.dismiss === this.$swal.DismissReason.timer) {
-                        this.$router.go(-1);
-                    }
+                    this.$swal("Yoohoo!",response.data, 'success');
+                    this.$router.go(0);
+                })
+                .catch((error) => {
+                    this.$swal("Error", error.response.data, 'error');
                 });
-                
-                }).catch((error) => {
-                    this.$swal("Error", error.response.data.message, 'error');
-                });
-            //}
         },
 
 

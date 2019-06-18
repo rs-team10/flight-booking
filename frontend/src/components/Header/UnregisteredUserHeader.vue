@@ -11,7 +11,7 @@
             <span>Hotels</span>
         </v-btn>
 
-        <v-btn flat>
+        <v-btn flat router to="/rentACars" blur>
             <v-icon left>directions_car</v-icon>
             <span>Rent-a-car</span>
         </v-btn>

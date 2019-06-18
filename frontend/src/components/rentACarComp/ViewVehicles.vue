@@ -25,9 +25,9 @@
       ></v-divider>
       <v-spacer></v-spacer>
 
-      <v-dialog v-model="dialog" max-width="500px">
+      <v-dialog v-model="dialog" max-width="500px" v-if = 'adminsPage' >
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-3" @click="addItem">Add vehicle</v-btn>
+          <v-btn color="primary" dark class="mb-3" @click="addItem" >Add vehicle</v-btn>
         </template>
         <v-card>
           <v-card-text>
@@ -55,7 +55,7 @@
                   
                </v-flex>
                <v-data-table  
-               :headers="headers"
+               :headers="headersRmk"
                :items="vehicles"
                :search="search"
                class="elevation-1"
@@ -71,7 +71,7 @@
                      <td class="text-xs-left">{{ props.item.seatsCount }}</td>
                      <td class="text-xs-left">{{ props.item.airCondition }}</td>
                      <td class="text-xs-left">{{ props.item.dailyRentalPrice }}</td>
-                     <td class="justify-center layout px-0">
+                     <td class="justify-center layout px-0" v-if = 'adminsPage'>
                         <v-icon
                            small
                            class="mr-2"
@@ -110,9 +110,9 @@ import AddVehicle from "@/components/rentACarComp/AddVehicle.vue"
 import EditVehicle from "@/components/rentACarComp/EditVehicle.vue"
 
 
-
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
-   props: ['branchOfficeId'],
+   props: ['branchOfficeId', 'rentACarId'],
 
    components: {
       "addVehicle" : AddVehicle,
@@ -124,7 +124,119 @@ export default {
   
           selectedVehicle  : {},
           search           :  '',
-          headers : [
+          headers : '',
+
+
+            component: "addVehicle",
+            dialog: false,
+
+         vehicles: []
+/*
+
+          vehicles: [
+              {
+                id                  : 1,
+                manufacturer        : 'BMW',
+                model               : '520',
+                year                : '2018',
+                fuel                : 'Gasoline',
+                engine              : 5.0,
+                transmission        : 'True',
+                seatsCount          : 5,
+                airCondition        : 'True',
+                dailyRentalPrice    : 10000
+                },
+          {
+                id                  : 2,
+                manufacturer        : 'Mercedes',
+                model               : '520',
+                year                : '2018',
+                fuel                : 'Gasoline',
+                engine              : 5.0,
+                transmission        : 'True',
+                seatsCount          : 5,
+                airCondition        : 'True',
+                dailyRentalPrice    : 100000
+          }]
+*/
+      }
+
+  },
+  methods:{
+      fetchVehicles: function(){
+         
+          this.$axios
+          .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId, yourConfig)
+          .then(response => this.vehicles = response.data)
+          .catch(error => {
+                alert(error.resposne.data)
+                this.search = 'error';
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
+      },
+ 
+      showAlert: function(){
+         alert(this.selectedVehicle.manufacturer) 
+      },
+   
+
+
+   //kacin nacin
+      vehicleSelected: function(vehicle){
+          this.$emit('selectedVehicle', vehicle);
+      },
+      changeComp: function(vehicle){
+            this.selectedVehicle = vehicle;
+            this.component = 'editVehicle';
+      },
+   
+      
+      
+      addItem(){
+         this.component = 'addVehicle';
+         this.dialog = true;
+      },
+
+      editItem (item) {
+         this.selectedVehicle = item;
+         this.component = 'editVehicle';
+         this.dialog = true;  
+      },
+      deleteItem (item) {
+         if(confirm('Are you sure you want to delete this vehicle?')){
+            this.$axios
+               .delete('http://localhost:8080/api/vehicle/'+item.id, yourConfig)
+               .then(response => {
+                     this.vehicles = this.vehicles.filter(i=>i !== item);
+                     alert(response.data);
+               })
+
+           //poziv na backend
+         }
+      }
+
+   },
+   watch: {
+      dialog() {
+         this.dalogKind = "";
+      }
+   },
+   created(){
+
+      this.fetchVehicles();
+   },
+   computed:{
+     
+
+      adminsPage(){
+         return localStorage.getItem("rentACarId") == this.rentACarId
+      },
+
+      headersRmk(){
+         if(this.adminsPage)
+            return [
                      {
                         text: 'Manufacturer',
                         align: 'left',
@@ -184,108 +296,66 @@ export default {
                         value: 'id', 
                         sortable: false
                      }
-                  ],
+                  ]
+         else
+            return [
+                     {
+                        text: 'Manufacturer',
+                        align: 'left',
+                        sortable: true,
+                        value: 'manufacturer'
+                     },
+                     {
+                        text: 'Model',
+                        align: 'left',
+                        sortable: true,
+                        value: 'model'
+                     },
+                     {
+                        text: 'Year',
+                        align: 'left',
+                        sortable: true,
+                        value: 'year'
+                     },
+                     {
+                        text: 'Fuel',
+                        align: 'left',
+                        sortable: true,
+                        value: 'fuel'
+                     },
+                     {
+                        text: 'Engine',
+                        align: 'left',
+                        sortable: true,
+                        value: 'engine'
+                     },
+                     {
+                        text: 'Transmission',
+                        align: 'left',
+                        sortable: true,
+                        value: 'transmission'
+                     },
+                     {
+                        text: 'Seats count',
+                        align: 'left',
+                        sortable: true,
+                        value: 'seatsCount'
+                     },
+                     {
+                        text: 'Air condition',
+                        align: 'left',
+                        sortable: true,
+                        value: 'airCondition'
+                     },
+                     {
+                        text: 'Daily rental price',
+                        align: 'left',
+                        sortable: true,
+                        value: 'dailyRentalPrice'
+                     },
+                  ]
 
-
-            component: "addVehicle",
-            dialog: false,
-
-         vehicles: []
-/*
-
-          vehicles: [
-              {
-                id                  : 1,
-                manufacturer        : 'BMW',
-                model               : '520',
-                year                : '2018',
-                fuel                : 'Gasoline',
-                engine              : 5.0,
-                transmission        : 'True',
-                seatsCount          : 5,
-                airCondition        : 'True',
-                dailyRentalPrice    : 10000
-                },
-          {
-                id                  : 2,
-                manufacturer        : 'Mercedes',
-                model               : '520',
-                year                : '2018',
-                fuel                : 'Gasoline',
-                engine              : 5.0,
-                transmission        : 'True',
-                seatsCount          : 5,
-                airCondition        : 'True',
-                dailyRentalPrice    : 100000
-          }]
-*/
       }
-
-  },
-  methods:{
-      fetchVehicles: function(){
-         
-          this.$axios
-          .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId)
-          .then(response => this.vehicles = response.data)
-          .catch(error => {
-                alert(error.resposne.data)
-                this.search = 'error';
-                this.$slots ='no-results';
-               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
-               //treba na backendu napraviti da proverava velicinu itema
-            });
-      },
- 
-      showAlert: function(){
-         alert(this.selectedVehicle.manufacturer) 
-      },
-   
-
-
-   //kacin nacin
-      vehicleSelected: function(vehicle){
-          this.$emit('selectedVehicle', vehicle);
-      },
-      changeComp: function(vehicle){
-            this.selectedVehicle = vehicle;
-            this.component = 'editVehicle';
-      },
-   
-      
-      
-      addItem(){
-         this.component = 'addVehicle';
-         this.dialog = true;
-      },
-
-      editItem (item) {
-         this.selectedVehicle = item;
-         this.component = 'editVehicle';
-         this.dialog = true;  
-      },
-      deleteItem (item) {
-         if(confirm('Are you sure you want to delete this vehicle?')){
-            this.$axios
-               .delete('http://localhost:8080/api/vehicle/'+item.id)
-               .then(response => {
-                     this.vehicles = this.vehicles.filter(i=>i !== item);
-                     alert(response.data);
-               })
-
-           //poziv na backend
-         }
-      }
-
-   },
-   watch: {
-      dialog() {
-         this.dalogKind = "";
-      }
-   },
-   created(){
-
-      this.fetchVehicles();
    }
 }
 

@@ -10,10 +10,11 @@
             <v-spacer></v-spacer>
             
             <component 
-                :is="currentUser" 
+                :is="currentHeader" 
                 @logIn="logIn()"
                 @logOut="logOut()"
-                @signUp="signUp()">
+                @signUp="signUp()"
+            >
             </component>
                 
         </v-toolbar>
@@ -25,66 +26,58 @@ import HotelAdminHeader from "@/components/Header/HotelAdminHeader.vue"
 import UnregisteredUserHeader from "@/components/Header/UnregisteredUserHeader.vue"
 import SysAdminHeader from "@/components/Header/SysAdminHeader.vue"
 import RegisteredUserHeader from "@/components/Header/RegisteredUserHeader.vue"
+import RentACarAdminHeader from "@/components/Header/RentACarAdminHeader.vue"
 
 export default {
     components: {
         "hotel-admin-header" : HotelAdminHeader,
         "unregistered-user-header" : UnregisteredUserHeader,
         "sys-admin-header" : SysAdminHeader,
-        "registered-user-header" : RegisteredUserHeader
+        "registered-user-header" : RegisteredUserHeader,
+        "rentACarAdminHeader"   : RentACarAdminHeader
     },
 
     data(){ 
         return{
             title:'login',
             route: '/login',
+            currentHeader : 'unregistered-user-header'
 
         }
     },
-    computed: {
-        currentUser(){
+    
+    methods: { 
+        currentUser: function(){
             if(localStorage.getItem("token") == null){
-                return 'unregistered-user-header'
+                this.currentHeader= 'unregistered-user-header'
             }else{
                 if(localStorage.getItem("role") == "ROLE_HOTEL_ADMIN")
-                    return 'hotel-admin-header'
+                    this.currentHeader= 'hotel-admin-header'
                 else if(localStorage.getItem("role") == "ROLE_SYSTEM_ADMIN")
-                    return 'sys-admin-header'
+                    this.currentHeader= 'sys-admin-header'
                 else if(localStorage.getItem('role') == "ROLE_REGISTERED_USER")
-                    return 'registered-user-header'
+                    this.currentHeader= 'registered-user-header'
+                else if(localStorage.getItem('role') == "ROLE_RENT_A_CAR_ADMIN")
+                    this.currentHeader = 'rentACarAdminHeader'
             }
         },
-    },
-    methods: { 
         logIn(){
-            this.$router.push("login");
+            //this.currentUser();
+            this.$router.push("/login");
         },
 
         logOut(){
             localStorage.removeItem("token");
             localStorage.removeItem("username");
             localStorage.removeItem("role");
-            this.$router.push("login");
-            this.$router.go();
+            localStorage.removeItem("rentACarId");
+            this.currentUser();
+            this.$router.push("/login");
+            //this.$router.go();
         },
         signUp(){
             this.$router.push("signup")
-        },
-
-
-        log: function(){
-
-            if(localStorage.getItem("token") == undefined){
-                this.title = 'login';
-                this.route = '/login';
-            }else{
-                this.title = 'logout';
-                this.route = '/logout';
-            }
-            
-
         }
-
 
     }
     // ,

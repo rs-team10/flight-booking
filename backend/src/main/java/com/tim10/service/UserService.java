@@ -14,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.RentACarAdmin;
 import com.tim10.domain.User;
-import com.tim10.dto.AdminDTO;
 import com.tim10.repository.UserRepository;
 
 @Service("userService")
@@ -91,7 +91,31 @@ public class UserService implements UserDetailsService {
 		}
 		throw new NoPermissionException("You are unauthorized to do this.");
 	}
+	//====================================================================
 	
-	
+	//ZA RentACar ADMINA
+	//====================================================================
+	public RentACarAdmin updateRentACarAdmin(RentACarAdmin rentACarAdmin) throws Exception {
+		RentACarAdmin currentRentACarAdmin = (RentACarAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentRentACarAdmin != null && currentRentACarAdmin.getId() == rentACarAdmin.getId()) {
+			if(!currentRentACarAdmin.getEmail().equalsIgnoreCase(rentACarAdmin.getEmail()) && 
+					findOneByEmail(rentACarAdmin.getEmail()) != null){
+				throw new Exception("Email taken!");
+			}
+			if(!currentRentACarAdmin.getUsername().equalsIgnoreCase(rentACarAdmin.getUsername()) &&
+					findOneByUsername(rentACarAdmin.getUsername()) != null) {
+				throw new Exception("Username taken!");
+			}
+			RentACarAdmin updatedRentACarAdmin = (RentACarAdmin)findById(rentACarAdmin.getId()).get();
+			updatedRentACarAdmin.setFirstName(rentACarAdmin.getFirstName());
+			updatedRentACarAdmin.setLastName(rentACarAdmin.getLastName());
+			updatedRentACarAdmin.setUsername(rentACarAdmin.getUsername());
+			updatedRentACarAdmin.setEmail(rentACarAdmin.getEmail());
+			if(!rentACarAdmin.getPassword().isEmpty())
+				updatedRentACarAdmin.setPassword(passwordEncoder.encode(rentACarAdmin.getPassword()));
+			return userRepository.save(updatedRentACarAdmin);
+		}
+		throw new NoPermissionException("You are unauthorized to do this.");
+	}
 	//====================================================================
 }

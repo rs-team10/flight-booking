@@ -1,9 +1,14 @@
 package com.tim10.controller;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +26,8 @@ import com.tim10.domain.RentACar;
 import com.tim10.dto.NewRentACarDTO;
 import com.tim10.dto.RcsDTO;
 import com.tim10.dto.RentACarDTO;
+import com.tim10.dto.RentACarReportDTO;
 import com.tim10.service.RentACarService;
-import com.tim10.service.UserService;
 
 @RestController
 public class RentACarController {
@@ -31,11 +36,27 @@ public class RentACarController {
 	private RentACarService rentACarService;
 	
 	//UZMI RENT A CAR SERVICE od LOGOVANOG RENT A CAR ADMINA
+	@RequestMapping(
+			value = "api/getRentACarFromAdmin",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getRentACarFromAdmin() {
+		
+		Long id;
+		
+		try {
+			id = rentACarService.getRentACarFromAdmin();
+		}catch(ClassCastException e) {
+			 e.printStackTrace();
+			 return new ResponseEntity<String>("Current user isn't RentACarAdmin!", HttpStatus.FORBIDDEN);
+		}catch(Exception e) {
+			 e.printStackTrace();
+			 return new ResponseEntity<String>("You are unauthorized to do this!", HttpStatus.FORBIDDEN);
+		}
+		
+		return new ResponseEntity<Long>(id, HttpStatus.OK);
+	}
 	
-	
-	
-	@Autowired
-	private UserService userService;
 	
 	@RequestMapping(
 			value = "api/rentACars",
@@ -165,5 +186,42 @@ public class RentACarController {
 				return ResponseEntity.notFound().build(); //nasao sam negde da ovo treba da se vrati... xD
 			 }
 	}
+	
+	@RequestMapping(value="/api/rentACarReport/{rentACarId}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<RentACarReportDTO> getReport(
+			@PathVariable("rentACarId") Long rentACarId) throws ParseException{
+		return new ResponseEntity<>(rentACarService.getReports(rentACarId), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/api/rentACarIncomeReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<BigDecimal> getIncomeReport(
+			@PathParam("rentACarId") Long rentACarId,
+			@PathParam("dateFrom") String dateFrom,
+			@PathParam("dateTo") String dateTo) throws ParseException {
+		
+		return new ResponseEntity<>(rentACarService.getIncomeReport(rentACarId,  dateFrom,  dateTo), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/api/rentACarDailyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getDailyReport(
+			@PathParam("rentACarId") Long rentACarId,
+			@PathParam("dateFrom") String dateFrom) throws ParseException{
+		return new ResponseEntity<>(rentACarService.getDailyReport(rentACarId, dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/api/rentACarWeeklyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> gteWeeklyReport(
+			@PathParam("rentACarId") Long rentACarId,
+			@PathParam("dateFrom") String dateFrom) throws ParseException{
+		return new ResponseEntity<>(rentACarService.getWeeklyReport(rentACarId, dateFrom), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/api/rentACarMonthlyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Long, Integer>> getYearlyReport(
+			@PathParam("rentACarId") Long rentACarId,
+			@PathParam("numberOfYears") int numberOfYears) throws ParseException{
+		return new ResponseEntity<>(rentACarService.getYearlyReport(rentACarId, numberOfYears), HttpStatus.OK);
+	}
+	
 
 }

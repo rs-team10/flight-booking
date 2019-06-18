@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class RentACarAdmin extends User {
@@ -14,7 +15,6 @@ public class RentACarAdmin extends User {
 	private Boolean hasCustomPassword;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "rentACarId")//nullable false
 	private RentACar company;
 
 	public RentACarAdmin() {

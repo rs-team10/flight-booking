@@ -1,6 +1,7 @@
 package com.tim10.dto;
 
 import com.tim10.domain.HotelAdmin;
+import com.tim10.domain.RentACarAdmin;
 
 public class AdminDTO {
 
@@ -18,6 +19,15 @@ public class AdminDTO {
 		this.username = hotelAdmin.getUsername();
 		this.email = hotelAdmin.getEmail();
 		this.hasCustomPassword = hotelAdmin.getHasCustomPassword();
+	}
+	
+	public AdminDTO(RentACarAdmin rentACarAdmin) {
+		this.id = rentACarAdmin.getId();
+		this.firstName = rentACarAdmin.getFirstName();
+		this.lastName = rentACarAdmin.getLastName();
+		this.username = rentACarAdmin.getUsername();
+		this.email = rentACarAdmin.getEmail();
+		this.hasCustomPassword = rentACarAdmin.getHasCustomPassword();
 	}
 
 	public Long getId() {

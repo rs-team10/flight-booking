@@ -59,7 +59,7 @@ public class Vehicle {
 	private Double averageFeedback;
 	
 	@Column(name="image")
-	private String image;
+	private String image = "defaultCar.jpg";
 	
 	@JsonIgnore
 	@OneToMany(mappedBy="reservedVehicle", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
