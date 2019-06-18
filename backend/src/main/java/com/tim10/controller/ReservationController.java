@@ -40,13 +40,15 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> reserveFlight(@RequestBody FlightReservationDTO flightReservationDTO) {
+
+		Long reservationId;
 		
-		Long reservationId = reservationService.reserveFlight(flightReservationDTO);
-		
-		if(reservationId != null)
+		try {
+			reservationId = reservationService.reserveFlight(flightReservationDTO);
 			return new ResponseEntity<>(reservationId, HttpStatus.OK);
-		else
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
 	}
 	
 	/**

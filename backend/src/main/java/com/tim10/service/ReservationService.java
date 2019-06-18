@@ -11,9 +11,11 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 
+import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,8 +101,11 @@ public class ReservationService {
     	
     }
 	
-	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public Long reserveFlight(FlightReservationDTO flightReservationDTO) {
+	@Transactional(readOnly = false,
+			propagation=Propagation.REQUIRES_NEW,
+			isolation=Isolation.SERIALIZABLE,
+			rollbackFor= {EntityNotFoundException.class, OptimisticLockException.class, PersistenceException.class, RuntimeException.class, StaleObjectStateException.class})
+	public Long reserveFlight(FlightReservationDTO flightReservationDTO) throws Exception {
 		
 		Optional<Flight> repoFlight = flightRepository.findById(flightReservationDTO.getFlightId());
 		if (!repoFlight.isPresent())
@@ -119,18 +124,13 @@ public class ReservationService {
 			
 			FlightReservation flightReservation = new FlightReservation(dto.getFirstName(), dto.getLastName(), dto.getPassportNumber());
 
-			Optional<Seat> repoSeat = seatRepository.findById(dto.getSeatId());
-			if(repoSeat.isPresent()) {
-				Seat seat = repoSeat.get();
-				if(seat.getVersion().equals(dto.getSeatVersion())) {
-					seat.setIsReserved(true);
-					flightReservation.setSeat(seat);
-				} else {
-					throw new OptimisticLockException("Selected seat is taken.");
-				}
-			} else {
-				throw new EntityNotFoundException("Seat not found.");
-			}
+			Seat seat = seatRepository.findById(dto.getSeatId()).get();
+
+			if(seat.getIsReserved() || !seat.getIsActive())
+				throw new EntityNotFoundException("Seat is unavailable.");
+			
+			seat.setIsReserved(true);
+			flightReservation.setSeat(seat);
 
 			Reservation reservation = new Reservation();
 			reservation.setFlightReservation(flightReservation);
@@ -174,15 +174,15 @@ public class ReservationService {
 			groupReservation.add(reservation);
 		}
 		
+		for(Reservation r : groupReservation.getReservations())
+			r.setGroupReservation(groupReservation);
 		
-		GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
-		
-		//for (Reservation r : savedGroupReservation.getReservations()) {
-		//	r.setGroupReservation(savedGroupReservation);
-			//reservationRepository.save(r);
-		//}
-		
-		return savedGroupReservation.getId();
+		try {
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
+		} catch (Exception e) {
+			throw new PersistenceException("Error while saving to DB.");
+		}
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
