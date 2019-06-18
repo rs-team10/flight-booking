@@ -105,14 +105,14 @@ export default {
 ,
             roomsHeaders: [
                 { text: 'Type', align: 'left', sortable: false, value: 'name'},
-                { text: 'Price per night (€)', value:'price'},
-                { text: 'Capacity', value: 'discount'},
+                { text: 'Price per night (€)', value:'price', sortable: false},
+                { text: 'Capacity', value: 'discount', sortable: false},
                 { text: 'Single beds', value: 'singleBeds', sortable: false },
                 { text: 'Double beds', value: 'doubleBeds', sortable: false },
                 { text: 'Has TV', value: 'hasTV', sortable: false },
                 { text: 'Has Balcony', value: 'hasBalcony', sortable: false },
-                { text: 'Square ft.', value: 'squareFootage', sortable: true },
-                { text: 'Average Feedback', value: 'avgFdbk'}
+                { text: 'Square ft.', value: 'squareFootage', sortable: false },
+                { text: 'Average Feedback', value: 'avgFdbk', sortable: false}
             ],
             lorem: "nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         }

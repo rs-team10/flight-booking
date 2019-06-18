@@ -336,7 +336,12 @@
                 @isClosed="handleEditSeatsDialogClose"
             />
 
-
+            <create-quick-reservation
+                :showDialog="showCreateQuickReservationDialog"
+                :receivedSeats="seats"
+                :flight="idToEditSeats"
+                @isClosed="handleCreateQuickReservationDialog"
+            />
 
 
 
@@ -360,7 +365,10 @@
                     <td class="justify-center layout px-0">
                         <v-icon small class="mr-2" @click="editSeatsLayout(props.item)">
                             airline_seat_legroom_normal
-                        </v-icon> 
+                        </v-icon>
+                        <v-icon small class="mr-2" @click="createQuickReservation(props.item)">
+                            library_add
+                        </v-icon>
                         <v-icon small class="mr-2" @click="editFlight(props.item)">
                             edit
                         </v-icon>
@@ -384,6 +392,7 @@ import { validationMixin } from 'vuelidate'
 import { required, numeric, between } from 'vuelidate/lib/validators'
 
 import EditSeatsLayout from "@/components/airline/EditSeatsLayout.vue"
+import CreateQuickReservation from "@/components/airline/CreateQuickReservation.vue"
 
 const haversine = require('haversine');
 
@@ -398,6 +407,7 @@ export default {
     mixins: [validationMixin],
     components: {
         'edit-seats': EditSeatsLayout,
+        'create-quick-reservation': CreateQuickReservation
     },
     data() {
         return {
@@ -421,6 +431,7 @@ export default {
             // show/hide dialog
             showFlightDialog: false,
             showEditSeatsLayoutDialog: false,
+            showCreateQuickReservationDialog: false,
             seats: [],
             idToEditSeats: undefined,
 
@@ -742,8 +753,26 @@ export default {
                     this.$swal("Error", error.response.data.message, 'error');
                 });
         },
+        createQuickReservation(flight) {
+
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
+            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
+                .then((response) => {
+                    
+                    this.seats = response.data;
+                    this.idToEditSeats = flight.id;
+                    this.showCreateQuickReservationDialog = true;
+                    
+                }).catch((error) => {
+                    this.$swal("Error", error.response.data.message, 'error');
+                });
+        },
         handleEditSeatsDialogClose(event) {
             this.showEditSeatsLayoutDialog = event;
+        },
+        handleCreateQuickReservationDialog(event) {
+            this.showCreateQuickReservationDialog = event;
         }
     },
     created() {

@@ -112,6 +112,9 @@ export default new Router({
       component: () => import('./components/HotelReservation/Reserve.vue'),
       meta: {
         //TODO
+        requiresAuth : true,
+        is_registered_user: true,
+        is_reservation_active: true
       }
     },
     {
@@ -163,6 +166,7 @@ export default new Router({
       name: 'editHotel',
       component: () => import('./components/HotelAdmin/HotelEditing.vue'),
       meta: {
+        requiresAuth : true,
         is_hotel_admin: true
       }
     },
@@ -171,6 +175,7 @@ export default new Router({
       name: 'hotelReport',
       component: () => import('./components/HotelAdmin/Reports.vue'),
       meta: {
+        requiresAuth : true,
         is_hotel_admin: true
       }
     },

@@ -3,6 +3,7 @@ package com.tim10.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.QuickFlightReservation;
 import com.tim10.dto.FlightDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatsUpdateDTO;
 import com.tim10.service.FlightService;
 
@@ -58,7 +61,27 @@ public class FlightController {
 	}
 	
 	
-	
+	@RequestMapping(
+			value = "/flights/quickFlightReservation",
+			method = RequestMethod.POST)
+	public ResponseEntity<QuickFlightReservationDTO> createQuickFlightReservation(@RequestBody QuickFlightReservationDTO dto) {
+		
+		QuickFlightReservation quickFlightReservation = flightService.createQuickFlightReservation(dto);
+		
+		if(quickFlightReservation != null) {
+			
+			QuickFlightReservationDTO retVal = new QuickFlightReservationDTO();
+			retVal.setId(quickFlightReservation.getId());
+			retVal.setDiscount(quickFlightReservation.getDiscount());
+			retVal.setSeatId(quickFlightReservation.getSeat().getId());
+			
+			return new ResponseEntity<QuickFlightReservationDTO>(retVal, HttpStatus.OK);
+			
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 	
 	
 }

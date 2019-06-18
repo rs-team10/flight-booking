@@ -30,6 +30,11 @@ public class GroupReservation {
 
 	public GroupReservation() {
 		super();
+	}
+	
+	public GroupReservation(Date date) {
+		super();
+		creationDateTime = date;
 		reservations = new HashSet<Reservation>();
 	}
 

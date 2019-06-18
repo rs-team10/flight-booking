@@ -109,7 +109,7 @@
                 <span class="headline">{{ hotel.name }}</span><br>
                 <v-icon small class="mr-1">location_on</v-icon>
                 <u @click="viewAddress(hotel.location)" class="blue--text text--darken-2 body-1">{{ hotel.location.formattedAddress }}</u>
-                <div class="d-flex">
+                <v-layout row >
                   <v-rating
                     :value="hotel.averageFeedback"
                     color="amber"
@@ -122,7 +122,7 @@
                     <span>{{ hotel.averageFeedback }}</span>
                     <span>({{ hotel.numberOfFeedbacks }})</span>
                   </div>
-                </div>
+                </v-layout>
               </div>
               <v-spacer></v-spacer>
 

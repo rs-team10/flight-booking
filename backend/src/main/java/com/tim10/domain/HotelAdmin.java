@@ -33,6 +33,7 @@ public class HotelAdmin extends User {
 	}
 	
 	//bezveze ali potrebno za registraciju hotela
+	//ne treba vise???
 	public HotelAdmin(User user) {
 		this.setUsername(user.getUsername());
 		this.setPassword(user.getPassword());

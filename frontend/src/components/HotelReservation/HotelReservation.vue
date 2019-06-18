@@ -15,7 +15,7 @@
         Close
         </v-btn>
     </v-snackbar>
-    <v-stepper v-model="e6" vertical>
+    <v-stepper v-model="e6" vertical style="background-color: #FAFAFA;">
         <v-stepper-step :complete="e6 > 1" step="1">Pick a hotel</v-stepper-step>
         <v-stepper-content step="1">    
 
@@ -28,7 +28,7 @@
                     <v-card-text>
                         <!-- datum od -->
                         <v-layout row>
-                        <v-menu
+                        <v-menu 
                         v-model="checkInMenuDialog"
                         :close-on-content-click="true"
                         :nudge-right="40"
@@ -40,7 +40,7 @@
                         >
                         <template v-slot:activator="{ on }">
                         <v-flex xs6 md6>
-                            <v-text-field
+                            <v-text-field readonly
                                 v-model="checkInDate"
                                 append-icon="event"
                                 label="Check-in*"
@@ -50,7 +50,7 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkInDate" @input="checkInMenuDialog=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker disabled v-model="checkInDate" @input="checkInMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         
                         <!-- datum do -->
@@ -75,7 +75,7 @@
                             </v-text-field>
                         </v-flex>
                         </template>
-                        <v-date-picker v-model="checkOutDate" @input="checkOutMenuDialog=false" color="indigo lighten-1"></v-date-picker>
+                        <v-date-picker :min="checkInDate" v-model="checkOutDate" @input="checkOutMenuDialog=false" color="indigo lighten-1"></v-date-picker>
                         </v-menu>
                         </v-layout>
 
@@ -97,8 +97,8 @@
                 </v-card>
             </v-dialog>
 
-            <v-flex class="d-flex">
-                <v-flex xs4 md4>
+            <v-layout row>
+                <v-flex xs4 sm4 md4>
                     <div id="form">
                         <form>
                             <v-flex>
@@ -131,9 +131,9 @@
                     </div>
 
                     <div id="info">
-                        <v-card flat class="mb-2" v-if="showCard">
+                        <v-card flat class="mb-2" v-if="showCard" color="grey lighten-5">
                             <v-spacer></v-spacer>
-                            <v-toolbar color="white" flat></v-toolbar>
+                            <v-toolbar color="grey lighten-5" flat></v-toolbar>
                             <v-card-text>
                                 <!-- datum od -->
                                 <v-layout row>
@@ -149,7 +149,7 @@
                                 >
                                 <template v-slot:activator="{ on }">
                                 <v-flex xs6 md6>
-                                    <v-text-field
+                                    <v-text-field readonly
                                         v-model="checkInDate"
                                         append-icon="event"
                                         label="Check-in*"
@@ -159,7 +159,7 @@
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
+                                <v-date-picker disabled v-model="checkInDate" @input="checkInMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 
                                 <!-- datum do -->
@@ -184,7 +184,7 @@
                                     </v-text-field>
                                 </v-flex>
                                 </template>
-                                <v-date-picker v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
+                                <v-date-picker :min="checkInDate" v-model="checkOutDate" @input="checkOutMenu=false" color="indigo lighten-1"></v-date-picker>
                                 </v-menu>
                                 </v-layout>
 
@@ -203,10 +203,11 @@
                     </div>
                 </v-flex>
 
-                <div id="hotelList" >
+                <v-flex xs8 sm8 md8>
+                <div id="hotelList">
                     <v-item-group>
                         <v-layout column>
-                            <v-list class="scroll-y pt-0" style="height: 700px" >
+                            <v-list class="scroll-y pt-0" style="height: 700px; background: #FAFAFA;">
                             <v-flex
                                 v-for="hotel in this.hotels"
                                 :key="hotel.name"
@@ -214,32 +215,36 @@
                             <v-item width="100%">
                                 <div style="margin: auto;">
                                     <v-card flat>
-                                    <v-container fluid>
+                                    <v-container fluid style="background-color: #FAFAFA;">
                                         <v-layout row wrap>
-                                        <v-flex xs12 md12>
+                                        <v-flex xs10 md10 offset-sm1>
                                             <v-card>
-                                            <v-layout>
-                                                <v-flex xs4 md4>
-                                                <v-img v-once
-                                                    :src="mockPics[Math.floor(Math.random()*mockPics.length)]"
-                                                    height="100%"
-                                                    max-height="170px"
-                                                    max-width="372px"
-                                                    
-                                                ></v-img>
+                                            <v-responsive :aspect-ratio="16/2">
+                                            <v-layout row>
+
+                                                <v-flex xs4 sm4 md4>
+                                                    <v-img v-once
+                                                        :src="mockPics[Math.floor(Math.random()*mockPics.length)]"
+                                                        height="100%"
+                                                        max-height="170px"
+                                                        max-width="372px"
+                                                        class="pr-0"
+                                                    ></v-img>
                                                 </v-flex>
-                                                <v-flex xs5 md5>
-                                                    <v-card-title primary-title>
+
+                                                <v-flex xs3 sm3 md3>
+                                                    <v-layout align-start justify-start column>
+                                                    <v-card-text >
                                                         <div>
                                                             <div class="headline">{{hotel.name}}</div>
                                                             <div class="pl-0">
                                                                 <v-icon small class="mr-1">location_on</v-icon>
-                                                                <span class="grey--text text--darken-2 ">{{hotel.location.street}}</span>
+                                                                <u @click="viewAddress(hotel.location)" class="blue--text text--darken-2">{{hotel.location.formattedAddress}}</u>
                                                             </div>
                                                         
                                                             <div class="d-flex">
                                                                 <v-rating
-                                                                    :value="rating"
+                                                                    :value="hotel.averageFeedback"
                                                                     color="amber"
                                                                     dense
                                                                     half-increments
@@ -247,23 +252,34 @@
                                                                 ></v-rating>
                                                             </div>  
 
-                                                            <div>
-                                                                <v-btn flat class="text-uppercase font-weight-bold indigo--text mx-0 px-1" @click="goToQuickRes(hotel.id)"><u>Discounted rooms</u></v-btn>
-                                                            </div> 
+                                                            
                                                         </div>
-                                                    </v-card-title>
+                                                    </v-card-text>
+                                                    </v-layout>
                                                 </v-flex>
 
-                                                <v-flex xs3 md3>
-                                                    <v-card-actions>
-                                                        <v-spacer></v-spacer>
-                                                        <v-btn flat @click="hotelSelected(hotel)">
-                                                            Reserve
-                                                            <v-icon right>input</v-icon>
-                                                        </v-btn>
-                                                    </v-card-actions>
+                                                <!-- <v-flex xs5 sm5 md4 >
+                                                    <v-card-text class="font-weight-light subheading pl-0">
+                                                    {{ hotel.description }}
+                                                    </v-card-text>
+                                                </v-flex> -->
+                                                <v-flex xs5 sm5 md5>
+                                                    <v-layout column mt-3>
+                                                    <v-btn outline color="indigo"  flat @click="hotelSelected(hotel)">
+                                                        Reserve
+                                                        <v-icon right>input</v-icon>
+                                                    </v-btn>
+                                                    <v-btn outline color="indigo" flat @click="showHotelProfile(hotel)">
+                                                        Hotel profile
+                                                    </v-btn>
+                                                    <v-btn outline color="indigo" flat @click="goToQuickRes(hotel.id)">
+                                                        Discounted rooms
+                                                    </v-btn>
+                                                    </v-layout>
                                                 </v-flex>
+
                                             </v-layout>
+                                            </v-responsive>
                                             </v-card>
                                         </v-flex>
                                         </v-layout>
@@ -282,11 +298,24 @@
                         </v-layout>
                     </v-item-group>
                 </div>
-            </v-flex>
+                </v-flex>
+            </v-layout>
             <!--<v-btn flat>Cancel</v-btn>-->
+
+            <v-dialog v-model="locationDialog" width="800px">
+                <v-card>
+                <location-map :selectedHotelLocation="selectedHotelLocation"></location-map>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog v-if="profileDialog" v-model="profileDialog">
+                <v-card>
+                <hotel-profile :selectedHotel="selectedHotel" @closeProfileDialog="profileDialog = false"></hotel-profile>
+                </v-card>
+            </v-dialog>
         </v-stepper-content>
 
-        <v-stepper-step :complete="e6 > 2" step="2">Pick a room</v-stepper-step>
+        <v-stepper-step :complete="e6 > 2" step="2">Pick rooms and additional services</v-stepper-step>
 
             <v-stepper-content step="2">
                 <component 
@@ -304,7 +333,7 @@
 
             </v-stepper-content>
 
-        <v-stepper-step :complete="e6 > 3" step="3">Additional services</v-stepper-step>
+        <!-- <v-stepper-step :complete="e6 > 3" step="3">Additional services</v-stepper-step>
 
             <v-stepper-content step="3">
                 <component 
@@ -314,7 +343,7 @@
                         :priceListItems="priceListItems"
                 ></component>
 
-            </v-stepper-content>
+            </v-stepper-content> -->
 
     </v-stepper>
   </div>
@@ -323,9 +352,13 @@
 <script>
 import Rooms from "./Rooms.vue"
 import AdditionalServices from "./AdditionalServices.vue"
+import LocationMap from "@/components/LocationMap.vue"
+import HotelProfile from "@/components/UnregisteredUser/HotelProfile.vue"
 
 export default {
     components: {
+       'location-map' : LocationMap,
+       'hotel-profile' : HotelProfile,
        'rooms' : Rooms,
        'additionalServices' : AdditionalServices
     },
@@ -337,6 +370,9 @@ export default {
             component2 : 'rooms',
             component3: 'additionalServices',
             selectedHotel: {},
+            selectedHotelLocation: {},
+            locationDialog: false,
+            profileDialog: false,
             reservation: {},
             e6: 1,
             
@@ -353,14 +389,16 @@ export default {
             //Search params-------------------
             hotelName: '',
             hotelLocation: '',
-            guests: '',
+            // guests: localStorage.getItem('guests'),
 
             checkInMenu: false,
             checkInMenuDialog: false,
-            checkInDate: new Date().toISOString().substr(0, 10),
+            //checkInDate: new Date().toISOString().substr(0, 10),
+            checkInDate: localStorage.getItem('arrivalDate'),
             checkOutMenu: false,
             checkOutMenuDialog: false,
-            checkOutDate: new Date().toISOString().substr(0, 10),
+            checkOutDate: localStorage.getItem('arrivalDate'),
+            
             minDate: new Date().toISOString().substr(0, 10),
 
             days: '',
@@ -472,6 +510,17 @@ export default {
                     checkOutDate: this.checkOutDate
                 }
                 this.$emit('goToQuickReservations', dataToPass)
+        },
+        viewAddress(location){
+            this.selectedHotelLocation = {
+            lat: location.latitude,
+            lng: location.longitude
+            }
+            this.locationDialog = true
+        },
+        showHotelProfile(hotel){
+            this.profileDialog = true;
+            this.selectedHotel = hotel;
         }
     },
     mounted(){

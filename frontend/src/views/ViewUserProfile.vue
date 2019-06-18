@@ -45,6 +45,7 @@
 
                 </v-layout>
             </v-layout>
+            <invitations/>
         </v-container>
     </div>
 </template>
@@ -53,6 +54,7 @@
 import UserProfile from "@/components/userProfile/UserProfile.vue"
 import Friendships from "@/components/userProfile/Friendships.vue"
 import FriendRequests from "@/components/userProfile/FriendRequests.vue"
+import Invitations from "@/components/userProfile/Invitations.vue"
 import ReservationsHistory from "@/components/userProfile/ReservationsHistory.vue"
 import CurrentReservations from "@/components/userProfile/CurrentReservations.vue"
 
@@ -61,6 +63,7 @@ export default {
         'user-profile': UserProfile,
         'friendships': Friendships,
         'friend-requests': FriendRequests,
+        'invitations': Invitations
         'reservationsHistory' : ReservationsHistory,
         'currentReservations' : CurrentReservations
     },

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RegisteredUser;
+import com.tim10.dto.InvitationDTO;
 import com.tim10.dto.RegisteredUserDTO;
 import com.tim10.dto.RegisteredUserSearchDTO;
 import com.tim10.dto.ReservationHistoryDTO;

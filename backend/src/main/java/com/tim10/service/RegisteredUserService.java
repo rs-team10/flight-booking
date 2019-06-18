@@ -136,6 +136,7 @@ public class RegisteredUserService {
 		
 		return true;
 	}
+
 	
 	// =====================================================================
 	// UPDATE USER

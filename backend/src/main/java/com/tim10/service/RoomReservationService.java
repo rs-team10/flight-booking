@@ -1,19 +1,24 @@
 package com.tim10.service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tim10.domain.GroupReservation;
+import com.tim10.domain.Reservation;
 import com.tim10.domain.Room;
 import com.tim10.domain.RoomReservation;
-import com.tim10.domain.RoomType;
+import com.tim10.dto.RoomDTO;
 import com.tim10.dto.RoomReservationDTO;
-import com.tim10.dto.RoomTypesDTO;
+import com.tim10.repository.GroupReservationRepository;
 import com.tim10.repository.RoomRepository;
 import com.tim10.repository.RoomReservationRepository;
 
@@ -26,31 +31,57 @@ public class RoomReservationService {
 	@Autowired 
 	private RoomRepository roomRepository;
 	
+	@Autowired
+	private GroupReservationRepository groupReservationRepository;
+	
 	public RoomReservation save(RoomReservation roomReservation) {
 		return roomReservationRepository.save(roomReservation);
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public void reserveRooms(RoomReservationDTO reservationDTO, String dateFrom, String dateTo) throws ParseException {
+	public Long reserveRooms(RoomReservationDTO reservationDTO, Long groupResId){
 		
-		Date checkInDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
-		Date checkOutDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateTo);
+		GroupReservation groupReservation = groupReservationRepository.getOne(groupResId);
+		Set<Reservation> reservations = groupReservation.getReservations();
 		
-		for (RoomTypesDTO roomTypesDTO : reservationDTO.getListOfRooms()) {
-			RoomType roomType = roomTypesDTO.getRoomType();
-			int numberOfRooms = roomTypesDTO.getNumberOfRooms();
-			
-			for(int i = 0; i < numberOfRooms; i++) {
-				Room room = roomRepository.findOneByRoomTypeId(roomType.getId());
-				RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
-						reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(),
-						room);
-				save(roomReservation);
+			for(RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
 				
+				Optional<Room> optionalRoom = roomRepository.findOneById(roomDTO.getId());
+//				try {
+//					Thread.sleep(5000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
+				
+				if(!optionalRoom.isPresent())
+					throw new EntityNotFoundException("Room not found");
+				Room room = optionalRoom.get();
+				if(room.isReserved(reservationDTO.getDateFrom(), reservationDTO.getDateTo())) {
+					System.out.println("USAO OVDE GDE TREBA");
+					throw new PersistenceException("vec rezervisano u tom periodu");
+				}
+					
+				
+				for(int i = 0; i < room.getRoomType().getCapacity(); i++) {
+					RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
+							reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(),
+							room);
+					
+					room.getRoomReservations().add(roomReservation);
+					
+					for(Reservation reservation : groupReservation.getReservations()) {
+						if(reservation.getRoomReservation() == null) {
+							reservation.setRoomReservation(roomReservation);
+							//groupReservation.add(reservation);
+							break;
+						}
+					}
+				}
 			}
-			//sa pesimistickim zakljucavanjem
 			
-			//selektujemo sobu po roomType id-u
-		}
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
 	}
 }

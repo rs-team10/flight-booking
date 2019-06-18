@@ -20,7 +20,7 @@ public class RegisteredUser extends User {
 	private String address;
 	
 	@Column(name="bonusPoints")
-	private Integer bonusPoints;
+	private Integer bonusPoints = 0;
 	
 	@Column(name="avatar")
 	private String avatar;

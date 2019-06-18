@@ -33,8 +33,10 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>{
 	@Query(value= 
 			  "SELECT rr.date_from "
 			+ "FROM Hotels h "
-			+ "RIGHT JOIN Rooms r ON h.id = r.hotel_id "
+			+ "RIGHT JOIN hotels_rooms hr ON hr.hotel_id = h.id "
+			+ "RIGHT JOIN Rooms r ON r.id = hr.rooms_id "
 			+ "RIGHT JOIN Room_Reservations rr ON r.id = rr.room_id "
+			+ "RIGHT JOIN Reservations res ON res.room_reservation_id = rr.id "
 			+ "WHERE h.id = :hotelId "
 			+ "AND (rr.date_from BETWEEN CAST(:start AS DATE) AND CAST(:end AS DATE))",
 			//TODO: Otkomentarisati kada se implementiraju sve rezervacije (zbog brzih rezervacija); ne zaboravi razmak iznad na kraju
@@ -45,7 +47,8 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>{
 	@Query(value= 
 			  "SELECT COUNT(*) "
 			+ "FROM Hotels h "
-			+ "RIGHT JOIN Rooms r ON h.id = r.hotel_id "
+			+ "RIGHT JOIN hotels_rooms hr ON hr.hotel_id = h.id "
+			+ "RIGHT JOIN Rooms r ON r.id = hr.rooms_id "
 			+ "RIGHT JOIN Room_Reservations rr ON r.id = rr.room_id "
 			+ "RIGHT JOIN Reviews rev ON rr.review_id = rev.id "
 			+ "WHERE h.id = :hotelId AND rev.company_feedback IS NOT NULL",
@@ -55,8 +58,10 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>{
 	@Query(value= 
 			  "SELECT SUM(rr.total_price) "
 			+ "FROM Hotels h "
-			+ "RIGHT JOIN Rooms r ON h.id = r.hotel_id "
+			+ "RIGHT JOIN hotels_rooms hr ON hr.hotel_id = h.id "
+			+ "RIGHT JOIN Rooms r ON r.id = hr.rooms_id "
 			+ "RIGHT JOIN Room_Reservations rr ON r.id = rr.room_id "
+			+ "RIGHT JOIN Reservations res ON res.room_reservation_id = rr.id "
 			+ "WHERE h.id = :hotelId "
 			+ "AND (rr.date_from BETWEEN CAST(:start AS DATE) AND CAST(:end AS DATE))",
 			//TODO: Otkomentarisati kada se implementiraju sve rezervacije (zbog brzih rezervacija); ne zaboravi razmak iznad na kraju

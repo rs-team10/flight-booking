@@ -8,9 +8,10 @@
         <h4 class="text-xs-center">{{ user.phone }}</h4>
         <h4 class="text-xs-center">{{ user.address }}</h4>
         <div class="text-xs-center">
-            
-            <v-btn @click="redirectToEdit()" round small flat color="primary" dark>Edit Profile</v-btn>
-                
+            <v-layout column>
+                <v-btn @click="redirectToEdit()" round small flat color="primary" dark>Edit Profile</v-btn>
+                <v-divider/>
+            </v-layout>
         </div>
         <v-spacer></v-spacer>
     </v-layout>
