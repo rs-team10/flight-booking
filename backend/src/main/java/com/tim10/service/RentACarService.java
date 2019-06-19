@@ -20,10 +20,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tim10.domain.PriceListItem;
 import com.tim10.domain.RentACar;
 import com.tim10.domain.RentACarAdmin;
 import com.tim10.dto.RentACarDTO;
 import com.tim10.dto.RentACarReportDTO;
+import com.tim10.repository.PriceListItemRepository;
 import com.tim10.repository.RentACarRepository;
 import com.tim10.repository.UserRepository;
 
@@ -38,6 +40,9 @@ public class RentACarService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private PriceListItemRepository priceListItemRepo;
 
 	
 	
@@ -231,6 +236,35 @@ public class RentACarService {
 		
 		
 	}
+	
+	
+	//----------------------------------
+	
+	public void createPriceListItem(Long rentACarId, PriceListItem priceListItem) {
+		RentACar rentACar= rentACarRepository.findById(rentACarId).get();
+		rentACar.getAdditionalServicesPriceList().getPriceListItems().add(priceListItem);
+		rentACarRepository.save(rentACar);
+		
+	}
+	
+	public void updatePriceListItem(PriceListItem priceListItem) {
+		
+		PriceListItem priceListToChang = priceListItemRepo.getOne(priceListItem.getId());
+		priceListToChang.setPrice(priceListItem.getPrice());
+		priceListToChang.setDescription(priceListItem.getDescription());
+		priceListToChang.setName(priceListItem.getName());
+		priceListToChang.setDiscount(priceListItem.getDiscount());
+		priceListItemRepo.save(priceListToChang);
+		
+	}
+	
+	public void deletePriceListItem(Long priceListItem) {
+		
+		priceListItemRepo.deleteById(priceListItem);
+		
+	}
+	
+	
 	
 
 }

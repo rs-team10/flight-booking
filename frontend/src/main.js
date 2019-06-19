@@ -98,7 +98,19 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
+/*
+axios.interceptors.request.use(function(config) {
+  const token = localStorage.setItem("token", response.data.accessToken);
 
+  if ( token != null ) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+}, function(err) {
+  return Promise.reject(err);
+});
+*/
 
 
 new Vue({

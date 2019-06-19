@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.RoomReservationDTO;
 import com.tim10.service.ReservationService;
 import com.tim10.service.RoomReservationService;
@@ -40,13 +41,35 @@ public class ReservationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> reserveFlight(@RequestBody FlightReservationDTO flightReservationDTO) {
+
+		Long reservationId;
 		
-		Long reservationId = reservationService.reserveFlight(flightReservationDTO);
-		
-		if(reservationId != null)
+		try {
+			reservationId = reservationService.reserveFlight(flightReservationDTO);
 			return new ResponseEntity<>(reservationId, HttpStatus.OK);
-		else
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
+	/**
+	 * @author fivkovic
+	 */
+	@RequestMapping(
+			value = "/reserveQuickFlight",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> reserveQuickFlight(@RequestBody QuickFlightReservationDTO dto) {
+
+		Long reservationId;
+		
+		try {
+			reservationId = reservationService.reserveQuickFlight(dto);
+			return new ResponseEntity<>(reservationId, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
 	}
 	
 	/**
@@ -60,6 +83,21 @@ public class ReservationController {
 	public ResponseEntity<?> sendEmails(@PathVariable("id") Long groupReservationId) {
 		
 		boolean success = reservationService.sendEmails(groupReservationId);
+		
+		if(success)
+			return new ResponseEntity<>(HttpStatus.OK);
+		else
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@RequestMapping(
+			value = "/cancelFlightReservation/{id}",
+			method = RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long groupReservationId) {
+		
+		boolean success = reservationService.cancelFlightReservation(groupReservationId);
 		
 		if(success)
 			return new ResponseEntity<>(HttpStatus.OK);

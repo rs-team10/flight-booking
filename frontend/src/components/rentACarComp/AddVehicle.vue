@@ -166,6 +166,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, numeric } from 'vuelidate/lib/validators'
 
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     props: ['myBranch'],
     mixins: [validationMixin],
@@ -295,12 +296,12 @@ export default {
         },
         addVehicle: function(){
             this.$axios
-            .post('http://localhost:8080/api/vehicles/'+this.myBranch, this.vehicle)
+            .post('http://localhost:8080/api/vehicles/'+this.myBranch, this.vehicle, yourConfig)
             .then(response => {
-                alert(response.data);
+                this.$swal("Yoohoo!", response.data, 'success');
                 this.cancel();
             }).catch(error => {
-                alert(error.response.data.message);
+                this.$swal("Error", error.response.data.message, 'error');
             });
         }
     }

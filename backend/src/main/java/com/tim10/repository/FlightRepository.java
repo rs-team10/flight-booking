@@ -3,6 +3,7 @@ package com.tim10.repository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import com.tim10.domain.Flight;
 
 public interface FlightRepository extends JpaRepository<Flight, Long> {
 	
-	Flight findOneByFlightNumber(String flightNumber);
+	Optional<Flight> findOneByFlightNumber(String flightNumber);
 	
 	@Query(value = "SELECT * " +
 				   "FROM Flights f " +

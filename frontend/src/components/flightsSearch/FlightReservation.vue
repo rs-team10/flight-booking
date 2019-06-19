@@ -727,6 +727,7 @@ export default {
 
         },
         continueToRentACarReservation() {
+            this.$router.push('/vehicleReservation')
 
             // COKSI
 

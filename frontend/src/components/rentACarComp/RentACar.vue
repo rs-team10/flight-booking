@@ -286,7 +286,7 @@ export default {
                 this.hasSaved=true; 
                 })
             .catch(error => {
-                alert(error.response.data.message);
+                this.$swal("Error", error.response.data.message, 'error');
                 this.rentACar.name  = this.beforeChange.name;
                 this.rentACar.description = this.beforeChange.description;
 

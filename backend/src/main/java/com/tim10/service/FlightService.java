@@ -1,36 +1,31 @@
 package com.tim10.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Airline;
+import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.Destination;
 import com.tim10.domain.Flight;
-import com.tim10.domain.QuickFlightReservation;
 import com.tim10.domain.Seat;
 import com.tim10.domain.SegmentClass;
 import com.tim10.dto.FlightDTO;
-import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatDTO;
 import com.tim10.dto.SeatsUpdateDTO;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.DestinationRepository;
 import com.tim10.repository.FlightRepository;
-import com.tim10.repository.SeatRepository;
 
 @Service
 public class FlightService {
@@ -43,73 +38,62 @@ public class FlightService {
 
 	@Autowired
 	FlightRepository flightRepository;
+
+	private Airline getCurrentAdminAirline() throws EntityNotFoundException {
+		
+		AirlineAdmin airlineAdmin = (AirlineAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(airlineAdmin == null)
+			throw new EntityNotFoundException(String.format("Airline administrator not found."));
+
+		Optional<Airline> airline = airlineRepository.findById(airlineAdmin.getCompany().getId());
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline administrator %s does not have an airline associated.", airlineAdmin.getUsername()));
+		
+		return airline.get();
+	}
 	
-	@Autowired
-	SeatRepository seatRespository;
-
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-	public ResponseEntity<List<FlightDTO>> getFlights() {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-
-		if (airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-		List<FlightDTO> flightsList = new ArrayList<FlightDTO>();
-
-		for (Flight flight : airline.getFlights()) {
-			FlightDTO flightDTO = new FlightDTO(flight);
-			flightDTO.setDepartureDate(sdf.format(flight.getDepartureDate()));
-			flightDTO.setArrivalDate(sdf.format(flight.getArrivalDate()));
-			flightsList.add(flightDTO);
-		}
-
-		return new ResponseEntity<List<FlightDTO>>(flightsList, HttpStatus.OK);
+	public Set<Flight> getFlights() {
+		Airline airline = getCurrentAdminAirline();
+		return airline.getFlights();
 	}
 
-	public ResponseEntity<FlightDTO> addFlight(FlightDTO flightDTO) {
-
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-
-		// Airline existingAirline =
-		// airlineRepository.findOneByName(flightDTO.getAirline());
-		Airline existingAirline = airlineRepository.findById(1L).get();
-
-		if (existingAirline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+	public Flight addFlight(FlightDTO flightDTO) throws ParseException {
+		Airline airline = getCurrentAdminAirline();
 		Flight newFlight = new Flight();
-
-		newFlight.setAirline(existingAirline);
+		
+		newFlight.setAirline(airline);
 		newFlight.setFlightNumber(flightDTO.getFlightNumber());
 
 		// TODO : Proveriti da li aviokompanija posluje na toj destinaciji
-		newFlight.setDeparture(destinationRepository.findOneByName(flightDTO.getDeparture()));
-		newFlight.setDestination(destinationRepository.findOneByName(flightDTO.getDestination()));
-
-		// TRANSIT DESTINATIONS
+		
+		Optional<Destination> departure = destinationRepository.findOneByName(flightDTO.getDeparture());
+		if (!departure.isPresent())
+			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDeparture()));
+		newFlight.setDeparture(departure.get());
+		
+		Optional<Destination> destination = destinationRepository.findOneByName(flightDTO.getDestination());
+		if (!destination.isPresent())
+			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDestination()));
+		newFlight.setDestination(destination.get());
 
 		for (String destinationName : flightDTO.getTransitDestinations()) {
-			Destination destination = destinationRepository.findOneByName(destinationName);
-			if (destination != null)
-				newFlight.getTransitDestinations().add(destination);
+			Optional<Destination> transit = destinationRepository.findOneByName(destinationName);
+			
+			if (!transit.isPresent())
+				throw new EntityNotFoundException(String.format("Destination %s not found.", destinationName));
+			
+			newFlight.getTransitDestinations().add(transit.get());
 		}
 
-		// DATES
-
-		try {
-			newFlight.setDepartureDate(sdf.parse(flightDTO.getDepartureDate()));
-			newFlight.setArrivalDate(sdf.parse(flightDTO.getArrivalDate()));
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		newFlight.setDepartureDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightDTO.getDepartureDate()));
+		newFlight.setArrivalDate(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(flightDTO.getArrivalDate()));
 
 		newFlight.setTicketPrice(flightDTO.getTicketPrice());
 		newFlight.setDistance(flightDTO.getDistance());
 		newFlight.setDuration(flightDTO.getDuration());
 
-		// SEATS
+		
+		// TODO: This needs a rework
 
 		ArrayList<Seat> seats = new ArrayList<>();
 
@@ -140,77 +124,71 @@ public class FlightService {
 		newFlight.setTransitCount(flightDTO.getTransitDestinations().size());
 		newFlight.setAverageFeedback(0.0);
 
-		existingAirline.getFlights().add(newFlight);
-		airlineRepository.save(existingAirline);
+		airline.getFlights().add(newFlight);
+		airlineRepository.save(airline);
 		
+		Optional<Flight> savedFlight = flightRepository.findOneByFlightNumber(newFlight.getFlightNumber());
 		
+		if(!savedFlight.isPresent())
+			throw new PersistenceException("Entity was not saved properly to DB.");
 		
-		Flight savedFlight = flightRepository.findOneByFlightNumber(newFlight.getFlightNumber());
-		FlightDTO retval = new FlightDTO(savedFlight);
-
-		return new ResponseEntity<FlightDTO>(retval, HttpStatus.OK);
+		return savedFlight.get();
 	}
 
-	public ResponseEntity<?> deleteFlight(FlightDTO flightDTO) {
+	public void deleteFlight(FlightDTO flightDTO) {
 
-		// TODO: HARDCODED
-		// Airline existingAirline =
-		// airlineRepository.findOneByName(flightDTO.getAirline());
-		Airline existingAirline = airlineRepository.findById(1L).get();
+		Airline airline = getCurrentAdminAirline();
+		
+		Optional<Flight> flight = flightRepository.findOneByFlightNumber(flightDTO.getFlightNumber());
 
-		if (existingAirline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		if (!flight.isPresent())
+			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
+		
+		if(!flight.get().getAirline().getId().equals(airline.getId()))
+			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
+		
+		
+		// TODO: Ne pretrazivati po broju leta nego po ID!
+		// TODO: Proveriti da li za let postoji bar jedna rezervacija
+		// TODO: Raditi logicko brisanje!
 
-		Flight existingFlight = flightRepository.findOneByFlightNumber(flightDTO.getFlightNumber());
-
-		if (existingFlight == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-		// TODO: Proveriti da li za let postoji bar jedna rezervacija! Raditi logicko
-		// brisanje!
-
-		flightRepository.delete(existingFlight);
-
-		return new ResponseEntity<>(HttpStatus.OK);
+		// flightRepository.delete(flight.get());
 	}
 
-	public ResponseEntity<List<SeatDTO>> getFlightSeats(FlightDTO flightDTO) {
+	public Set<Seat> getFlightSeats(FlightDTO flightDTO) {
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		if (airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		Flight flight = flightRepository.findById(flightDTO.getId()).get();
-		if(flight == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		List<SeatDTO> seatsList = new ArrayList<SeatDTO>();
+		Airline airline = getCurrentAdminAirline();
 
-		for (Seat seat : flight.getSeats()) { 
-			SeatDTO seatDTO = new SeatDTO(seat);
-			seatsList.add(seatDTO); 
-		}
-		 
-		return new ResponseEntity<List<SeatDTO>>(seatsList, HttpStatus.OK);
+		Optional<Flight> flight = flightRepository.findById(flightDTO.getId());
+		if(!flight.isPresent())
+			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
+		
+		if(!flight.get().getAirline().getId().equals(airline.getId()))
+			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
+		
+		return flight.get().getSeats();
 	}
 	
-	public ResponseEntity<?> updateFlightSeats(SeatsUpdateDTO seatsUpdateDTO) {
+	public Flight updateFlightSeats(SeatsUpdateDTO seatsUpdateDTO) {
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		if (airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Airline airline = getCurrentAdminAirline();
 		
-		Flight flight = flightRepository.findById(seatsUpdateDTO.getFlightId()).get();
-		if(flight == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Optional<Flight> flight = flightRepository.findById(seatsUpdateDTO.getFlightId());
+		if(!flight.isPresent())
+			throw new EntityNotFoundException(String.format("Flight %s not found.", seatsUpdateDTO.getFlightId()));
 		
-		int seatsCount = flight.getSeats().size();
+		if(!flight.get().getAirline().getId().equals(airline.getId()))
+			throw new EntityNotFoundException(String.format("Flight %s not found.", seatsUpdateDTO.getFlightId()));
+		
+		
+		Flight existingFlight = flight.get();
+		
+		int seatsCount = existingFlight.getSeats().size();
 		int counter = 0;
-
+		
+		// TODO: Optimize
 		for(SeatDTO seatDTO : seatsUpdateDTO.getUpdatedSeatsList()) {
-			for (Seat seat : flight.getSeats()) {
+			for (Seat seat : existingFlight.getSeats()) {
 				if(seat.getRed() == seatDTO.getRed() && seat.getKolona() == seatDTO.getKolona()) {
 					seat.setIsActive(seatDTO.getIsActive());
 					seat.setSegmentClass(seatDTO.getSegmentClass());
@@ -224,48 +202,10 @@ public class FlightService {
 		
 		for(int i = seatsCount; i < seatsUpdateDTO.getUpdatedSeatsList().size(); i++) {
 			SeatDTO seatDTO = seatsUpdateDTO.getUpdatedSeatsList().get(i);
-			Seat newSeat = new Seat(flight, seatDTO.getRed(), seatDTO.getKolona(), seatDTO.getSegmentClass());
-			flight.getSeats().add(newSeat);
+			Seat newSeat = new Seat(existingFlight, seatDTO.getRed(), seatDTO.getKolona(), seatDTO.getSegmentClass());
+			existingFlight.getSeats().add(newSeat);
 		}
 		
-		flightRepository.save(flight);
-		 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return flightRepository.save(existingFlight);
 	}
-
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public QuickFlightReservation createQuickFlightReservation(QuickFlightReservationDTO dto) {
-		
-		Optional<Seat> repoSeat = seatRespository.findById(dto.getSeatId());
-		if(repoSeat.isPresent()) {
-			
-			Seat seat = repoSeat.get();
-			if(!seat.getIsActive() || seat.getIsReserved())
-				throw new RollbackException("Seat is reserved.");
-			
-			if(!seat.getFlight().getDepartureDate().before(new Date()))
-				throw new RollbackException("Flight has already passed.");
-			
-			seat.setIsReserved(true);
-			QuickFlightReservation qfr = new QuickFlightReservation();
-
-			qfr.setDiscount(dto.getDiscount());
-			qfr.setSeat(seat);
-
-			Optional<Airline> repoAirline = airlineRepository.findById(seat.getFlight().getAirline().getId());
-			if(repoAirline.isPresent()) {
-				Airline airline = repoAirline.get();
-				airline.getQuickFlightReservations().add(qfr);
-				
-				airlineRepository.save(airline);
-				
-				return qfr;
-			} else {
-				throw new EntityNotFoundException("Airline not found");
-			}
-		} else {
-			throw new EntityNotFoundException("Seat not found.");
-		}
-	}
-
 }

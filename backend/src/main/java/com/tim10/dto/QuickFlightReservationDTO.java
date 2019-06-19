@@ -2,6 +2,8 @@ package com.tim10.dto;
 
 import java.math.BigDecimal;
 
+import com.tim10.domain.QuickFlightReservation;
+
 public class QuickFlightReservationDTO {
 	
 	private Long id;
@@ -17,6 +19,19 @@ public class QuickFlightReservationDTO {
 	
 	public QuickFlightReservationDTO() {
 		super();
+	}
+	
+	public QuickFlightReservationDTO(QuickFlightReservation item) {
+		this.setId(item.getId());
+		this.setSeatId(item.getSeat().getId());
+		this.setSeatNumber(item.getSeat().getRed().toString() + (char)(item.getSeat().getKolona() + 64));
+		this.setDiscount(item.getDiscount());
+		
+		this.setFlightNumber(item.getSeat().getFlight().getFlightNumber());
+		this.setDeparture(item.getSeat().getFlight().getDeparture().getName());
+		this.setDestination(item.getSeat().getFlight().getDestination().getName());
+		this.setDate(item.getSeat().getFlight().getDepartureDate().toString());
+		this.setOriginalPrice(item.getSeat().getFlight().getTicketPrice());
 	}
 
 	public Long getId() {
