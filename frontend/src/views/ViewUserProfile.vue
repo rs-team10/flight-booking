@@ -63,7 +63,7 @@ export default {
         'user-profile': UserProfile,
         'friendships': Friendships,
         'friend-requests': FriendRequests,
-        'invitations': Invitations
+        'invitations': Invitations,
         'reservationsHistory' : ReservationsHistory,
         'currentReservations' : CurrentReservations
     },

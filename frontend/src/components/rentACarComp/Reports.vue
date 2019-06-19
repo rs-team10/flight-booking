@@ -316,7 +316,6 @@ export default {
                         dateFrom : this.dailyDate
                     }
                 }).then(response => {
-                    console.log(response.data)
                     this.dailyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
                         datasets : [

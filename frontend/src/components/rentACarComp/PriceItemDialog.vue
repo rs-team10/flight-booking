@@ -10,14 +10,14 @@
             >
                 <v-layout column>
                     <v-text-field
-                        v-model.lazy="priceListItem.name"
+                        v-model="priceListItem.name"
                         :rules="nameRules"
                         :counter="20"
                         label="Name"
                         
                     ></v-text-field>
                     <v-text-field
-                        v-model.lazy="priceListItem.price"
+                        v-model="priceListItem.price"
                         :rules="priceRules"
                         :counter="3"
                         type="number"
@@ -46,13 +46,13 @@
                                 hide-details
                                 single-line
                                 type="number"
-                                v-model.lazy="priceListItem.discount"
+                                v-model="priceListItem.discount"
                                 readonly
                             ></v-text-field>
                         </v-flex>
 
                         <v-textarea
-                            v-model.lazy="priceListItem.description"
+                            v-model="priceListItem.description"
                             label="Description"
                             placeholder="Price list item descsriptin"
                         ></v-textarea>
@@ -77,9 +77,9 @@
 
 <script>
 
-
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
-    props:['priceListItem'],
+    props:['priceListItem', 'rentACarId'],
 
     
     data:() => ({
@@ -105,7 +105,23 @@ export default {
 
         },
         submit:function(){
-            
+            if(this.priceListItem.id == 0){
+                this.$axios
+                .post('http://localhost:8080/api/createPriceListItem/'+ this.rentACarId, this.priceListItem, yourConfig)
+                .then(response => {
+                    this.$swal("Yoohoo!", response.data, 'success');
+                }).catch(() => {
+                    this.$swal("Error", "Something went wrong.", 'error');
+                });
+            }else{
+                this.$axios
+                .put('http://localhost:8080/api/updatePriceListItem', this.priceListItem, yourConfig)
+                .then(response => {
+                    this.$swal("Yoohoo!", response.data, 'success');
+                }).catch(() => {
+                    this.$swal("Error", "Something went wrong.", 'error');
+                });
+            }
         }
     }
 }

@@ -132,7 +132,6 @@ export default {
                 }
           )
           .catch(error => {
-                alert("STA!?")
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
                //treba na backendu napraviti da proverava velicinu itema

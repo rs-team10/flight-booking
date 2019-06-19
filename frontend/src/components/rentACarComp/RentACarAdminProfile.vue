@@ -115,7 +115,6 @@ export default{
     },
     methods:{
         editRentACarAdmin(){
-            console.log(this.user)
             this.$v.$touch();
             if(!this.$v.$invalid){
                 var yourConfig = {
@@ -144,7 +143,6 @@ export default{
         this.$axios
         .get('http://localhost:8080/api/users/currentRentACarAdmin', yourConfig)
         .then((response) => {
-            console.log()
             this.user = response.data;
             this.user.password = '';
             //this.user.passwordConfirmation = '';
