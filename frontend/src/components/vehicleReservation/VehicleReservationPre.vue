@@ -194,6 +194,9 @@
 <script>
 
 var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 export default {
 
 
@@ -250,11 +253,13 @@ export default {
                     this.$axios //mora drugi rest da se gadja 
                     .post('http://localhost:8080/api/vehicleReservation/', vehicleReservationDTO, yourConfig)
                     .then(response =>{
-                        alert(response.data);
-                        this.$router.go(0);
+                        this.$swal("Yoohoo!", response.data, 'success')
+                        
+                        
+                        //this.$router.go(0);
                     })
-                    .catch(error => {
-                        alert(error.resposne)
+                    .catch(() => {
+                        this.$swal("Error!", "Something went wrong.", 'error');
                     });
                 }else{
                     //imas atribut toatalPrice da stavis additionalDiscount
@@ -263,10 +268,10 @@ export default {
                     .post('http://localhost:8080/api/quickVehicleReservation/', vehicleReservationDTO, yourConfig) //create
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
-                        this.$router.go(0);
+                        //this.$router.go(0);
                     })
-                    .catch(error => {
-                        this.$swal("Error", error.resposne.data, 'error');
+                    .catch(() => {
+                        this.$swal("Error", "Something went wrong.", 'error');
                     });
                 }
             }else{
@@ -276,11 +281,18 @@ export default {
                 if(this.quickReser){
                     
                     this.$axios
-                    .post('http://localhost:8080/api/confirmQuickVehicle/1/'+this.overview.reservationId, yourConfig)//1 je za main rezervaciju
+                    .post('http://localhost:8080/api/confirmQuickVehicle/'+this.groupResId+'/'+this.overview.reservationId, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
+                      
+                        localStorage.removeItem('groupResId')
+                        localStorage.removeItem('arrivalDate')
+                        localStorage.removeItem('guests')
+                        sleep(1000);
+                        this.$router.push('/userProfile');
+                    
                     })
-                    .catch(error => {
+                    .catch(() => {
                         this.$swal("Error", "Something went wrong.", 'error');
                     });
 
@@ -294,12 +306,21 @@ export default {
                         vehicleId : this.overview.vehicleId
                     };
                     this.$axios
-                    .post('http://localhost:8080/api/vehicleReservation/1', vehicleReservationDTO1, yourConfig)//1 je za main rezervaciju
+                    .post('http://localhost:8080/api/vehicleReservation/'+this.groupResId, vehicleReservationDTO1, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
-                        this.$swal("Yoohoo!", response.data, 'success');
-                        //this.$router.go(0);
+                        this.$swal("Yoohoo!", response.data, 'success')
+                        .then(()=>{
+                            localStorage.removeItem('groupResId');
+                            localStorage.removeItem('arrivalDate');
+                            localStorage.removeItem('guests');
+                            sleep(1000);})
+                        .then(()=>{
+                            this.$router.push('/userProfile');});
+                        
+                        
+                        
                     })
-                    .catch(error => {
+                    .catch(() => {
                         this.$swal("Error", "You can't make reservation right now!", 'error');
                     });
                 }
@@ -311,10 +332,6 @@ export default {
          
             this.$router.go(0);
            
-        },
-
-        confirmAsync: async function (){
-            
         }
         
 
@@ -350,7 +367,17 @@ export default {
         },
         quickReser(){
             return this.overview.reservationId == -1 ? false : true;
-        } 
+        },
+        groupResId(){
+            var groupres = localStorage.getItem('groupResId')
+            if(groupres != null)
+                return groupres;
+            else{
+                //return '1';                
+                this.$router.push("/"); 
+                return ''
+            } 
+        }
     }
 
     

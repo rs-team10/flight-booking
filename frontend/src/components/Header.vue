@@ -79,6 +79,9 @@ export default {
             this.$router.push("signup")
         }
 
+    },
+    mounted(){
+        this.currentUser();
     }
     // ,
     // mounted(){

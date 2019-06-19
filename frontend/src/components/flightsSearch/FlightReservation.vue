@@ -714,7 +714,7 @@ export default {
                 });
         },
         continueToHotelReservation() {
-            this.$router.push('hotelReservation')
+            this.$router.push('/hotelReservation')
             
             // KATARINA
 
@@ -727,6 +727,7 @@ export default {
 
         },
         continueToRentACarReservation() {
+            this.$router.push('/vehicleReservation')
 
             // COKSI
 
