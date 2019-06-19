@@ -16,23 +16,26 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.BranchOffice;
+import com.tim10.domain.GroupReservation;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceList;
 import com.tim10.domain.PriceListItem;
 import com.tim10.domain.QuickVehicleReservation;
+import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.RentACar;
+import com.tim10.domain.Reservation;
 import com.tim10.domain.Vehicle;
 import com.tim10.domain.VehicleReservation;
 import com.tim10.dto.QuickResSendDTO;
@@ -40,6 +43,7 @@ import com.tim10.dto.QuickVehicleReservationDTO;
 import com.tim10.dto.VehicleReservationDTO;
 import com.tim10.dto.VehicleReservationPrewDTO;
 import com.tim10.dto.VehicleReservationPrewQuickDTO;
+import com.tim10.repository.GroupReservationRepository;
 import com.tim10.repository.QuickVehicleReservationRepository;
 import com.tim10.repository.RentACarRepository;
 import com.tim10.repository.VehicleRepository;
@@ -67,8 +71,13 @@ public class VehicleReservationService {
 	@Autowired
 	private RentACarRepository rentACarRepository;
 	
+	@Autowired
+	private GroupReservationRepository groupReservationRepository;
+	
 	@PersistenceContext
 	private EntityManager em;
+	
+	
 	
 	
 	@Transactional(readOnly = true, propagation=Propagation.REQUIRES_NEW)
@@ -269,6 +278,13 @@ public class VehicleReservationService {
 	@Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ )
 	public boolean saveVehicleReservation(Long mainReservationId, VehicleReservationDTO vehicleResDTO) throws ResourceNotFoundException, IOException, InterruptedException, Exception {
 		
+		
+		
+		RegisteredUser user = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		GroupReservation groupResersvation = groupReservationRepository.getOne(mainReservationId);
+		
+		
+		
 		System.out.println("--------------------");
 		
 		Long id = vehicleResDTO.getVehicleId();
@@ -336,13 +352,30 @@ public class VehicleReservationService {
         	totalPrice = totalPrice.multiply(percent).add(price);
         	
         }
-        	
+        
+        Integer bonus = user.getBonusPoints() + days;
+		user.setBonusPoints(bonus);
+		
 		vehicleRes.setTotalPrice(totalPrice);
 		vehicleRes.setAdditionalServices(items);
 		vehicle.getReservations().add(vehicleRes);
 		
-		Thread.sleep(5000);
-		vehicleReservationRepository.save(vehicleRes);
+		//Thread.sleep(5000);
+		
+		Set<Reservation> reservations = groupResersvation.getReservations();
+		Reservation resForRes = null;
+		
+		
+		for(Reservation r : reservations) {
+			if(r.getRegisteredUser().getId() == user.getId()) {
+				resForRes = r;
+				break;
+			}
+		}
+		resForRes.setVehicleReservation(vehicleRes);
+		
+		groupReservationRepository.save(groupResersvation);
+		//vehicleReservationRepository.save(vehicleRes);
 		
 
 
@@ -385,7 +418,8 @@ public class VehicleReservationService {
 	@Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ )
 	public boolean confirQuickVehicleRes(Long mainResId, Long vehicleResId) throws ResourceNotFoundException, ObjectOptimisticLockingFailureException, InterruptedException{
 		
-		
+		RegisteredUser user = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		GroupReservation groupResersvation = groupReservationRepository.getOne(mainResId);
 		
 		QuickVehicleReservation quckRes;
 		try {
@@ -394,7 +428,21 @@ public class VehicleReservationService {
 		} catch (ObjectOptimisticLockingFailureException e) {
 			throw new ObjectOptimisticLockingFailureException("Quick vehicle reservation has already been reserved", QuickVehicleReservation.class);
 		}
-		 
+		
+		Integer bonus = user.getBonusPoints() + quckRes.getAdditionalServices().size() *2;
+		user.setBonusPoints(bonus);
+		
+		Set<Reservation> reservations = groupResersvation.getReservations();
+		Reservation resForRes = null;
+		for(Reservation r : reservations) {
+			if(r.getRegisteredUser().getId() == user.getId()) {
+				resForRes = r;
+				break;
+			}
+		}
+		resForRes.setVehicleReservation(quckRes);
+		groupReservationRepository.save(groupResersvation);
+		
 		return quckRes != null;
 	}
 	

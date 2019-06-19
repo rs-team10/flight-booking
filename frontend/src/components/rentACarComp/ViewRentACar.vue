@@ -93,6 +93,7 @@
 
 
 <script>
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
   export default {
     //fali validacija na frontu 
     props : ['rentACarId'],
@@ -120,7 +121,7 @@
     methods: {
         fetchRentACar: function(){
             this.$axios
-            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId)
+            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId, yourConfig)
             .then(response => {
                                 this.rentACar.id = response.data.id;
                                 this.rentACar.name  = response.data.name;
@@ -155,14 +156,14 @@
         },
         editOnBackend: function(){
             this.$axios
-            .put('http://localhost:8080/api/rentACars/',this.rentACar)
+            .put('http://localhost:8080/api/rentACars/',this.rentACar, yourConfig)
             .then(() => {
                 this.beforeChange.name = this.rentACar.name;
                 this.beforeChange.description = this.rentACar.description;
                 this.hasSaved=true; 
                 })
             .catch(error => {
-                alert(error.response.data.message);
+                this.$swal("Error",error.response.data.message, 'error');
                 this.rentACar.name  = this.beforeChange.name;
                 this.rentACar.description = this.beforeChange.description;
 

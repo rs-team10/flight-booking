@@ -96,7 +96,7 @@ public class ReviewService {
 			
 			Review vehicleReservationReview = vehicleReservation.getReview();
 			
-			if(flightReservationReview!=null) {
+			if(vehicleReservationReview!=null) {
 				double ratingRentACar = vehicleReservationReview.getCompanyFeedback()/2;
 				double ratingVehicle = vehicleReservationReview.getServiceFeedback()/2;
 				

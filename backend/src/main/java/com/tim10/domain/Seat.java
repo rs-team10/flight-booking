@@ -17,7 +17,7 @@ import javax.persistence.Version;
 public class Seat {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="red")

@@ -169,7 +169,7 @@ export default {
           .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId, yourConfig)
           .then(response => this.vehicles = response.data)
           .catch(error => {
-                alert(error.resposne.data)
+                this.$swal("Error!", error.response.data, 'error');
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
@@ -210,7 +210,8 @@ export default {
                .delete('http://localhost:8080/api/vehicle/'+item.id, yourConfig)
                .then(response => {
                      this.vehicles = this.vehicles.filter(i=>i !== item);
-                     alert(response.data);
+                     this.$swal("Yoohoo!", response.data, 'success');
+
                })
 
            //poziv na backend

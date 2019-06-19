@@ -35,6 +35,7 @@ public class RentACar extends Company {
 		additionalServicesPriceList = new PriceList();
 		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
 		administrators = new HashSet<RentACarAdmin>();
+		additionalServicesPriceList = new PriceList();
 	}
 	
 	public RentACar(NewRentACarDTO dto) {

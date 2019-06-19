@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.PriceListItem;
 import com.tim10.domain.RentACar;
 import com.tim10.dto.NewRentACarDTO;
 import com.tim10.dto.RcsDTO;
@@ -221,6 +222,33 @@ public class RentACarController {
 			@PathParam("rentACarId") Long rentACarId,
 			@PathParam("numberOfYears") int numberOfYears) throws ParseException{
 		return new ResponseEntity<>(rentACarService.getYearlyReport(rentACarId, numberOfYears), HttpStatus.OK);
+	}
+	
+	
+	//===============================================
+	@RequestMapping(value="/api/createPriceListItem/{rentACarId}", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> createPriceListItem(
+			@PathVariable("rentACarId") Long rentACarId, 
+			@RequestBody PriceListItem priceListItem) {
+		rentACarService.createPriceListItem(rentACarId, priceListItem);
+		return new ResponseEntity<String>("Price list item is created!", HttpStatus.OK);
+		
+	}
+	@RequestMapping(value="/api/updatePriceListItem", method=RequestMethod.PUT, consumes=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updatePriceListItem(
+			@RequestBody PriceListItem priceListItem) {
+		
+		rentACarService.updatePriceListItem(priceListItem);
+		return new ResponseEntity<String>("Price list item is updated!", HttpStatus.OK);
+		
+	}
+	@RequestMapping(value="/api/deletePriceListItem/{priceListItem}", method=RequestMethod.DELETE)
+	public ResponseEntity<?> deletePriceListItem(
+			@PathVariable("priceListItem") Long priceListItem) {
+		
+		rentACarService.deletePriceListItem(priceListItem);
+		return new ResponseEntity<String>("Price list item is deleted!", HttpStatus.OK);
+		
 	}
 	
 

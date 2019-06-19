@@ -264,9 +264,9 @@ export default {
             this.$axios
             .post('http://localhost:8080/api/vehicles', this.selectedVehicle, yourConfig)
             .then(response => {
-                alert(response.data);
+                this.$swal("Yoohoo!", response.data, 'success');
             }).catch(function(error) {
-                alert(error.response.data.message);
+                this.$swal("Error", error.response.data.message, 'error');
             });
         }
     }

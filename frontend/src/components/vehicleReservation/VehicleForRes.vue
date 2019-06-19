@@ -71,6 +71,7 @@
 
 <script>
 import VehicleReservationPre from "@/components/vehicleReservation/VehicleReservationPre.vue"
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}};
 
     export default {
         components:{
@@ -112,7 +113,7 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
             showPrev:function(vehicle){
                 if(!this.quickReser){
                     this.$axios
-                    .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id)
+                    .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id, yourConfig)
                     .then(respone =>{
                         var datas = respone.data
                         this.overview.rentACarId = datas.rentACarId;
@@ -130,7 +131,7 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
                 }else{
                     
                      this.$axios
-                    .get('http://localhost:8080/api/getQuickResFromVehicle/'+this.from+'/'+this.to  +'/'+vehicle.id)
+                    .get('http://localhost:8080/api/getQuickResFromVehicle/'+this.from+'/'+this.to  +'/'+vehicle.id, yourConfig)
                     .then(respone =>{
                         var datas = respone.data
                         this.overview.rentACarId = datas.rentACarId;
@@ -158,8 +159,9 @@ import VehicleReservationPre from "@/components/vehicleReservation/VehicleReserv
         computed:{
             quickReser(){
                 if(this.vehicles.length!=0){
-                    console.log(this.vehicles[1].quick)
-                    return this.vehicles[1].quick;
+                    return this.vehicles[0].quick;
+                }else{
+                    return null;
                 }
             } 
         }

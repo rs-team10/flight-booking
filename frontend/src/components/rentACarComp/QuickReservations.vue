@@ -132,13 +132,13 @@ export default {
                 }
           )
           .catch(error => {
-                alert("STA!?")
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
                //treba na backendu napraviti da proverava velicinu itema
             });
         },
         editItem:function(item){
+            /*
             this.quickVehicleSelected = item;
             this.component='pehicleReservationPre';
 
@@ -158,10 +158,13 @@ export default {
                 this.overview.vehicle = item
                 this.overview.edit = true;
             this.dialog= true;
+            */
 
         },
         deleteItem:function(item){
+            /*
             this.quickVehicleSelected = item
+            */
 
         },
         addItem:function(){

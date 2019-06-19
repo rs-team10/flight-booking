@@ -123,13 +123,11 @@ export default {
           .delete('api/branchOffice/'+item.id)
           .then(response => {
               this.branches = this.branches.filter(i=>i !== item)
-              alert(response.data)
+              this.$swal("Yoohoo!", response.data, 'success');
             }
           )
           .catch(error => {
-
-                alert(error.response.data);
-                
+              this.$swal("Error", error.response.data, 'error');    
             }
           )
 

@@ -5,6 +5,7 @@
             <component 
                 :is='component'
                 :priceListItem = 'priceListItem'
+                :rentACarId = 'rentACarId'
             >
             </component>
         </v-dialog>
@@ -64,6 +65,8 @@
 
 <script>
 import PriceItemDialog from "@/components/rentACarComp/PriceItemDialog.vue"
+
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     props:['priceList', 'rentACarId'],
 
@@ -123,13 +126,20 @@ export default {
     methods:{
         editItem:function(item){
             this.priceListItem = item;
-
             this.dialog= true;
 
         },
         deleteItem:function(item){
             this.priceListItem = item
 
+            this.$axios
+            .delete('http://localhost:8080/api/deletePriceListItem/'+ this.priceListItem.id, yourConfig)
+            .then(response => {
+                this.$swal("Yoohoo!", response.data, 'success');
+            }).catch(() => {
+                this.$swal("Error", "Something went wrong.", 'error');
+            });
+            
         },
         addItem:function(){
 

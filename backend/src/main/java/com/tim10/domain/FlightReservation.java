@@ -15,12 +15,12 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) zasto ovo?
 @Table(name="FlightReservations")
 public class FlightReservation {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="passengerName")

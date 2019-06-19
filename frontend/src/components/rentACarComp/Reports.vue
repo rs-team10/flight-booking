@@ -201,7 +201,7 @@
 <script>
 
 import Chart from './Chart.vue'
-
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 
 export default {
 
@@ -255,7 +255,7 @@ export default {
                         rentACarId : this.rentACarId,
                         dateFrom : this.dateFrom,
                         dateTo: this.dateTo
-                    }
+                    }, yourConfig
                 }).then(response => {
                     this.income = response.data;
                     this.showDateFrom = this.dateFrom;
@@ -269,7 +269,7 @@ export default {
                     params: {
                         rentACarId : this.rentACarId,
                         numberOfYears : new Date().getFullYear() - this.year
-                    }
+                    }, yourConfig
                 }).then(response => {
                     this.yearlyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>this.months[new Date(parseInt(x)).getMonth()])),
@@ -292,7 +292,7 @@ export default {
                     params: {
                         rentACarId : this.rentACarId,
                         dateFrom : this.weeklyDate
-                    }
+                    }, yourConfig
                 }).then(response => {
                     this.weeklyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
@@ -314,9 +314,8 @@ export default {
                     params: {
                         rentACarId : this.rentACarId,
                         dateFrom : this.dailyDate
-                    }
+                    }, yourConfig
                 }).then(response => {
-                    console.log(response.data)
                     this.dailyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
                         datasets : [
@@ -342,7 +341,7 @@ export default {
     },
     created(){
         this.$axios
-            .get('http://localhost:8080/api/rentACarReport/' + this.rentACarId)
+            .get('http://localhost:8080/api/rentACarReport/' + this.rentACarId, yourConfig)
             .then(response => {
                 
                 this.report = response.data;

@@ -100,6 +100,7 @@
 
 
 <script>
+var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
 export default {
     props:[
         'overview',
@@ -113,12 +114,6 @@ export default {
     methods:{
         confirmAct : function()
         {
-            var yourConfig = {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
-            };
-
             this.$axios.post('http://localhost:8080/api/setReview/', this.overview, yourConfig).then((response) => {
                 this.$swal("Yoohoo!",response.data, 'success');
             }).catch((error) => {
@@ -127,12 +122,6 @@ export default {
         },
         declineRoomReservation : function()
         {
-            var yourConfig = {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
-            };
-
 
             this.$axios.post('http://localhost:8080/api/declineRoomReservation/', this.overview, yourConfig).then((response) => {
                 this.$swal("Yoohoo!",response.data, 'success');
