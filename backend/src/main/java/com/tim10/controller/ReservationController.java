@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.RoomReservationDTO;
 import com.tim10.service.ReservationService;
 import com.tim10.service.RoomReservationService;
-import com.tim10.service.RoomService;
 
 @RestController
 @RequestMapping(value="/api/reservations")
@@ -42,6 +42,26 @@ public class ReservationController {
 		
 		try {
 			reservationId = reservationService.reserveFlight(flightReservationDTO);
+			return new ResponseEntity<>(reservationId, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
+	/**
+	 * @author fivkovic
+	 */
+	@RequestMapping(
+			value = "/reserveQuickFlight",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> reserveQuickFlight(@RequestBody QuickFlightReservationDTO dto) {
+
+		Long reservationId;
+		
+		try {
+			reservationId = reservationService.reserveQuickFlight(dto);
 			return new ResponseEntity<>(reservationId, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

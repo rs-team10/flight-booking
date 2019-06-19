@@ -22,15 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tim10.domain.Flight;
 import com.tim10.domain.FlightReservation;
 import com.tim10.domain.GroupReservation;
+import com.tim10.domain.QuickFlightReservation;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.RequestStatus;
 import com.tim10.domain.Reservation;
 import com.tim10.domain.Seat;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatReservationDTO;
 import com.tim10.repository.FlightRepository;
 import com.tim10.repository.GroupReservationRepository;
+import com.tim10.repository.QuickFlightReservationRepository;
 import com.tim10.repository.RegisteredUserRepository;
 import com.tim10.repository.ReservationRepository;
 import com.tim10.repository.SeatRepository;
@@ -55,6 +58,9 @@ public class ReservationService {
 	
 	@Autowired
 	ReservationRepository reservationRepository;
+	
+	@Autowired
+	QuickFlightReservationRepository quickFlightReservationRepository;
 	
     @Autowired
 	EmailService mailSender;
@@ -183,6 +189,52 @@ public class ReservationService {
 		} catch (Exception e) {
 			throw new PersistenceException("Error while saving to DB.");
 		}
+	}
+	
+	@Transactional(readOnly = false,
+			propagation=Propagation.REQUIRES_NEW,
+			isolation=Isolation.SERIALIZABLE,
+			rollbackFor= {EntityNotFoundException.class, OptimisticLockException.class, PersistenceException.class, RuntimeException.class, StaleObjectStateException.class})
+	public Long reserveQuickFlight(QuickFlightReservationDTO flightReservationDTO) throws Exception {
+
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
+		
+		GroupReservation groupReservation = new GroupReservation(new Date());
+		
+		Optional<QuickFlightReservation> repoQuickFlightReservation = quickFlightReservationRepository.findById(flightReservationDTO.getId());
+		if(!repoQuickFlightReservation.isPresent())
+			throw new EntityNotFoundException("Quick flight reservation not found.");
+		QuickFlightReservation qfr = repoQuickFlightReservation.get();
+		
+		Reservation reservation = new Reservation();
+		reservation.setFlightReservation(qfr);
+		
+		reservation.setIsHost(true);
+		reservation.setInvitationCode(null);
+		reservation.setStatus(RequestStatus.ACCEPTED);
+		reservation.setRegisteredUser(currentUser);
+		currentUser.getReservations().add(reservation);
+		currentUser.setBonusPoints(currentUser.getBonusPoints() + qfr.getSeat().getFlight().getDistance());
+		
+		reservation.setDistance(qfr.getSeat().getFlight().getDistance());
+		reservation.setDiscount(5.0); 					// TODO: Discount
+		//reservation.setUsedDiscount(0);				// TODO: Used discount
+		reservation.setHasPassed(false);
+		
+		groupReservation.add(reservation);
+		reservation.setGroupReservation(groupReservation);
+		
+		try {
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
+		} catch (Exception e) {
+			throw new PersistenceException("Error while saving to DB.");
+		}
+		
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
