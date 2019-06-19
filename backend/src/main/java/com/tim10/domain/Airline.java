@@ -19,7 +19,7 @@ public class Airline extends Company {
 	
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<Destination> businessLocations;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

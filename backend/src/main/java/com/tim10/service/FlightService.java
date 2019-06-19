@@ -243,7 +243,7 @@ public class FlightService {
 			if(!seat.getIsActive() || seat.getIsReserved())
 				throw new RollbackException("Seat is reserved.");
 			
-			if(!seat.getFlight().getDepartureDate().before(new Date()))
+			if(seat.getFlight().getDepartureDate().before(new Date()))
 				throw new RollbackException("Flight has already passed.");
 			
 			seat.setIsReserved(true);

@@ -86,6 +86,33 @@
                 </v-layout>
             </v-flex>
 
+            <v-flex xs12 sm12 md12>
+                <v-card flat>
+                <v-toolbar flat>
+                    <v-toolbar-title class="text-uppercase indigo--text font-weight-light">Quick flight reservations</v-toolbar-title>
+                </v-toolbar>
+                </v-card>
+                <v-layout column style="height: 300px">
+                <v-flex style="overflow: auto">
+                    <v-list 
+                        three-line
+                        class="scroll-y" 
+                        style="height: 300px">
+                        <template v-for="quickReservation in selectedAirline.quickFlightReservations">
+                            <v-list-tile :key="quickReservation.id" class="ma-2">
+                                <v-list-tile-content>
+                                    <v-list-tile-title class="font-weight-bold">{{ "Flight no. " + quickReservation.flightNumber + "  from " + quickReservation.departure + " to " + quickReservation.destination }}</v-list-tile-title>
+                                    <v-list-tile-sub-title class="font-weight-bold">{{ "Date: " + quickReservation.date + " Seat: " + quickReservation.seatNumber }}</v-list-tile-sub-title>
+                                    <v-list-tile-sub-title>{{ "Original Price: " + quickReservation.originalPrice + "€ Discount: " + quickReservation.discount + "%"}}</v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-btn flat @click="reserveFlight(quickReservation)">BOOK FLIGHT</v-btn>
+                            </v-list-tile>
+                        </template>
+                    </v-list>
+                </v-flex>
+                </v-layout>
+            </v-flex>
+
             </v-layout>
 
     </v-card-text>
@@ -107,6 +134,11 @@ export default {
                 lat: this.selectedAirline.airlineProfileDTO.location.latitude,
                 lng: this.selectedAirline.airlineProfileDTO.location.longitude
             }
+        }
+    },
+    methods: {
+        reserveFlight(quickReservation) {
+            // TODO: Slanje zahteva za quick reservation na backend
         }
     }
 }
