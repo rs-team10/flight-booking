@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,8 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	//@Autowired
+	//private PasswordEncoder passwordEncoder;
 	
 	public User findUserByEmail(String email) {
 	
@@ -86,7 +87,7 @@ public class UserService implements UserDetailsService {
 			updatedHotelAdmin.setUsername(hotelAdmin.getUsername());
 			updatedHotelAdmin.setEmail(hotelAdmin.getEmail());
 			if(!hotelAdmin.getPassword().isEmpty())
-				updatedHotelAdmin.setPassword(passwordEncoder.encode(hotelAdmin.getPassword()));
+				updatedHotelAdmin.setPassword(hotelAdmin.getPassword());
 			return userRepository.save(updatedHotelAdmin);
 		}
 		throw new NoPermissionException("You are unauthorized to do this.");

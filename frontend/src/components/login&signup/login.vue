@@ -108,7 +108,7 @@ export default {
         logIn: function(){
            
             this.$axios
-            .post('http://localhost:8080/auth/login', this.user)
+            .post('/auth/login', this.user)
             .then(response => {
                 if(response.data.accessToken == undefined){
                     this.error = "Wrong username or password!";
