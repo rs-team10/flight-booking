@@ -1,11 +1,10 @@
 package com.tim10.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-
-import com.tim10.dto.AdminDTO;
 
 @Entity
 public class HotelAdmin extends User {
@@ -15,7 +14,7 @@ public class HotelAdmin extends User {
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	//@JoinColumn(name = "hotel_id")
 	public Hotel hotel;
 
@@ -34,6 +33,7 @@ public class HotelAdmin extends User {
 	}
 	
 	//bezveze ali potrebno za registraciju hotela
+	//ne treba vise???
 	public HotelAdmin(User user) {
 		this.setUsername(user.getUsername());
 		this.setPassword(user.getPassword());

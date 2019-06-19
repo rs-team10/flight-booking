@@ -682,10 +682,14 @@ export default {
         confirmReservation() {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
             this.$axios.post('http://localhost:8080/api/reservations/reserveFlight', this.flightReservation, yourConfig)
                 .then((response) => {
                     this.groupReservationId = response.data;
+                    
+                    //DODATO KK 
+                    localStorage.setItem('groupResId', this.groupReservationId)
+                    localStorage.setItem('arrivalDate', this.flight.arrivalDate)
+                    localStorage.setItem('guests', this.flightReservation.seatReservationDTOList.length)
                     
                     this.$swal({
                             title: 'Success', 
@@ -710,6 +714,7 @@ export default {
                 });
         },
         continueToHotelReservation() {
+            this.$router.push('hotelReservation')
             
             // KATARINA
 
@@ -774,7 +779,6 @@ export default {
         }
     },
     created() {
-
         this.passengerInfo = [];
         for(var i = 0; i < this.passengerCountSearch; i++) {
 

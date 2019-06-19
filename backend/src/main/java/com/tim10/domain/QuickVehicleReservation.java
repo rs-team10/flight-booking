@@ -10,6 +10,8 @@ public class QuickVehicleReservation extends VehicleReservation {
 
 	@Column(name="discount")
 	private Double discount;
+	
+	
 
 	public QuickVehicleReservation() {
 		super();

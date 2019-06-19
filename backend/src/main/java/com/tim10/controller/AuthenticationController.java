@@ -145,7 +145,8 @@ public class AuthenticationController {
 		
 
 		User user = (User) authentication.getPrincipal();
-		
+		System.out.println(user.getUsername());
+		System.out.println(user.getPassword());
 		if(user.getAuthorities().size() == 0) {
 			RegisteredUser userR = (RegisteredUser)user;
 			

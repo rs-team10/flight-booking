@@ -6,11 +6,11 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tim10.dto.NewHotelDTO;
 
 @Entity
@@ -18,9 +18,9 @@ import com.tim10.dto.NewHotelDTO;
 public class Hotel extends Company {
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	//@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name = "hotel_id")
 	private Set<Room> rooms;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
@@ -32,7 +32,8 @@ public class Hotel extends Company {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<QuickRoomReservation> quickRoomReservations;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER/*, mappedBy="hotel"*/)
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public Set<HotelAdmin> administrators;
 
 	public Hotel() {
@@ -51,6 +52,10 @@ public class Hotel extends Company {
 		this.setName(dto.getName());
 		this.setLocation(dto.getLocation());
 		administrators = dto.getAdministrators();
+//		for(HotelAdmin admin : dto.getAdministrators()) {
+//			admin.setHotel(this);
+//			administrators.add(admin);
+//		}
 	}
 
 	public Set<Room> getRooms() {

@@ -2,7 +2,10 @@ package com.tim10.repository;
 
 import java.util.Collection;
 
+import javax.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,7 +49,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>{
 	VehicleDTO getVehicleFromBranch(@Param("branchId") Long branchId, @Param("vehicleId") Long vehicleId);
 	
 	
-	
+	@Lock(LockModeType.PESSIMISTIC_READ)
 	@Query(value = "DELETE FROM branch_office_vehicle WHERE vehicle_id = :vehicleId", nativeQuery = true)
 	public void deleteBranchOfficeVehicleConnection(@Param("vehicleId") Long vehicleId);
 	
@@ -81,7 +84,11 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>{
 			+ "l.id = b.location_id " 
 			+ "WHERE l.country = :country and l.city = :city", nativeQuery = true)
 	Collection<Vehicle> vehiclesFromCity(@Param("country") String country, @Param("city") String city);
+
 	
+
+
+	 
 	
 	
 	

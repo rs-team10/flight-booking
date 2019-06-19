@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     changeText: function(){
-      this.$refs.header.log();
+      this.$refs.header.currentUser();
     }
   }
 }

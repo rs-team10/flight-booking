@@ -12,7 +12,7 @@
                     </v-toolbar>
                     <v-card>
 
-                            <v-card-actions>
+                            <v-card-actions v-if = 'adminsPage'>
                                 <v-spacer></v-spacer>
                                 <v-btn
                                     ref = 'btn'
@@ -114,6 +114,16 @@
                     </component>
                 </v-flex>
 
+                <v-flex xs8 v-if='adminsPage'>
+                   
+                    <component
+                        :is="component4"
+                        :rentACarId ="realId"
+                    >
+                    </component>
+               
+                </v-flex>
+
                 <v-flex xs8>
                    
                     <component
@@ -124,6 +134,8 @@
                     </component>
                
                 </v-flex>
+
+                
                 
 
         </v-layout>
@@ -134,6 +146,7 @@
             <component
                 :is="component2"
                 :priceList ='additionalServicesPriceList'
+                :rentACarId ='realId'
             >
             </component>
        
@@ -150,9 +163,10 @@
 <script>
 import ViewBranchOffices from "@/components/rentACarComp/ViewBranchOffices.vue"
 import VehiclePriceList from "@/components/rentACarComp/VehiclePriceList.vue"
-
 import QuickReservations from "@/components/rentACarComp/QuickReservations.vue"
+import Reports from "@/components/rentACarComp/Reports.vue"
 
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     props:{
         rentACarId:{
@@ -163,8 +177,9 @@ export default {
     components: {
         'viewBranchOffices' : ViewBranchOffices,
         'vehiclePriceList' : VehiclePriceList,
+        'quickReservations' : QuickReservations,
+        'reports' : Reports
 
-        'quickReservations' : QuickReservations
     },
     data () {
       return {
@@ -188,8 +203,8 @@ export default {
 
         component1 : 'viewBranchOffices',
         component2 : 'vehiclePriceList',
-
         component3 : 'quickReservations',
+        component4 : 'reports',
 
         text: 'Ovde ce trenutnom adminu da se pokazuju podaci o njegovom rent-a-car servisu',
         realId : 0,
@@ -197,7 +212,9 @@ export default {
         vehicles: [],
 
 
-        quickRes: []
+        quickRes: [],
+
+        adminRentACarId : 0
 
 
 
@@ -207,7 +224,7 @@ export default {
     methods: {
         fetchRentACar: function(){
             this.$axios
-            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId)
+            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId, yourConfig)
             .then(response => {
                                 this.rentACar.id = response.data.id;
                                 this.rentACar.name  = response.data.name;
@@ -218,7 +235,7 @@ export default {
         },
         fetchQuickReservations: function(){
             this.$axios
-            .get('http://localhost:8080/api/getQuickReservations/'+ this.rentACarId)
+            .get('http://localhost:8080/api/getQuickReservations/'+ this.rentACarId, yourConfig)
             .then(response => {
                     var quickReservations = response.data
                     this.quickRes=[];
@@ -262,7 +279,7 @@ export default {
         },
         editOnBackend: function(){
             this.$axios
-            .put('http://localhost:8080/api/rentACars/',this.rentACar)
+            .put('http://localhost:8080/api/rentACars/',this.rentACar, yourConfig)
             .then(() => {
                 this.beforeChange.name = this.rentACar.name;
                 this.beforeChange.description = this.rentACar.description;
@@ -273,15 +290,24 @@ export default {
                 this.rentACar.name  = this.beforeChange.name;
                 this.rentACar.description = this.beforeChange.description;
 
-            });
-            
-             
+            }); 
         }
+        
     },
     created(){
+
         this.realId = this.rentACarId
         this.fetchRentACar();
         this.fetchQuickReservations();
+    },
+    computed: {
+        adminsPage(){
+            return localStorage.getItem("rentACarId") == this.rentACarId
+        }
     }
+    
+        
+
+    
 }
 </script>

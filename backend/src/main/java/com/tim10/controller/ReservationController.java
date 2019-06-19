@@ -14,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.RegisteredUser;
-import com.tim10.domain.Room;
-import com.tim10.domain.RoomReservation;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
-import com.tim10.dto.RoomDTO;
 import com.tim10.dto.RoomReservationDTO;
 import com.tim10.service.ReservationService;
 import com.tim10.service.RoomReservationService;
@@ -135,22 +132,19 @@ public class ReservationController {
 	@Autowired
 	private RoomReservationService roomReservationService;
 
-	@Autowired
-	private RoomService roomService;
-
 	/*
 	 * Rezervisanje sobe/soba
 	 */
-	@RequestMapping(value = "/reserveRoom", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO) {
-
-		for (RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
-			Room room = roomService.getRoom(roomDTO.getId()).get();
-			RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
-					reservationDTO.getDateTo(), reservationDTO.getTotalPrice(), reservationDTO.getAdditionalServices(),
-					room);
-			roomReservationService.save(roomReservation);
+	@RequestMapping(value = "/reserveRoom/{groupResId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO,
+											@PathVariable Long groupResId) {
+		try{
+			roomReservationService.reserveRooms(reservationDTO, groupResId);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	
 }

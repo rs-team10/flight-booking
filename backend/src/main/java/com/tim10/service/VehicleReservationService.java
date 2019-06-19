@@ -14,9 +14,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.BranchOffice;
 import com.tim10.domain.Location;
@@ -40,9 +49,8 @@ import com.tim10.repository.VehicleReservationRepository;
 @Service
 public class VehicleReservationService {
 	
+	public static int index = 0;
 	/*
-
-	
 	@Autowired
 	private BranchOfficeRepository branchOfficeRepository;
 	*/
@@ -59,18 +67,20 @@ public class VehicleReservationService {
 	@Autowired
 	private RentACarRepository rentACarRepository;
 	
+	@PersistenceContext
+	private EntityManager em;
 	
 	
+	@Transactional(readOnly = true, propagation=Propagation.REQUIRES_NEW)
 	public VehicleReservationPrewDTO forPreview(Long vehicleId) throws  ResourceNotFoundException, ParseException{
 		
+		
 		Optional<Vehicle> mybVehicle = vehicleRepository.findById(vehicleId);
-		
-		
 		if(!mybVehicle.isPresent())
 			throw new ResourceNotFoundException("Vehicle with id: "+vehicleId+" doesn't exist!");
-		
 		Vehicle vehicle = mybVehicle.get();
 		
+
 		BranchOffice bo = vehicle.getBranchOffice();
 		Location loc = bo.getLocation(); 
 		RentACar rac = bo.getMainOffice();
@@ -83,6 +93,7 @@ public class VehicleReservationService {
 		String city = loc.getCity();
 		Long vId = vehicleId;
 		PriceList priceList = rac.getAdditionalServicesPriceList();
+		
 		
 		return new VehicleReservationPrewDTO(rentACarId,  rentACarName, branchOfficeId, country, city, vId, priceList);
 		
@@ -253,40 +264,70 @@ public class VehicleReservationService {
 	}
 	
 	
-	
-	
-	public boolean saveVehicleReservation(Long mainReservationId, VehicleReservationDTO vehicleResDTO) throws ResourceNotFoundException {
+	//@Lock(LockModeType.PESSIMISTIC_READ)
+	//
+	@Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ )
+	public boolean saveVehicleReservation(Long mainReservationId, VehicleReservationDTO vehicleResDTO) throws ResourceNotFoundException, IOException, InterruptedException, Exception {
 		
-		
+		System.out.println("--------------------");
 		
 		Long id = vehicleResDTO.getVehicleId();
-        Optional<Vehicle> mybVeh = vehicleRepository.findById(id);
+		/*
+		Query q = em.createQuery("from Vehicle v where v.id = :vehicleId");
+		q.setParameter("vehicleId", id);
+		q.setLockMode(LockModeType.PESSIMISTIC_READ);
+		q.getResultList().get(0);
+		Vehicle vehicle =(Vehicle) q.getResultList().get(0);
+		
+		Vrati dobro vozilo, kada dodje sledeci req komotno procita isto vozilo
+		
+		Vehicle vehicle = em.find(Vehicle.class, id);
+		em.lock(vehicle, LockModeType.PESSIMISTIC_READ);
+		
+		
+		Vehicle vehicle = em.find(Vehicle.class, id, LockModeType.PESSIMISTIC_READ);
+		*/
+		
+		
+		Vehicle vehicle = em.find(Vehicle.class, id);
+        System.out.println(em.getLockMode(vehicle));
+        				
+        em.lock(vehicle, LockModeType.PESSIMISTIC_WRITE);//LockModeType.PESSIMISTIC_READ //ovo bi trebalo da baci exception 
+
+	    System.out.println(vehicle.getId()+" "+vehicle.getManufacturer()+" "+em.getLockMode(vehicle));
+	    
+		
+		
+	    /*
+        Optional<Vehicle> mybVeh = vehicleRepository.findById(id); 
         
         if(!mybVeh.isPresent())
         	throw new ResourceNotFoundException("Vehicle with id: "+id+" doesn't exist!");
         Vehicle vehicle = mybVeh.get();
-		
+        */
+       
+        
 		Date from = vehicleResDTO.getDateFrom();
 		Date to = vehicleResDTO.getDateTo();
+		
+		
+		if(vehicle.isReserved(from, to))
+			throw new IOException("Voziolo je zauzeto");
+
+		
 		
 		VehicleReservation vehicleRes = new VehicleReservation();
 		
 		vehicleRes.setDateFrom(from);
 		vehicleRes.setDateTo(to);
-		
-		
-		LocalDate cFrom = from.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate cTo = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        int days = (int) ChronoUnit.DAYS.between(cFrom, cTo);
-		
-        
-        
         vehicleRes.setReservedVehicle(vehicle);
         
-        Set<PriceListItem> items = vehicleResDTO.getAdditionalServices();
+        LocalDate cFrom = from.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate cTo = to.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int days = (int) ChronoUnit.DAYS.between(cFrom, cTo); 
         
-        BigDecimal totalPrice = vehicle.getDailyRentalPrice().multiply(new BigDecimal(days));
-        
+        Set<PriceListItem> items = vehicleResDTO.getAdditionalServices();   
+        BigDecimal totalPrice = vehicle.getDailyRentalPrice().multiply(new BigDecimal(days));   
         for(PriceListItem item : items) {
         	
         	BigDecimal percent = (new BigDecimal(1).subtract(item.getDiscount().divide(new BigDecimal(100))));
@@ -295,22 +336,16 @@ public class VehicleReservationService {
         	totalPrice = totalPrice.multiply(percent).add(price);
         	
         }
-        
-		
+        	
 		vehicleRes.setTotalPrice(totalPrice);
 		vehicleRes.setAdditionalServices(items);
 		vehicle.getReservations().add(vehicleRes);
 		
-		//vehicle = vehicleRepository.save(vehicle);
-		//System.out.println("STA JE OVAJ BROJ OVDE REKAO -> " + vehicle.getReservations().size());
-		
-		
+		Thread.sleep(5000);
 		vehicleReservationRepository.save(vehicleRes);
 		
-		//Vehicle ajde = vehicleRepository.findById(vehicle.getId()).get();
-		//System.out.println(ajde.getId());
-		//7System.out.println("STA JE OVAJ BROJ OVDE REKAO -> " + ajde.getReservations().size());
-		
+
+
 		return true;
 		
 	}
@@ -347,17 +382,20 @@ public class VehicleReservationService {
 		 return ret;
 	 }
 	 
-	public void confirQuickVehicleRes(Long mainResId, Long vehicleResId) throws ResourceNotFoundException{
+	@Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ )
+	public boolean confirQuickVehicleRes(Long mainResId, Long vehicleResId) throws ResourceNotFoundException, ObjectOptimisticLockingFailureException, InterruptedException{
 		
 		
 		
-		Optional<QuickVehicleReservation> quckResMyb = qVehicleReservationRepository.findById(vehicleResId);
-		
-		if(!quckResMyb.isPresent())
-			throw new ResourceNotFoundException("Quick reservation with id: "+vehicleResId+" doesn't exist!");
-		
-		QuickVehicleReservation quckRes = quckResMyb.get(); //to dodaj u main rezervaciju
-		
+		QuickVehicleReservation quckRes;
+		try {
+			quckRes = qVehicleReservationRepository.findOneById(vehicleResId);
+			Thread.sleep(5000);
+		} catch (ObjectOptimisticLockingFailureException e) {
+			throw new ObjectOptimisticLockingFailureException("Quick vehicle reservation has already been reserved", QuickVehicleReservation.class);
+		}
+		 
+		return quckRes != null;
 	}
 	
 

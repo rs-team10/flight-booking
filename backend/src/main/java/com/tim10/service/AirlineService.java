@@ -14,6 +14,8 @@ import java.util.TreeMap;
 import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,6 +55,10 @@ public class AirlineService {
 		return airlineRepository.findAll();
 	}
 	
+	public Page<Airline> findAll(Pageable page){
+		return airlineRepository.findAll(page);
+	}
+	
 	public Airline registerAirline(Airline airline) throws Exception {
 		for(AirlineAdmin admin : airline.getAdministrators()) {
 			if(userRepository.findOneByUsername(admin.getUsername()).isPresent())
@@ -60,6 +66,7 @@ public class AirlineService {
 			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
 				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+			admin.setCompany(airline);
 		}
 		return save(airline);
 	}
