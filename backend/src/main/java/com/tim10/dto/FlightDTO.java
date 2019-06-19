@@ -47,8 +47,8 @@ public class FlightDTO implements Serializable {
 			this.transitDestinations.add(d.getName());
 		}
 		
-		this.departureDate = new SimpleDateFormat("yyyy-MM-dd").format(flight.getDepartureDate());
-		this.arrivalDate = new SimpleDateFormat("yyyy-MM-dd").format(flight.getArrivalDate());
+		this.departureDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(flight.getDepartureDate());
+		this.arrivalDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(flight.getArrivalDate());
 		
 		this.ticketPrice = flight.getTicketPrice();
 		this.duration = flight.getDuration();

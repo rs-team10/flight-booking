@@ -3,6 +3,7 @@ package com.tim10.repository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ public interface AirlineRepository extends JpaRepository<Airline, Long> {
 	
 	List<Airline> findAll();
 	
-	Airline findOneByName(String name);
+	Optional<Airline> findOneByName(String name);
 	
 	@Query(value = "SELECT a.name FROM Airlines a", nativeQuery = true)
 	List<String> findAllNames();

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tim10.domain.Airline;
 import com.tim10.domain.Flight;
 import com.tim10.domain.FlightReservation;
 import com.tim10.domain.GroupReservation;
@@ -31,6 +32,7 @@ import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatReservationDTO;
+import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.FlightRepository;
 import com.tim10.repository.GroupReservationRepository;
 import com.tim10.repository.QuickFlightReservationRepository;
@@ -43,6 +45,9 @@ public class ReservationService {
 	
 	//@Autowired
 	//FlightReservationRepository flightReservationRepository;
+	
+	@Autowired
+	AirlineRepository airlineRepository;
 	
 	@Autowired
 	FlightRepository flightRepository;
@@ -210,6 +215,9 @@ public class ReservationService {
 			throw new EntityNotFoundException("Quick flight reservation not found.");
 		QuickFlightReservation qfr = repoQuickFlightReservation.get();
 		
+		qfr.setPassengerFirstName(currentUser.getFirstName());
+		qfr.setPassengerLastName(currentUser.getLastName());
+
 		Reservation reservation = new Reservation();
 		reservation.setFlightReservation(qfr);
 		
@@ -227,6 +235,12 @@ public class ReservationService {
 		
 		groupReservation.add(reservation);
 		reservation.setGroupReservation(groupReservation);
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(qfr.getSeat().getFlight().getAirline().getId());
+		if(!repoAirline.isPresent())
+			throw new EntityNotFoundException("Quick flight reservation not found.");
+		
+		repoAirline.get().getQuickFlightReservations().remove(qfr);
 		
 		try {
 			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);

@@ -139,6 +139,26 @@ export default {
     methods: {
         reserveFlight(quickReservation) {
             // TODO: Slanje zahteva za quick reservation na backend
+
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
+            this.$axios.post('http://localhost:8080/api/reservations/reserveQuickFlight', quickReservation, yourConfig)
+                .then(response => {
+                                        
+                    this.$swal({
+                            title: 'Success', 
+                            html: 'Flight reservation successfull',
+                            type: 'success',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            this.$router.go(-1);
+                        });
+
+                }).catch((error) => {
+                   
+                    this.$swal("Error", "Unsuccessfull reservation. The selected quick reservation has already been sold.", 'error');
+                });
         }
     }
 }

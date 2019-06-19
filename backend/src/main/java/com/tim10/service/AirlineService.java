@@ -3,23 +3,26 @@ package com.tim10.service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
-import javax.persistence.PersistenceException;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.RollbackException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
@@ -27,13 +30,14 @@ import com.tim10.domain.Destination;
 import com.tim10.domain.Location;
 import com.tim10.domain.PriceListItem;
 import com.tim10.domain.QuickFlightReservation;
-import com.tim10.dto.AirlineProfileDTO;
+import com.tim10.domain.Seat;
 import com.tim10.dto.AirlineReportDTO;
 import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.QuickFlightReservationRepository;
+import com.tim10.repository.SeatRepository;
 import com.tim10.repository.UserRepository;
 
 @Service
@@ -43,6 +47,9 @@ public class AirlineService {
 	private AirlineRepository airlineRepository;
 	
 	@Autowired
+	private SeatRepository seatRespository;
+	
+	@Autowired
 	private QuickFlightReservationRepository quickFlightReservationRepository;
 	
 	@Autowired
@@ -50,6 +57,9 @@ public class AirlineService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	
+	
 	
 	public List<Airline> findAll() {
 		return airlineRepository.findAll();
@@ -76,7 +86,7 @@ public class AirlineService {
 	}
 	
 	public Airline findOneByName(String name) {
-		return airlineRepository.findOneByName(name);
+		return airlineRepository.findOneByName(name).get();
 	}
 	
 	public Optional<Airline> findOne(Long id) {
@@ -84,441 +94,309 @@ public class AirlineService {
 	}
 
 	// ===========================================================================
-	
+	// AIRLINE CRUD
 	// ===========================================================================
+	
+	public Airline getCurrentAdminAirline() throws EntityNotFoundException {
+		
+		AirlineAdmin airlineAdmin = (AirlineAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(airlineAdmin == null)
+			throw new EntityNotFoundException(String.format("Airline administrator not found."));
 
-	public ResponseEntity<AirlineProfileDTO> getCurrentAdminAirline() {
+		Optional<Airline> airline = airlineRepository.findById(airlineAdmin.getCompany().getId());
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline administrator %s does not have an airline associated.", airlineAdmin.getUsername()));
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		AirlineProfileDTO airlineProfileDTO = new AirlineProfileDTO(airline);
-		return new ResponseEntity<AirlineProfileDTO>(airlineProfileDTO, HttpStatus.OK);
+		return airline.get();
 	}
 
-	public ResponseEntity<?> updateAirline(Airline editedAirline, String previousAirlineName) {
+	public Airline updateAirline(Airline editedAirline) throws EntityExistsException {
+
+		Airline airline = getCurrentAdminAirline();
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		// tada ce moci da se izbaci previousAirlineName jer korisnik moze da menja
-		// samo svoju aviokompaniju
-		Airline existingAirline = airlineRepository.findOneByName(previousAirlineName);
-		
-		if(existingAirline == null)
-			return new ResponseEntity<>("Airline not found.", HttpStatus.BAD_REQUEST);
-		if(editedAirline.getName() != null && !editedAirline.getName().equals(existingAirline.getName())) {
-			if(airlineRepository.findOneByName(editedAirline.getName()) != null)
-				return new ResponseEntity<>("Airline name already in use.", HttpStatus.BAD_REQUEST);
-			existingAirline.setName(editedAirline.getName());
+		if(editedAirline.getName() != null && !editedAirline.getName().equals(airline.getName())) {
+			
+			if(airlineRepository.findOneByName(editedAirline.getName()).isPresent())
+				throw new EntityExistsException(String.format("Airline name %s already in use.", editedAirline.getName()));
+			else
+				airline.setName(editedAirline.getName());
 		}
+		
 		if(editedAirline.getDescription() != null)
-			existingAirline.setDescription(editedAirline.getDescription());
+			airline.setDescription(editedAirline.getDescription());
+		
 		if(editedAirline.getLocation().getCountry() != null && editedAirline.getLocation().getCity() != null && editedAirline.getLocation().getStreet() != null) {
 			Location updatedLocation = editedAirline.getLocation();
-			existingAirline.getLocation().setCountry(updatedLocation.getCountry());
-			existingAirline.getLocation().setCity(updatedLocation.getCity());
-			existingAirline.getLocation().setStreet(updatedLocation.getStreet());
-			existingAirline.getLocation().setformattedAddress(updatedLocation.getformattedAddress());
-			existingAirline.getLocation().setLatitude(updatedLocation.getLatitude());
-			existingAirline.getLocation().setLongitude(updatedLocation.getLongitude());
+			airline.getLocation().setCountry(updatedLocation.getCountry());
+			airline.getLocation().setCity(updatedLocation.getCity());
+			airline.getLocation().setStreet(updatedLocation.getStreet());
+			airline.getLocation().setformattedAddress(updatedLocation.getformattedAddress());
+			airline.getLocation().setLatitude(updatedLocation.getLatitude());
+			airline.getLocation().setLongitude(updatedLocation.getLongitude());
 		}
 		
-		try {
-			airlineRepository.save(existingAirline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return airlineRepository.save(airline);
 	}
 	
-	public ResponseEntity<List<DestinationDTO>> getBusinessLocations() {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
+	public Set<Destination> getBusinessLocations() {
 		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Airline airline = getCurrentAdminAirline();
+		return airline.getBusinessLocations();
 		
-		List<DestinationDTO> businessLocationsList = new ArrayList<DestinationDTO>();
-		
-		for (Destination destination : airline.getBusinessLocations()) {
-			businessLocationsList.add(new DestinationDTO(destination));
-		}
-		
-		return new ResponseEntity<List<DestinationDTO>>(businessLocationsList, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<?> addBusinessLocation(Destination destination) {
+	public Airline addBusinessLocation(Destination newDestination) {
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Airline airline = getCurrentAdminAirline();
 		
 		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code
-		airline.getBusinessLocations().add(destination);
 		
-		try {
-			airlineRepository.save(airline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		airline.getBusinessLocations().add(newDestination);
+		return airlineRepository.save(airline);
 	}
 	
-	public ResponseEntity<?> removeBusinessLocation(DestinationDTO destinationDTO) {
+	public Airline removeBusinessLocation(DestinationDTO destinationDTO) {
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
+		Airline airline = getCurrentAdminAirline();
 		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		// TODO : Mora da postoji neki drugi nacin za ovo
 		Destination destinationToRemove = null;
-		for (Destination d : airline.getBusinessLocations()) {
+		for (Destination d : airline.getBusinessLocations())
 			if(d.getName().equals(destinationDTO.getName()) && d.getAirportCode().equals(destinationDTO.getAirportCode()))
 				destinationToRemove = d;
-		}
 		
-		// TODO: Proveriti da li postoje letovi koji su vezani za ovu lokaciju, ukoliko ne postoje, obrisati
-		if(destinationToRemove != null)
-			airline.getBusinessLocations().remove(destinationToRemove);
+		if(destinationToRemove == null)
+			throw new EntityNotFoundException(String.format("Destination with name %s does not exist.", destinationDTO.getName()));
 		
-		try {
-			airlineRepository.save(airline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		// TODO: Proveriti da li postoji let za datu lokaciju i zabraniti brisanje
+		
+		airline.getBusinessLocations().remove(destinationToRemove);
+		return airlineRepository.save(airline);
 	}
 	
-	public ResponseEntity<List<PriceListItemDTO>> getPriceListItems() {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
+	public Set<PriceListItem> getPriceListItems() {
 		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Airline airline = getCurrentAdminAirline();
+		return airline.getLuggagePriceList().getPriceListItems();
 		
-		List<PriceListItemDTO> priceListItems = new ArrayList<PriceListItemDTO>();
-		
-		for (PriceListItem item : airline.getLuggagePriceList().getPriceListItems()) {
-			priceListItems.add(new PriceListItemDTO(item));
-		}
-		
-		return new ResponseEntity<List<PriceListItemDTO>>(priceListItems, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<?> addPriceListItem(PriceListItem item) {
+	public Airline addPriceListItem(PriceListItem item) {
 		
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
+		Airline airline = getCurrentAdminAirline();
 		airline.getLuggagePriceList().getPriceListItems().add(item);
 		
-		try {
-			airlineRepository.save(airline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return airlineRepository.save(airline);
 	}
 
-	public ResponseEntity<?> removePriceListItem(PriceListItemDTO itemDTO) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
+	public Airline removePriceListItem(PriceListItemDTO itemDTO) {
 		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Airline airline = getCurrentAdminAirline();
 		
-		// TODO : Mora da postoji neki drugi nacin za ovo
 		PriceListItem itemToRemove = null;
-		for (PriceListItem i : airline.getLuggagePriceList().getPriceListItems()) {
+		for (PriceListItem i : airline.getLuggagePriceList().getPriceListItems())
 			if(i.getName().equals(itemDTO.getName()))
 				itemToRemove = i;
-		}
 		
 		// TODO: Proveriti da li postoje rezervacije koje referenciraju ovaj price list item, ukoliko ne postoje, obrisati
-		if(itemToRemove != null)
-			airline.getLuggagePriceList().getPriceListItems().remove(itemToRemove);
 		
-		try {
-			airlineRepository.save(airline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		if(itemToRemove == null)
+			throw new EntityNotFoundException(String.format("Price list item with name %s does not exist.", itemDTO.getName()));
+		
+		airline.getLuggagePriceList().getPriceListItems().remove(itemToRemove);
+		return airlineRepository.save(airline);
 	}
 
-	public ResponseEntity<List<QuickFlightReservationDTO>> getQuickFlightReservations() {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
-		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		List<QuickFlightReservationDTO> dtos = new ArrayList<QuickFlightReservationDTO>();
-		
-		for (QuickFlightReservation item : airline.getQuickFlightReservations()) {
-			
-			QuickFlightReservationDTO dto = new QuickFlightReservationDTO();
-			
-			dto.setId(item.getId());
-			dto.setSeatId(item.getSeat().getId());
-			dto.setSeatNumber(item.getSeat().getRed().toString() + (char)(item.getSeat().getKolona() + 64));
-			dto.setDiscount(item.getDiscount());
-			
-			dto.setFlightNumber(item.getSeat().getFlight().getFlightNumber());
-			dto.setDeparture(item.getSeat().getFlight().getDeparture().getName());
-			dto.setDestination(item.getSeat().getFlight().getDestination().getName());
-			dto.setDate(item.getSeat().getFlight().getDepartureDate().toString());
-			dto.setOriginalPrice(item.getSeat().getFlight().getTicketPrice());
-			
-			dtos.add(dto);
-		}
-		
-		return new ResponseEntity<List<QuickFlightReservationDTO>>(dtos, HttpStatus.OK);
+	public Set<QuickFlightReservation> getQuickFlightReservations() {
+
+		Airline airline = getCurrentAdminAirline();
+		return airline.getQuickFlightReservations();
 		
 	}
 
-	public ResponseEntity<?> deleteQuickFlightReservation(QuickFlightReservationDTO dto) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		Airline airline = airlineRepository.findById(1L).get();
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public QuickFlightReservation createQuickFlightReservation(QuickFlightReservationDTO dto) {
 		
-		if(airline == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		// TODO: Dovrsiti transakcije
 		
-		// TODO : Mora da postoji neki drugi nacin za ovo
-		QuickFlightReservation itemToRemove = null;
-		for (QuickFlightReservation i : airline.getQuickFlightReservations()) {
-			if(i.getId().equals(dto.getId()))
-				itemToRemove = i;
-		}
+		Optional<Seat> repoSeat = seatRespository.findById(dto.getSeatId());
+		if(!repoSeat.isPresent())
+			throw new EntityNotFoundException("Seat not found.");
+			
+		Seat seat = repoSeat.get();
+		if(!seat.getIsActive() || seat.getIsReserved())
+			throw new RollbackException("Seat is reserved.");
 		
-		// TODO: Proveriti !!!
-		if(itemToRemove != null) {
-			if(itemToRemove.getPassengerFirstName().equals(null) && itemToRemove.getPassengerLastName().equals(null) && itemToRemove.getPassportNumber().equals(null)) {
-				airline.getQuickFlightReservations().remove(itemToRemove);
-				quickFlightReservationRepository.delete(itemToRemove);
-			}
-		}
+		if(seat.getFlight().getDepartureDate().before(new Date()))
+			throw new RollbackException("Flight has already passed.");
 		
-		try {
-			airlineRepository.save(airline);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (PersistenceException e) {
-			return new ResponseEntity<>("Error occured while trying to save entity to DB.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		seat.setIsReserved(true);
+		QuickFlightReservation quickFlightReservation = new QuickFlightReservation();
+
+		quickFlightReservation.setDiscount(dto.getDiscount());
+		quickFlightReservation.setSeat(seat);
+
+		Optional<Airline> repoAirline = airlineRepository.findById(seat.getFlight().getAirline().getId());
+		if(!repoAirline.isPresent()) 
+			throw new EntityNotFoundException("Airline not found");
+		
+		Airline airline = repoAirline.get();
+		airline.getQuickFlightReservations().add(quickFlightReservation);
+		
+		airlineRepository.save(airline);
+		
+		return quickFlightReservation;
 	}
 	
-
+	public Airline deleteQuickFlightReservation(QuickFlightReservationDTO dto) {
+		
+		Airline airline = getCurrentAdminAirline();
+		
+		QuickFlightReservation itemToRemove = null;
+		for (QuickFlightReservation i : airline.getQuickFlightReservations())
+			if(i.getId().equals(dto.getId()))
+				itemToRemove = i;
+		
+		if(itemToRemove == null) 
+			throw new EntityNotFoundException(String.format("Quick flight reservation with id %d does not exist.", dto.getId()));
+			
+		if(itemToRemove.getPassengerFirstName() == null && itemToRemove.getPassengerLastName() == null && itemToRemove.getPassportNumber() == null) {
+			itemToRemove.getSeat().setIsReserved(false);
+			itemToRemove.setSeat(null);
+			airline.getQuickFlightReservations().remove(itemToRemove);
+			quickFlightReservationRepository.delete(itemToRemove);
+		}
+		
+		return airlineRepository.save(airline);
+	}
 	
 	// ==============================================================================
 	// REPORTS
 	// ==============================================================================
-	
 
-	public AirlineReportDTO getReports() {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+	public AirlineReportDTO getReports() throws ParseException {
 		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
-			Airline airline = repoAirline.get();
-			
-			AirlineReportDTO dto = new AirlineReportDTO(airline);
-			dto.setNumberOfFeedbacks(airlineRepository.getNumberOfFeedbacks(airline.getId()));
-			
-			String todayString = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
-			dto.setAverageFeedback(getAverageFeedback());
-			dto.setDailyReports(getDailyReport(todayString));
-			dto.setWeeklyReports(getWeeklyReport(todayString));
-			dto.setYearlyReports(getYearlyReport(0));
-			
-			return dto;
-		}
+		Airline airline = getCurrentAdminAirline();
+	
+		AirlineReportDTO reportDTO = new AirlineReportDTO(airline);
+		reportDTO.setNumberOfFeedbacks(airlineRepository.getNumberOfFeedbacks(airline.getId()));
 		
-		return null;
+		String todayString = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+		reportDTO.setAverageFeedback(getAverageFeedback());
+		reportDTO.setDailyReports(getDailyReport(todayString));
+		reportDTO.setWeeklyReports(getWeeklyReport(todayString));
+		reportDTO.setYearlyReports(getYearlyReport(0));
+		
+		return reportDTO;
 	}
 	
 	public Double getAverageFeedback() {
-		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
-			Airline airline = repoAirline.get();
-			
-			return airlineRepository.getAverageFeedback(airline.getId());
-		}
-		return null;
-		
+		Airline airline = getCurrentAdminAirline();
+		return airlineRepository.getAverageFeedback(airline.getId());
 	}
 
 	public BigDecimal getIncomeReport(String dateFrom, String dateTo) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
-		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
-			Airline airline = repoAirline.get();
-			
-			return airlineRepository.getIncomeReport(airline.getId(), dateFrom, dateTo);
-		}
-		return null;
+		Airline airline = getCurrentAdminAirline();
+		return airlineRepository.getIncomeReport(airline.getId(), dateFrom, dateTo);
 	}
 
-	public Map<Long, Integer> getDailyReport(String dateFrom) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+	public Map<Long, Integer> getDailyReport(String dateFrom) throws ParseException {
 		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
+		Airline airline = getCurrentAdminAirline();
 			
-			Airline airline = repoAirline.get();
-			
-			Map<Long, Integer> dailyReport = new TreeMap<Long, Integer>();
-			Calendar calendar = Calendar.getInstance();
-			
-			Date date;
-			try {
-				date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-				return null;
-			}
-			calendar.setTime(date);
+		Map<Long, Integer> dailyReport = new TreeMap<Long, Integer>();
+		Calendar calendar = Calendar.getInstance();
+		
+		Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
 
-			calendar.add(Calendar.DATE, -12);
-			String previousString = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-			
-			
-			Calendar newCalendar = Calendar.getInstance();
-			newCalendar.setTime(date);
-			for(int i = 0; i < 12; i++) {
-
-				newCalendar.add(Calendar.DATE, -1);
-				String dateString = new SimpleDateFormat("yyyy-MM-dd").format(newCalendar.getTime());
-				
-				Date newDate;
-				try {
-					newDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-				} catch (ParseException e) {
-					e.printStackTrace();
-					return null;
-				}
-				
-				dailyReport.put(newDate.getTime(), 0);
-				
-			}
-			
-			List<Date> datesList = airlineRepository.getFlightReservations(airline.getId(), previousString, dateFrom);
-			
-			for(Date d : datesList) {
-				
-				String tempDateString = new SimpleDateFormat("yyyy-MM-dd").format(d);
-				Date tempDate = null;
-				try {
-					tempDate = new SimpleDateFormat("yyyy-MM-dd").parse(tempDateString);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				
-				Integer value = dailyReport.get(tempDate.getTime());
-				dailyReport.put(tempDate.getTime(), ++value);
-			}
-			
-			return dailyReport;
+		calendar.setTime(date);
+		calendar.add(Calendar.DATE, -12);
+		
+		String previousString = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+		
+		
+		Calendar newCalendar = Calendar.getInstance();
+		newCalendar.setTime(date);
+		for(int i = 0; i < 12; i++) {
+			newCalendar.add(Calendar.DATE, -1);
+			String dateString = new SimpleDateFormat("yyyy-MM-dd").format(newCalendar.getTime());
+			Date newDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+		
+			dailyReport.put(newDate.getTime(), 0);
 		}
 		
-		return null;
+		List<Date> datesList = airlineRepository.getFlightReservations(airline.getId(), previousString, dateFrom);
+		
+		for(Date d : datesList) {
+			
+			String tempDateString = new SimpleDateFormat("yyyy-MM-dd").format(d);
+			Date tempDate = new SimpleDateFormat("yyyy-MM-dd").parse(tempDateString);
+			
+			Integer value = dailyReport.get(tempDate.getTime());
+			dailyReport.put(tempDate.getTime(), ++value);
+		}
+		
+		return dailyReport;
 	}
 
-	public Map<Long, Integer> getWeeklyReport(String dateFrom) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
+	public Map<Long, Integer> getWeeklyReport(String dateFrom) throws ParseException {
+		Airline airline = getCurrentAdminAirline();
+			
+		Map<Long, Integer> weeklyReport = new TreeMap<Long, Integer>();
+		Calendar calendar = Calendar.getInstance();
 		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
-			
-			Airline airline = repoAirline.get();
-			
-			Map<Long, Integer> weeklyReport = new TreeMap<Long, Integer>();
-			Calendar calendar = Calendar.getInstance();
-			
-			Date date;
-			try {
-				date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-				return null;
-			}
-			calendar.setTime(date);
-			int diff = calendar.get(Calendar.DAY_OF_WEEK) - calendar.getFirstDayOfWeek();
-			
-			List<Date> listOfReservations;
-			String start, end;
-			
-			calendar.add(Calendar.DATE, -diff);
-			String temp = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-			
-			for(int i = 0; i < 12; i++) {
-				
-				calendar.add(Calendar.DATE, -7);
-				
-				start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-				Date monday = calendar.getTime();
+		Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFrom);
 
-				calendar.add(Calendar.DATE, 6);
-			    end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-			    
-			    listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
-			    weeklyReport.put(monday.getTime(), listOfReservations.size());
-			    	 
-			    calendar.add(Calendar.DATE, -6);
-			}
+		calendar.setTime(date);
+		int diff = calendar.get(Calendar.DAY_OF_WEEK) - calendar.getFirstDayOfWeek();
+		
+		List<Date> listOfReservations;
+		String start, end;
+		
+		calendar.add(Calendar.DATE, -diff);
+		
+		for(int i = 0; i < 12; i++) {
 			
-			return weeklyReport;
-	
+			calendar.add(Calendar.DATE, -7);
+			
+			start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+			Date monday = calendar.getTime();
+
+			calendar.add(Calendar.DATE, 6);
+		    end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+		    
+		    listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
+		    weeklyReport.put(monday.getTime(), listOfReservations.size());
+		    	 
+		    calendar.add(Calendar.DATE, -6);
 		}
 		
-		return null;
+		return weeklyReport;
 	}
 
 	public Map<Long, Integer> getYearlyReport(int numberOfYears) {
-		// TODO: preuzeti od trenutnog korisnika tj. admin-a njegovu aviokompaniju
 		
-		Optional<Airline> repoAirline = airlineRepository.findById(1L);
-		if(repoAirline.isPresent()) {
-			Airline airline = repoAirline.get();
+		Airline airline = getCurrentAdminAirline();
 			
-			Map<Long, Integer> yearlyReport = new TreeMap<Long, Integer>();
-			Calendar calendar = Calendar.getInstance();
-			String start, end;
-			List<Date> listOfReservations;
+		Map<Long, Integer> yearlyReport = new TreeMap<Long, Integer>();
+		Calendar calendar = Calendar.getInstance();
+		String start, end;
+		List<Date> listOfReservations;
+		
+		calendar.add(Calendar.YEAR, -numberOfYears);
+		
+		for(int i = 0; i < 12; i++) {
+			calendar.set(Calendar.MONTH, i);
+			start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
 			
-			calendar.add(Calendar.YEAR, -numberOfYears);
+			calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
+			end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
 			
-			for(int i = 0; i < 12; i++) {
-				calendar.set(Calendar.MONTH, i);
-				start = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-				
-				calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
-				end = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
-				
-				listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
-			    yearlyReport.put(calendar.getTime().getTime(), listOfReservations.size());
-				
-			    calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE));
-			}
+			listOfReservations = airlineRepository.getFlightReservations(airline.getId(), start, end);
+		    yearlyReport.put(calendar.getTime().getTime(), listOfReservations.size());
 			
-			return yearlyReport;
+		    calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE));
 		}
 		
-		return null;
+		return yearlyReport;
 	}
-
-
-
-	
-	
 }

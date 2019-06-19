@@ -346,14 +346,15 @@ export default {
     methods: {
         getIncomeReport() {
 
-            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
             this.$axios.get('http://localhost:8080/api/airlines/getIncomeReport/', {
+                    headers: { 
+                        Authorization: "Bearer " + localStorage.getItem("token") 
+                    },
                     params: {
                         dateFrom : this.dateFrom,
                         dateTo: this.dateTo
                     }
-                }, yourConfig).then(response => {
+                }).then(response => {
                     this.income = response.data;
                     this.showDateFrom = this.dateFrom;
                     this.showDateTo = this.dateTo;
@@ -362,13 +363,14 @@ export default {
         },
         getMonthlySales() {
 
-            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
             this.$axios.get('http://localhost:8080/api/airlines/monthlyReport/', {
+                    headers: { 
+                        Authorization: "Bearer " + localStorage.getItem("token") 
+                    },
                     params: {
                         numberOfYears : new Date().getFullYear() - this.year
                     }
-                }, yourConfig).then(response => {
+                }).then(response => {
                     this.yearlyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>this.months[new Date(parseInt(x)).getMonth()])),
                         datasets : [
@@ -385,13 +387,15 @@ export default {
                 })
         },
         getWeeklySales() {
-            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
             this.$axios.get('http://localhost:8080/api/airlines/weeklyReport/', {
+                    headers: { 
+                        Authorization: "Bearer " + localStorage.getItem("token") 
+                    },
                     params: {
                         dateFrom : this.weeklyDate
                     }
-                }, yourConfig).then(response => {
+                }).then(response => {
                     this.weeklyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
                         datasets : [
@@ -408,14 +412,15 @@ export default {
         },
         getDailySales() {
 
-            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-
             this.$axios
                 .get('http://localhost:8080/api/airlines/dailyReport/', {
+                    headers: { 
+                        Authorization: "Bearer " + localStorage.getItem("token") 
+                    },
                     params: {
                         dateFrom : this.dailyDate
                     }
-                }, yourConfig).then(response => {
+                }).then(response => {
                     
                     this.dailyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
@@ -447,7 +452,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getReport/')
+        this.$axios.get('http://localhost:8080/api/airlines/getReport/', yourConfig)
             .then((response) => {
                 this.report = response.data;
 
