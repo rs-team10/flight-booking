@@ -48,6 +48,7 @@ export default {
                 localStorage.removeItem("token");
                 localStorage.removeItem("username");
                 localStorage.removeItem("role");
+                localStorage.removeItem("rentACarId");
                 this.success = "Logout DONE!\n User "+this.username+" is successfully logged out!";
             }
             

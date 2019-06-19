@@ -18,7 +18,6 @@ public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Long
 			+ "image," 
 			+ "latitude,"
 			+ "longitude,"
-			+ "postal_code,"
 			+ "street"
 			+ "  FROM "
 			+ 	"flight_booking.branch_office bo "

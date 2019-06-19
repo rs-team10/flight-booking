@@ -131,6 +131,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                 to : this.to
             };
             this.fetchVehicles(countryDate);
+            this.fetchQuickVehicles(countryDate);
         },
 
         fetchVehicles: function(countryDate){
@@ -229,6 +230,39 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                                                                 image               : this.getImgUrl(v.image),
                                                                 totalPrice          : this.priceForPeriod(v.dailyRentalPrice),
                                                                 //mainRentACar        : 'My rent-a-car service'
+                                                            }));
+
+                }
+          )
+          .catch(error => {
+                alert(error.resposne)
+                this.search = 'error';
+                this.$slots ='no-results';
+               //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
+               //treba na backendu napraviti da proverava velicinu itema
+            });
+
+            this.$axios
+            .post('http://localhost:8080/api/vehicleSearchQuick/'+this.country,vehicleSearchDTO)
+            .then(response => {
+                    var vehicleQuick = response.data
+                    this.vehiclesQuick=[];
+                    vehicleQuick.forEach(v => this.vehiclesQuick.push({
+                                                                id                  : v.id,
+                                                                manufacturer        : v.manufacturer,
+                                                                model               : v.model,
+                                                                year                : v.year,
+                                                                fuel                : v.fuel,
+                                                                engine              : v.engine,
+                                                                transmission        : v.transmission,
+                                                                seatsCount          : v.seatsCount,
+                                                                airCondition        : v.airCondition,
+                                                                dailyRentalPrice    : v.dailyRentalPrice,
+                                                                image               : this.getImgUrl(v.image),
+                                                                totalPrice          : v.dailyRentalPrice, //vrvtno ce da ide ocena xD
+                                                                //mainRentACar        : 'My rent-a-car service',
+                                                                quick               : true 
+  
                                                             }));
 
                 }

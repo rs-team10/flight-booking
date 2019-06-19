@@ -10,15 +10,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tim10.dto.NewRentACarDTO;
 
 @Entity
 @Table(name="RentACar")
 public class RentACar extends Company {
 	
-	@OneToMany(mappedBy="id", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="mainOffice", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<BranchOffice> branchOffices;
 	
+	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<RentACarAdmin> administrators;
 	
@@ -41,7 +43,15 @@ public class RentACar extends Company {
 		quickVehicleReservations = new HashSet<QuickVehicleReservation>();
 		this.setName(dto.getName());
 		this.setLocation(dto.getLocation());
-		administrators = dto.getAdministrators();
+		Set<RentACarAdmin> tempAdm = dto.getAdministrators();
+		HashSet<RentACarAdmin> admins = new HashSet<RentACarAdmin>();
+		for(RentACarAdmin rca : tempAdm) {
+			Set<Authority> autoriteti = new HashSet<Authority>();
+			autoriteti.add(new Authority(Role.ROLE_RENT_A_CAR_ADMIN));
+			rca.setAuthorities(autoriteti);
+			admins.add(rca);
+		}
+		this.setAdministrators(admins);
 	}
 
 	public Set<BranchOffice> getBranchOffices() {

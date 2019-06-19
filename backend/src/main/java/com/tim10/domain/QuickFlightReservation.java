@@ -2,10 +2,8 @@ package com.tim10.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
-@Table(name="QuickFlightReservations")
 public class QuickFlightReservation extends FlightReservation {
 	
 	@Column(name="discount")
@@ -22,4 +20,5 @@ public class QuickFlightReservation extends FlightReservation {
 	public void setDiscount(Double discount) {
 		this.discount = discount;
 	}
+	
 }

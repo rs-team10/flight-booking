@@ -20,8 +20,32 @@
                             </v-card>
                         </v-tab-item>   
                     </v-tabs>
+
+
+                    <v-tabs color="light blue" dark slider-color="black" ma-4>
+                        <v-tab>Current reservations</v-tab>
+                        <v-tab ripple>Reservations history</v-tab>
+                        <v-tab-item>
+                            <v-card
+                                id="scroll-target"
+                                style="max-height: 400px"
+                                class="scroll-y">
+                                <currentReservations/>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card
+                                id="scroll-target"
+                                style="max-height: 400px"
+                                class="scroll-y">
+                                <reservationsHistory/>
+                            </v-card>
+                        </v-tab-item>   
+                    </v-tabs>
+
                 </v-layout>
             </v-layout>
+            <invitations/>
         </v-container>
     </div>
 </template>
@@ -30,12 +54,18 @@
 import UserProfile from "@/components/userProfile/UserProfile.vue"
 import Friendships from "@/components/userProfile/Friendships.vue"
 import FriendRequests from "@/components/userProfile/FriendRequests.vue"
+import Invitations from "@/components/userProfile/Invitations.vue"
+import ReservationsHistory from "@/components/userProfile/ReservationsHistory.vue"
+import CurrentReservations from "@/components/userProfile/CurrentReservations.vue"
 
 export default {
     components: {
         'user-profile': UserProfile,
         'friendships': Friendships,
-        'friend-requests': FriendRequests
+        'friend-requests': FriendRequests,
+        'invitations': Invitations,
+        'reservationsHistory' : ReservationsHistory,
+        'currentReservations' : CurrentReservations
     },
     data() {
         return {

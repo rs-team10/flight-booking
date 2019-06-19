@@ -1,11 +1,6 @@
 <template>
   <div class="hotels">
 
-    <v-tabs fixed-tabs color="#F5F4F9">
-        <v-tab v-on:click="component = 'hotels'" outline color="indigo">View hotels</v-tab>
-        <v-tab v-on:click="component = 'add-hotel'" outline color="indigo">Add hotel</v-tab>
-    </v-tabs>
-
     <component v-bind:is="component" 
         @hotelSelected="changeComp($event)"
         @generateReports="generateReports($event)" 
@@ -19,7 +14,6 @@
 <script>
 // @ is an alias to /src
 import ViewHotels from "@/components/ViewHotels.vue"
-import AddHotel from "@/components/SysAdmin/AddHotel.vue"
 import EditHotel from "@/components/HotelAdmin/EditHotel.vue"
 import QuickRoomReservations from "@/components/HotelAdmin/QuickRoomReservations.vue"
 import Reports from "@/components/HotelAdmin/Reports.vue"
@@ -27,7 +21,6 @@ import Reports from "@/components/HotelAdmin/Reports.vue"
 export default {
     components: {
         'hotels' : ViewHotels,
-        'add-hotel' : AddHotel,
         'edit-hotel' : EditHotel,
         'quick-room-reservations' : QuickRoomReservations,
         'reports' : Reports

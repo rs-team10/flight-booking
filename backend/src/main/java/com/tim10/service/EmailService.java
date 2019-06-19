@@ -1,9 +1,12 @@
 package com.tim10.service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,40 +36,40 @@ public class EmailService {
     }
     
     @Async
-    public void sendFlightReservationEmail(Reservation reservation, String emailAddress,String departure, String destination, String departureDate, Seat reservedSeat) {
+    public void sendFlightReservationEmail(Reservation reservation, String emailAddress,String departure, String destination, String departureDate, Seat reservedSeat) throws MessagingException {
     	
-    	SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(emailAddress);
-        mailMessage.setSubject("Flight successfully booked");
-        mailMessage.setFrom("flightbooking.tim10@gmail.com");
-        mailMessage.setText("Hello " + reservation.getRegisteredUser().getFirstName() + 
+    	MimeMessage mailMessage = mailSender.createMimeMessage();
+    	MimeMessageHelper helper = new MimeMessageHelper(mailMessage, "utf-8");
+    	
+    	String body = "Hello " + reservation.getRegisteredUser().getFirstName() + 
         		"! You have successfully booked a flight from " + departure + " to " + destination +
         		" on " + departureDate + ". Your seat is " + reservedSeat.getRed() + (char)(reservedSeat.getKolona() + 64) +
-        		". Enjoy your flight!");
+        		". Enjoy your flight!";
     	
-        try {
-        	mailSender.send(mailMessage);
-        } catch (MailException e) {
-        	e.printStackTrace();
-        }
+    	mailMessage.setContent(body, "text/html");
+    	helper.setTo(emailAddress);
+    	helper.setSubject("Flight successfully booked");
+    	helper.setFrom("flightbooking.tim10@gmail.com");
+
+        mailSender.send(mailMessage);
     }
     
     @Async
-    public void sendInvitationEmail(Reservation reservation, String emailAddress, String invitationCode, String departure, String destination, String departureDate, Seat reservedSeat) {
+    public void sendInvitationEmail(Reservation reservation, String emailAddress, String invitationCode, String departure, String destination, String departureDate, Seat reservedSeat) throws MessagingException {
     	
-    	SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(emailAddress);
-        mailMessage.setSubject("You have been invited on a trip!");
-        mailMessage.setFrom("flightbooking.tim10@gmail.com");
-        mailMessage.setText("Hello " + reservation.getFlightReservation().getPassengerFirstName() + 
+    	MimeMessage mailMessage = mailSender.createMimeMessage();
+    	MimeMessageHelper helper = new MimeMessageHelper(mailMessage, "utf-8");
+    	
+    	String body = "Hello " + reservation.getFlightReservation().getPassengerFirstName() + 
         		"! You have been invited to travel with your friends from " + departure + " to " + destination +
         		" on " + departureDate + ". Your seat is " + reservedSeat.getRed() + (char)(reservedSeat.getKolona() + 64) +
-        		". Click on the following link to accept the invitation: http://localhost:8081/api/acceptInvitation/" + invitationCode);
+        		". <a href='http://localhost:8080/#/userProfile'>Visit your profile</a> to accept the invitation";
     	
-        try {
-        	mailSender.send(mailMessage);
-        } catch (MailException e) {
-        	e.printStackTrace();
-        }
+    	mailMessage.setContent(body, "text/html");
+    	helper.setTo(emailAddress);
+    	helper.setSubject("You have been invited on a trip!");
+    	helper.setFrom("flightbooking.tim10@gmail.com");
+      
+        mailSender.send(mailMessage);
     }
 }

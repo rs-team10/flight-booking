@@ -5,6 +5,7 @@
             <business-locations/>
             <flights/>
             <price-list/>
+            <quick-flight-reservations/>
         </v-container>
     </div>
 </template>
@@ -14,13 +15,15 @@ import AirlineProfile from "@/components/airline/AirlineProfile.vue"
 import BusinessLocations from "@/components/airline/BusinessLocations.vue"
 import Flights from "@/components/airline/Flights.vue"
 import PriceList from "@/components/airline/PriceList.vue"
+import QuickFlightReservations from "@/components/airline/QuickFlightReservations.vue"
 
 export default {
     components: {
         'airline-profile': AirlineProfile,
         'business-locations': BusinessLocations,
         'flights': Flights,
-        'price-list': PriceList
+        'price-list': PriceList,
+        "quick-flight-reservations": QuickFlightReservations,
     },
     data() {
         return {

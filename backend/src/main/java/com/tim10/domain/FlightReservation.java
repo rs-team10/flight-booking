@@ -12,9 +12,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name="FlightReservations")
 public class FlightReservation {
 	
@@ -39,8 +40,18 @@ public class FlightReservation {
 	
 	//NEMA POTREBE??????
 	//private Reservation reservation;
+	
+	@Version
+	@Column(name="version")
+	private Long version;
 
 	public FlightReservation() {
+	}
+	
+	public FlightReservation(String firstName, String lastName, String passportNumber) {
+		this.passengerFirstName = firstName;
+		this.passengerLastName = lastName;
+		this.passportNumber = passportNumber;
 	}
 
 	public Long getId() {
@@ -90,4 +101,14 @@ public class FlightReservation {
 	public void setReview(Review review) {
 		this.review = review;
 	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+	
+	
 }

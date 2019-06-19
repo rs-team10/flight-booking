@@ -104,6 +104,21 @@ export default {
                 this.logIn();
             }
         },
+        getRentACarFromUser : function(){
+            var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
+            this.$axios
+            .get('http://localhost:8080/api/getRentACarFromAdmin', yourConfig)
+            .then(response =>
+            {
+                
+                localStorage.setItem("rentACarId", response.data);
+
+            }).catch(error => {
+                alert(error);
+
+            });   
+        },
 
         logIn: function(){
            
@@ -112,13 +127,23 @@ export default {
             .then(response => {
                 if(response.data.accessToken == undefined){
                     this.error = "Wrong username or password!";
+                    return;
                 }
                 else{
                     localStorage.setItem("token", response.data.accessToken);
                     localStorage.setItem("username", this.user.username);
                     localStorage.setItem("role", response.data.role);
                     this.success=true;
+
+                    if(response.data.role == 'ROLE_RENT_A_CAR_ADMIN'){
+                        this.getRentACarFromUser();
+                        
+                    }
+                    
+                    
                     this.$emit("logged");
+                    this.$router.push('/')
+                    
                 }
             }).catch(error => {
                 this.error = "Wrong username or password!";

@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -48,7 +49,11 @@ public class VehicleReservation {
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Vehicle reservedVehicle; //pogledaj mapiranje
-
+	
+	
+	@Version
+	private Integer version = 1;
+	
 	public VehicleReservation() {
 		super();
 		additionalServices = new HashSet<PriceListItem>();

@@ -130,7 +130,7 @@ export default {
                 yourConfig.params = { previousAirlineName: this.previousAirlineName };
                 this.$axios.put('http://localhost:8080/api/airlines/updateAirline', this.airline, yourConfig)
                     .then((response) => {
-                        this.$swal.fire({
+                        this.$swal({
                             title: 'Success', 
                             html: 'Airline profile edited successfuly',
                             type: 'success',
@@ -138,9 +138,7 @@ export default {
                             timer: 2000,
                             allowOutsideClick: false
                         }).then((result) => {
-                            if (result.dismiss === this.$swal.DismissReason.timer) {
-                                this.$router.go(-1);
-                            }
+                            this.$router.go(-1);
                         });
                     }).catch((error) => {
                         this.$swal("Error", error.response.data.message, 'error');

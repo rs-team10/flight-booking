@@ -30,7 +30,7 @@
                     <v-list-tile-sub-title>{{item.description}}</v-list-tile-sub-title>
 
                 </v-list-tile-content>
-                <v-list-tile-action>
+                <v-list-tile-action v-if = 'adminsPage'>
                     <v-layout row>
                     <v-icon
                             small
@@ -53,7 +53,7 @@
         </template>
 
         </v-list>
-        <v-layout column  align-center>
+        <v-layout column  align-center v-if = 'adminsPage'>
             <v-btn fab small dark color="primary" @click="addItem" flat><v-icon dark>add</v-icon></v-btn>
         </v-layout>
 
@@ -65,7 +65,7 @@
 <script>
 import PriceItemDialog from "@/components/rentACarComp/PriceItemDialog.vue"
 export default {
-    props:['priceList'],
+    props:['priceList', 'rentACarId'],
 
     components:{
         'priceItemDialog': PriceItemDialog
@@ -142,6 +142,11 @@ export default {
             };
 
             this.dialog= true;
+        }
+    },
+    computed: {
+        adminsPage(){
+            return localStorage.getItem("rentACarId") == this.rentACarId
         }
     }
 }

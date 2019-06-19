@@ -16,10 +16,10 @@
                         <v-card flat>
                         <v-container fluid>
                             <v-layout row wrap justify-center>
-                            <v-flex xs8>
+                            <v-flex xs8 sm8 md8>
                                 <v-card color="grey lighten-4">
                                 <v-layout>
-                                    <v-flex xs3 md3>
+                                    <v-flex xs3 sm3 md3>
                                     <v-img
                                         :src="image"
                                         height="100%"
@@ -28,16 +28,15 @@
                                         class="elevation-4"
                                     ></v-img>
                                     </v-flex>
-                                    <v-flex xs5 md5>
+                                    <v-flex xs5 sm5 md5>
                                         <v-card-text class="indigo--text font-weight-light subheading">
                                             <v-flex id="description">
                                                 {{ reservation.room.roomType.description}}
                                             </v-flex>
                                         </v-card-text>
                                     </v-flex>
-                                    <v-flex xs4 md4>
+                                    <v-flex xs4 sm4 md4>
                                         <v-layout row >
-                                            <v-flex xs5>
                                                 <v-layout column align left class="mt-1 ml-2 indigo--text font-weight-regular subheading">
                                                     <div class="my-2"><v-icon color="indigo">person</v-icon> {{reservation.room.roomType.capacity}}</div>
                                                     <v-divider></v-divider>
@@ -52,7 +51,6 @@
                                                     <v-divider></v-divider>
                                                     <div class="my-2"><v-icon color="indigo" v-if="reservation.room.roomType.hasTV">tv</v-icon></div>
                                                 </v-layout>
-                                            </v-flex>
 
                                             <v-layout column align right>
                                                 <v-card height="216px" color="indigo lighten-4" class="white--text">
@@ -64,12 +62,12 @@
                                                     </v-card-title>
 
                                                     <v-card-actions>
-                                                        <v-layout row align right class="ml-5">
-                                                            <v-btn outline color="indigo" flat>
+                                                        
+                                                            <v-btn outline color="indigo" flat block>
                                                                 Reserve 
                                                                 <v-icon right>done_outline</v-icon>
                                                             </v-btn>
-                                                        </v-layout>
+                                                        
                                                     </v-card-actions>
                                                     
                                                 </v-card>    
@@ -119,6 +117,9 @@ export default {
         },
         calculateDiscountedPrice(reservation){
             return reservation.totalPrice - (reservation.totalPrice * (reservation.discount / 100))
+        },
+        reserveQuickReservation(){
+
         }
     },
     created(){

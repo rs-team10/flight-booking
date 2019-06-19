@@ -28,7 +28,7 @@
                     <v-list-tile-sub-title>{{item.dateFrom}} - {{item.dateTo}}</v-list-tile-sub-title>
 
                 </v-list-tile-content>
-                <v-list-tile-action>
+                <v-list-tile-action v-if='adminsPage'>
                     <v-layout row>
                     <v-icon
                             small
@@ -51,7 +51,7 @@
         </template>
 
         </v-list>
-        <v-layout column  align-center>
+        <v-layout column  align-center v-if = 'adminsPage'>
             <v-btn fab small dark color="primary" @click="addItem" flat><v-icon dark>add</v-icon></v-btn>
         </v-layout>
 
@@ -63,6 +63,9 @@
 <script>
 import VehicleReservationPre from "@/components/vehicleReservation/VehicleReservationPre.vue"
 import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
+
+
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     props:[
             'quickReservations',
@@ -97,77 +100,6 @@ export default {
 
         dialog : null,
 
-        quickReservation : {
-            id: 1,
-            dateFrom: '2019-03-11',
-            dateTo: '2019-04-11',
-            additionalServices: "neka lista",
-            vehicleId: 1,
-            manufacturer: "BMW",
-            model: "520",
-            totalPrice: 10000,
-            discount: 3
-        },
-        quickReservationsTEST: [
-            {
-                id: 1,
-                dateFrom: '2019-03-11',
-                dateTo: '2019-04-11',
-                additionalServices: "neka lista",
-                vehicleId: 1,
-                manufacturer: "BMW",
-                model: "520",
-                totalPrice: 10000,
-                discount: 3
-	
-            },
-            {
-                id: 2,
-                dateFrom: '2019-03-11',
-                dateTo: '2019-04-11',
-                additionalServices: "neka lista",
-                vehicleId: 1,
-                manufacturer: "BMW",
-                model: "520",
-                totalPrice: 10000,
-                discount: 3
-            },
-            {
-                id: 3,
-                dateFrom: '2019-03-11',
-                dateTo: '2019-04-11',
-                additionalServices: "neka lista",
-                vehicleId: 1,
-                manufacturer: "BMW",
-                model: "520",
-                totalPrice: 10000,
-                discount: 3
-            },
-            {
-                id: 4,
-                dateFrom: '2019-03-11',
-                dateTo: '2019-04-11',
-                additionalServices: "neka lista",
-                vehicleId: 1,
-                manufacturer: "BMW",
-                model: "520",
-                totalPrice: 10000,
-                discount: 3
-            },
-            {
-                id: 5,
-                dateFrom: '2019-03-11',
-                dateTo: '2019-04-11',
-                additionalServices: "neka lista",
-                vehicleId: 1,
-                manufacturer: "BMW",
-                model: "520",
-                totalPrice: 10000,
-                discount: 3
-            }
-
-        ]
-
     }),
     methods:{
         getImgUrl(file) {
@@ -177,7 +109,7 @@ export default {
         fetchVehicles: function(){
 
             this.$axios
-            .get('http://localhost:8080/api/vehiclesRentACar/'+this.rentACarId)
+            .get('http://localhost:8080/api/vehiclesRentACar/'+this.rentACarId, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -211,7 +143,7 @@ export default {
             this.component='pehicleReservationPre';
 
             this.$axios
-                .get('http://localhost:8080/api/vehicleReservationPrew/'+item.id)
+                .get('http://localhost:8080/api/vehicleReservationPrew/'+item.id, yourConfig)
                 .then(respone =>{
                     var datas = respone.data
                     this.overview.rentACarId = datas.rentACarId;
@@ -236,6 +168,11 @@ export default {
             this.component='vehicleForRes';
             this.fetchVehicles();
             this.dialog= true;
+        }
+    },
+    computed: {
+        adminsPage(){
+            return localStorage.getItem("rentACarId") == this.rentACarId
         }
     }
 }
