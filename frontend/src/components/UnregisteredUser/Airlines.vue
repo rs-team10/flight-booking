@@ -124,7 +124,9 @@
 <script>
 import LocationMap from "@/components/LocationMap.vue"
 import AirlineProfile from "@/components/UnregisteredUser/AirlineProfile.vue"
-
+var yourConfig = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+}
 export default {
     components: {
         'location-map' : LocationMap,
@@ -134,7 +136,7 @@ export default {
     data(){
         return{
             page: 0,
-            size: 10,
+            size: 3,
             airlines: [],
             empty: false,
             dialog: false,
@@ -145,38 +147,36 @@ export default {
     },
     methods: {
         fetchAirlines(){
-            var yourConfig = {
-                headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-            }
             this.$axios
                 .get('http://localhost:8080/api/airlines/airlinePage', {
                     params: {
                         page: this.page,
                         size: this.size
-                    }, yourConfig
-                }).then(response => {
+                    }
+                }, yourConfig)
+                .then(response => {
                     this.airlines = response.data
                 })
         },
         nextPage(){
-        this.page += 1;
-        this.$axios
-        .get('http://localhost:8080/api/airlines/airlinePage', {
-            params: {
-                page: this.page,
-                size: this.size
-        }})
-        .then(response => {
-            if(response.data.length > 0){
-                this.airlines = response.data;  
-            }else{
-                this.page -= 1;
-                this.empty = true; 
-                setTimeout(() => {
-                    this.empty = false;
-                }, 3000)      
-            }
-        })
+            this.page += 1;
+            this.$axios
+            .get('http://localhost:8080/api/airlines/airlinePage', {
+                params: {
+                    page: this.page,
+                    size: this.size
+            }}, yourConfig)
+            .then(response => {
+                if(response.data.length > 0){
+                    this.airlines = response.data;  
+                }else{
+                    this.page -= 1;
+                    this.empty = true; 
+                    setTimeout(() => {
+                        this.empty = false;
+                    }, 3000)      
+                }
+            })
       },
       previousPage(){
             this.page -= 1;

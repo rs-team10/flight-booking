@@ -27,6 +27,7 @@ import UnregisteredUserHeader from "@/components/Header/UnregisteredUserHeader.v
 import SysAdminHeader from "@/components/Header/SysAdminHeader.vue"
 import RegisteredUserHeader from "@/components/Header/RegisteredUserHeader.vue"
 import RentACarAdminHeader from "@/components/Header/RentACarAdminHeader.vue"
+import AirlineAdminHeader from "@/components/Header/AirlineAdminHeader.vue"
 
 export default {
     components: {
@@ -34,7 +35,8 @@ export default {
         "unregistered-user-header" : UnregisteredUserHeader,
         "sys-admin-header" : SysAdminHeader,
         "registered-user-header" : RegisteredUserHeader,
-        "rentACarAdminHeader"   : RentACarAdminHeader
+        "rentACarAdminHeader"   : RentACarAdminHeader,
+        "airline-admin-header" : AirlineAdminHeader
     },
 
     data(){ 
@@ -42,7 +44,6 @@ export default {
             title:'login',
             route: '/login',
             currentHeader : 'unregistered-user-header'
-
         }
     },
     
@@ -59,6 +60,8 @@ export default {
                     this.currentHeader= 'registered-user-header'
                 else if(localStorage.getItem('role') == "ROLE_RENT_A_CAR_ADMIN")
                     this.currentHeader = 'rentACarAdminHeader'
+                else if(localStorage.getItem('role') == "ROLE_AIRLINE_ADMIN")
+                    this.currentHeader = 'airline-admin-header'
             }
         },
         logIn(){
@@ -78,53 +81,11 @@ export default {
         signUp(){
             this.$router.push("signup")
         }
-
+    },
+    mounted(){
+        this.currentUser();
     }
-    // ,
-    // mounted(){
-    //     this.log();
-    // }
-
-
 }
-
-
-// <v-btn flat router to="/userProfile">
-//                     <v-icon left>account_circle</v-icon>
-//                     <span>My profile</span>
-//                 </v-btn>
-//                 <v-btn flat router to="/airlineProfile">
-//                     <v-icon left>flight</v-icon>
-//                     <span>Airlines</span>
-//                 </v-btn>
-//                 <v-btn flat router to="/searchFlights">
-//                     <v-icon left>search</v-icon>
-//                     <span>Search Flights</span>
-//                 </v-btn>
-
-//                 <v-btn flat router to="/hotels" blur>
-//                     <v-icon left>hotel</v-icon>
-//                     <span>Hotels</span>
-//                 </v-btn>
-                    
-//                 <v-btn flat router to="/rentACars">
-//                     <v-icon left>directions_car</v-icon>
-//                     <span>Rent a cars</span>
-//                 </v-btn>
-                
-//                 <v-btn flat router to="/rentACar/1">
-//                     <v-icon left>directions_boat</v-icon>
-//                     <span>RentACar flow</span>
-//                 </v-btn>
-
-//                 <v-btn flat router v-bind:to = "route" @click = "log()">
-//                     <v-icon left>rowing</v-icon>
-//                     <span>{{this.title}}</span>
-//                 </v-btn>
-
-//                 <v-btn v-if="showSignUp" flat router to="/signup">
-//                     <span>Sign up</span>
-//                 </v-btn>
 </script>
 
 <style scoped>

@@ -46,7 +46,7 @@
                                                     half-increments
                                                     readonly
                                                 ></v-rating>
-                                                <span class="mt-2 ml-1 grey--text text--darken-2 font-weight-light caption">{{numberOfRoomReviews(roomType.id)}} reviews</span>
+                                                <!--<span class="mt-2 ml-1 grey--text text--darken-2 font-weight-light caption">{{numberOfRoomReviews(roomType.id)}} reviews</span>-->
                                             </v-layout>
                                         </v-card-text>
                                         <v-divider></v-divider>
@@ -328,13 +328,12 @@ export default {
     },
 
     methods:{
-        numberOfRoomReviews(roomTypeId){
-            //TODO
-            return 0;
-        },
         getIncomeReport(){
             this.$axios
                 .get('http://localhost:8080/api/hotels/getIncomeReport/', {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    },
                     params: {
                         adminUsername : localStorage.getItem("username"),
                         dateFrom : this.dateFrom,
@@ -350,6 +349,9 @@ export default {
         getMonthlyVisits(){
             this.$axios
                 .get('http://localhost:8080/api/hotels/monthlyReport/', {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    },
                     params: {
                         adminUsername : localStorage.getItem("username"),
                         numberOfYears : new Date().getFullYear() - this.year
@@ -373,6 +375,9 @@ export default {
         getWeeklyVisits(){
             this.$axios
                 .get('http://localhost:8080/api/hotels/weeklyReport/', {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    },
                     params: {
                         adminUsername : localStorage.getItem("username"),
                         dateFrom : this.weeklyDate
@@ -395,12 +400,14 @@ export default {
         getDailyVisits(){
             this.$axios
                 .get('http://localhost:8080/api/hotels/dailyReport/', {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    },
                     params: {
                         adminUsername : localStorage.getItem("username"),
                         dateFrom : this.dailyDate
                     }
                 }).then(response => {
-                    console.log(response.data)
                     this.dailyReport = {
                         labels : (Array.from(Object.keys(response.data), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5).replace('-', '/'))),
                         datasets : [
@@ -424,8 +431,10 @@ export default {
         }
     },
     created(){
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios
-            .get('http://localhost:8080/api/hotels/getReport/' + localStorage.getItem('username'))
+            .get('http://localhost:8080/api/hotels/getReport/' + localStorage.getItem('username'), yourConfig)
             .then(response => {
                 this.report = response.data;
                 this.dailyReport.labels = Array.from(Object.keys(this.report.dailyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5));

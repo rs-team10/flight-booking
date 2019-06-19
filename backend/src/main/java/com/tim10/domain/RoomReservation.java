@@ -20,9 +20,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="RoomReservations")
@@ -43,6 +46,7 @@ public class RoomReservation implements Serializable{
 	@Type(type="date")
 	private Date dateTo;
 	
+	//cena bez popusta, za brzu rezervaciju potrebno dinamicki racunati cenu sa popustom
 	@Column(name="totalPrice", nullable=false)
 	private BigDecimal totalPrice;
 	
@@ -51,16 +55,21 @@ public class RoomReservation implements Serializable{
 	private Set<PriceListItem> additionalServices;
 	
 	//DA LI JE POTREBNA REFERENCA NA REZERVACIJU???????
+	@JsonIgnore
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Reservation reservation;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private Review review;
 	
+	@JsonIgnore
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="room_id")
 	private Room room;
+	
+	@Version
+	private Long version;
 	
 	public RoomReservation() {
 		super();
@@ -143,6 +152,14 @@ public class RoomReservation implements Serializable{
 
 	public void setRoom(Room room) {
 		this.room = room;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

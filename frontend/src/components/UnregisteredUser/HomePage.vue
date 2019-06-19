@@ -69,11 +69,7 @@
 export default {
     data(){
         return{
-
         }
-    },
-    created(){
-        console.log(localStorage.getItem('user'))
     }
 }
 </script>

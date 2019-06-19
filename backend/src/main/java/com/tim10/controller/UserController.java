@@ -99,11 +99,10 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/api/users/hotelAdmin", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateHotelAdmin(@RequestBody HotelAdmin hotelAdmin){
-		HotelAdmin updatedAdmin = null;
+	public ResponseEntity<String> updateHotelAdmin(@RequestBody AdminDTO adminDTO){
 		try {
-			updatedAdmin = userService.updateHotelAdmin(hotelAdmin);
-			return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
+			userService.updateHotelAdmin(adminDTO);
+			return new ResponseEntity<>("Hotel admin updated successfully", HttpStatus.OK);
 		}catch(Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}

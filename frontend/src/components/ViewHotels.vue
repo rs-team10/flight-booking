@@ -180,9 +180,7 @@
 import LocationMap from "@/components/LocationMap.vue"
 import HotelProfile from "@/components/UnregisteredUser/HotelProfile.vue"
 import { setTimeout } from 'timers';
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-}
+
 export default {
   components: {
     'location-map' : LocationMap,
@@ -235,13 +233,16 @@ export default {
       fetchHotels(){
           this.$axios
           .get('http://localhost:8080/api/hotels/searchHotels', {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token")
+            },
             params: {
               page: this.page,
               size: this.size,
               hotelName: this.hotelName,
               hotelLocation: this.hotelLocation
             }
-          }, yourConfig)
+          })
           .then(response => {
             this.hotels = response.data;
           })
@@ -250,6 +251,9 @@ export default {
         this.page += 1;
         this.$axios
         .get('http://localhost:8080/api/hotels/searchHotels', {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token")
+            },
             params: {
                 page: this.page,
                 size: this.size,
@@ -272,7 +276,10 @@ export default {
             this.page -= 1;
             this.fetchHotels();
       },
-      hotelSelected: function(hotel){
+      hotelSelected(hotel){
+        var yourConfig = {
+            headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+        }
         this.$axios
         .get('http://localhost:8080/api/hotels/getHotelRooms/' + hotel.id, yourConfig)
         .then(response => {
@@ -280,14 +287,6 @@ export default {
           hotel = response.data
           this.$emit('hotelSelected', hotel);
         })
-      },
-      generateReports(hotel){
-        this.$emit('generateReports', hotel);
-      },
-      checkAdmin(){
-        if(localStorage.getItem("role") == "ROLE_HOTEL_ADMIN")
-          return true;     
-        return false;
       },
       showHotelProfile(hotel){
         this.profileDialog = true;

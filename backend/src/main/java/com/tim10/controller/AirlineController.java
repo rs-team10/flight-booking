@@ -52,7 +52,7 @@ public class AirlineController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<AirlineDTO>> getAirlines(Pageable page){
 		List<AirlineDTO> dtos = new ArrayList<AirlineDTO>();
-		for(Airline airline : airlineService.findAll()) {
+		for(Airline airline : airlineService.findAll(page)) {
 			dtos.add(new AirlineDTO(airline));
 		}
 		return new ResponseEntity<List<AirlineDTO>>(dtos, HttpStatus.OK);

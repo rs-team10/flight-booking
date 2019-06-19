@@ -714,7 +714,7 @@ export default {
                 });
         },
         continueToHotelReservation() {
-            this.$router.push('hotelReservation')
+            this.$router.push('/hotelReservation')
             
             // KATARINA
 

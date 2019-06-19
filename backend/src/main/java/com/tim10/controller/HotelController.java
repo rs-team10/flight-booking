@@ -107,22 +107,6 @@ public class HotelController {
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	
-	
-	
-	/* 
-	 * Vracanje svih soba iz hotela (koristi se kod editHotel)
-	 */
-//	@RequestMapping(value="/getHotelRooms/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<?> getHotelRooms(@PathVariable("id") Long id){
-//		HotelRoomsDTO dto = null;
-//		try {
-//			dto = hotelService.getHotelRooms(id);
-//		}catch(Exception ex) {
-//			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//		return new ResponseEntity<>(dto, HttpStatus.OK);
-//	}
-
 	/*
 	 * Vracanje svih soba iz hotela koje nisu rezervisane u odredjenom periodu
 	 * (koristi se kod rezervisanja soba)
@@ -155,9 +139,23 @@ public class HotelController {
 	/*
 	 * Dodavanje nove/novih brzih rezervacija hotela (hotelAdmin)
 	 */
-	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<QuickRoomResDTO>> setQuickRoomReservations(@RequestBody Set<QuickRoomReservation> quickRoomReservations, @PathVariable("hotelId") Long hotelId){	
-		return new ResponseEntity<>(hotelService.setQuickRoomReservations(quickRoomReservations, hotelId), HttpStatus.OK);
+//	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<List<QuickRoomResDTO>> setQuickRoomReservations(@RequestBody Set<QuickRoomResDTO> quickRoomReservations, @PathVariable("hotelId") Long hotelId){	
+//		return new ResponseEntity<>(hotelService.setQuickRoomReservations(quickRoomReservations, hotelId), HttpStatus.OK);
+//	}
+	
+	@RequestMapping(value="/quickRoomReservations/{hotelId}/{dateFrom}/{dateTo}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> createQuickRoomReservation(@RequestBody QuickRoomResDTO dto, 
+														@PathVariable("hotelId") Long hotelId,
+														@PathVariable("dateFrom") String dateFrom,
+														@PathVariable("dateTo") String dateTo){
+		QuickRoomResDTO quickRoomResDto = null;
+		try {
+			dto = hotelService.createQuickRoomReservation(dto, hotelId, dateFrom, dateTo);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(quickRoomResDto, HttpStatus.CREATED);
 	}
 	
 	/*

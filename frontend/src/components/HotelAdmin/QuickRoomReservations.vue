@@ -10,10 +10,10 @@
                 <v-toolbar dense color="indigo lighten-4" class="mt-2">
                     <v-toolbar-title class="text-uppercase font-weight-regular indigo--text">Quick room reservations</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn color="indigo" flat @click="saveData">
+                    <!-- <v-btn color="indigo" flat >
                         save
                         <v-icon right>save</v-icon>
-                    </v-btn>
+                    </v-btn> -->
                 </v-toolbar>
                 <v-layout column style="height: 800px">
                 <v-flex style="overflow: auto">
@@ -34,8 +34,8 @@
                             <td class="justify-center layout px-0">
                                 <v-icon
                                     small
-                                    @click="deleteItem(props.item)">
-                                delete
+                                    >
+                                    delete
                                 </v-icon>
                             </td>
                         </template>
@@ -254,18 +254,19 @@ export default {
             this.$emit('goBack')
         },
         addQuickReservation(){
-            
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
             var additionalServicesPrice = this.calculateAdditionalService();
             if(!this.validateData()){
                 return;
             }
             //TODO: POTREBNO DODATI PROVERU DA LI BRZA REZERVACIJA VEC POSTOJI ZA SOBU
              
-
+            //za sad samo jednu selektuj da ne dodje do greske
             for(var i = 0; i < this.selectedRooms.length; i++){
-                var quickRoomReservation =  {    
-                                        dateFrom : this.dateFrom,
-                                        dateTo : this.dateTo,
+                var quickRoomReservation =  {  
+                                        //dateFrom : this.dateFrom,
+                                        //dateTo : this.dateTo,
                                         additionalServices : this.selected,
                                         discount: this.discount,
                                         totalPrice : additionalServicesPrice
@@ -274,9 +275,18 @@ export default {
                 quickRoomReservation.room = room;
                 quickRoomReservation.totalPrice += this.calculateRoomPrice(room.roomType.pricePerNight);
                 quickRoomReservation.totalPrice = Math.floor(quickRoomReservation.totalPrice)
-                this.quickRoomReservations.push(quickRoomReservation)
-            } 
+                //this.quickRoomReservations.push(quickRoomReservation)
+             
+                this.$axios
+                .post('http://localhost:8080/api/hotels/quickRoomReservations/'+ this.selectedHotel.id + '/' + this.dateFrom + '/' + this.dateTo,  quickRoomReservation, yourConfig)
+                .then(response => {
+                    this.$swal("Reservations added successfuly", "", "success")
+                        .then(() => this.$router.push('hotels'));
+                }).catch(error => {
+                    this.$swal("", "Sorry, a mistake happened", "error")
+                });
 
+            }
             
         },
         calculateAdditionalService(){
@@ -291,16 +301,16 @@ export default {
             var days = (new Date(this.dateTo) - new Date(this.dateFrom)) / (1000*60*60*24);
             return roomPrice * days;
         },
-        saveData(){
-            //this.selectedHotel.quickRoomReservations = this.quickRoomReservations;
-            this.$axios
-            .post('http://localhost:8080/api/hotels/quickRoomReservations/'+ this.selectedHotel.id, this.quickRoomReservations)
-            .then(response => {
-                this.$swal("Reservations added successfuly", "", "success");
-            }).catch(error => {
-                console.log(error)
-            });
-        },
+        // saveData(){
+        //     //this.selectedHotel.quickRoomReservations = this.quickRoomReservations;
+        //     this.$axios
+        //     .post('http://localhost:8080/api/hotels/quickRoomReservations/'+ this.selectedHotel.id, this.quickRoomReservations)
+        //     .then(response => {
+        //         this.$swal("Reservations added successfuly", "", "success");
+        //     }).catch(error => {
+        //         console.log(error)
+        //     });
+        // },
         calcDiscountedPrice(totalPrice, discount){
             return Math.floor(totalPrice - (totalPrice * (discount / 100)));
         },
@@ -319,10 +329,11 @@ export default {
         }
     },
     mounted(){
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios
-            .get('http://localhost:8080/api/hotels/quickRoomReservations/' + this.selectedHotel.id)
+            .get('http://localhost:8080/api/hotels/quickRoomReservations/' + this.selectedHotel.id, yourConfig)
             .then(response => {
-                console.log(response.data)
                 this.quickRoomReservations = response.data;
             })
     }

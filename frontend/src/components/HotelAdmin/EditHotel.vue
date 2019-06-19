@@ -314,10 +314,6 @@ import { required } from 'vuelidate/lib/validators'
 import SpecialRoomPrices from "./SpecialRoomPrices.vue"
 import EditRooms from "./EditRooms.vue"
 
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-}
-
 export default {
     components: {
         "specialRoomPrices" : SpecialRoomPrices,
@@ -438,15 +434,13 @@ export default {
             }
         },
         editHotel(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
             this.$axios
             .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel, yourConfig)
             .then(() => {
                 this.$swal("Hotel edited successfully", "", "success")
-                    .then(() => this.$router.push('hotels'))
-            //     this.success = true;
-            //     setTimeout(() => {
-            //         this.success = false
-            // }, 3000)
+                    .then(() => this.$router.push('/hotels'))
             }).catch(error => {
                 this.$swal("Error", "", "error")
             });
@@ -555,8 +549,10 @@ export default {
         }
     },
     beforeCreate(){
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
         this.$axios
-        .get('http://localhost:8080/api/hotels/hotelToEdit/' + localStorage.getItem('username'))
+        .get('http://localhost:8080/api/hotels/hotelToEdit/' + localStorage.getItem('username'), yourConfig)
         .then(response => {
             this.selectedHotel = response.data;
         })

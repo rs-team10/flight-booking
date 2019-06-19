@@ -2,6 +2,8 @@ package com.tim10.controller;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +21,6 @@ import com.tim10.dto.InvitationDTO;
 import com.tim10.dto.RoomReservationDTO;
 import com.tim10.service.ReservationService;
 import com.tim10.service.RoomReservationService;
-import com.tim10.service.RoomService;
 
 @RestController
 @RequestMapping(value="/api/reservations")
@@ -129,5 +130,14 @@ public class ReservationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/quickReserveRoom", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> quickReserveRoom(@PathParam("quickReservationId") Long quickReservationId, @PathParam("groupReservationId") Long groupReservationId){
+		try {
+			roomReservationService.quickReserveRoom(quickReservationId, groupReservationId);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 	
 }
