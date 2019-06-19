@@ -11,24 +11,31 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 
+import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tim10.domain.Airline;
 import com.tim10.domain.Flight;
 import com.tim10.domain.FlightReservation;
 import com.tim10.domain.GroupReservation;
+import com.tim10.domain.QuickFlightReservation;
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.RequestStatus;
 import com.tim10.domain.Reservation;
 import com.tim10.domain.Seat;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
+import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatReservationDTO;
+import com.tim10.repository.AirlineRepository;
 import com.tim10.repository.FlightRepository;
 import com.tim10.repository.GroupReservationRepository;
+import com.tim10.repository.QuickFlightReservationRepository;
 import com.tim10.repository.RegisteredUserRepository;
 import com.tim10.repository.ReservationRepository;
 import com.tim10.repository.SeatRepository;
@@ -38,6 +45,9 @@ public class ReservationService {
 	
 	//@Autowired
 	//FlightReservationRepository flightReservationRepository;
+	
+	@Autowired
+	AirlineRepository airlineRepository;
 	
 	@Autowired
 	FlightRepository flightRepository;
@@ -53,6 +63,9 @@ public class ReservationService {
 	
 	@Autowired
 	ReservationRepository reservationRepository;
+	
+	@Autowired
+	QuickFlightReservationRepository quickFlightReservationRepository;
 	
     @Autowired
 	EmailService mailSender;
@@ -99,8 +112,11 @@ public class ReservationService {
     	
     }
 	
-	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public Long reserveFlight(FlightReservationDTO flightReservationDTO) {
+	@Transactional(readOnly = false,
+			propagation=Propagation.REQUIRES_NEW,
+			isolation=Isolation.SERIALIZABLE,
+			rollbackFor= {EntityNotFoundException.class, OptimisticLockException.class, PersistenceException.class, RuntimeException.class, StaleObjectStateException.class})
+	public Long reserveFlight(FlightReservationDTO flightReservationDTO) throws Exception {
 		
 		Optional<Flight> repoFlight = flightRepository.findById(flightReservationDTO.getFlightId());
 		if (!repoFlight.isPresent())
@@ -119,18 +135,13 @@ public class ReservationService {
 			
 			FlightReservation flightReservation = new FlightReservation(dto.getFirstName(), dto.getLastName(), dto.getPassportNumber());
 
-			Optional<Seat> repoSeat = seatRepository.findById(dto.getSeatId());
-			if(repoSeat.isPresent()) {
-				Seat seat = repoSeat.get();
-				if(seat.getVersion().equals(dto.getSeatVersion())) {
-					seat.setIsReserved(true);
-					flightReservation.setSeat(seat);
-				} else {
-					throw new OptimisticLockException("Selected seat is taken.");
-				}
-			} else {
-				throw new EntityNotFoundException("Seat not found.");
-			}
+			Seat seat = seatRepository.findById(dto.getSeatId()).get();
+
+			if(seat.getIsReserved() || !seat.getIsActive())
+				throw new EntityNotFoundException("Seat is unavailable.");
+			
+			seat.setIsReserved(true);
+			flightReservation.setSeat(seat);
 
 			Reservation reservation = new Reservation();
 			reservation.setFlightReservation(flightReservation);
@@ -174,16 +185,103 @@ public class ReservationService {
 			groupReservation.add(reservation);
 		}
 		
+		for(Reservation r : groupReservation.getReservations())
+			r.setGroupReservation(groupReservation);
 		
-		GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
-		
-		//for (Reservation r : savedGroupReservation.getReservations()) {
-		//	r.setGroupReservation(savedGroupReservation);
-			//reservationRepository.save(r);
-		//}
-		
-		return savedGroupReservation.getId();
+		try {
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
+		} catch (Exception e) {
+			throw new PersistenceException("Error while saving to DB.");
+		}
 	}
+	
+	@Transactional(readOnly = false,
+			propagation=Propagation.REQUIRES_NEW,
+			isolation=Isolation.SERIALIZABLE,
+			rollbackFor= {EntityNotFoundException.class, OptimisticLockException.class, PersistenceException.class, RuntimeException.class, StaleObjectStateException.class})
+	public Long reserveQuickFlight(QuickFlightReservationDTO flightReservationDTO) throws Exception {
+
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
+		
+		GroupReservation groupReservation = new GroupReservation(new Date());
+		
+		Optional<QuickFlightReservation> repoQuickFlightReservation = quickFlightReservationRepository.findById(flightReservationDTO.getId());
+		if(!repoQuickFlightReservation.isPresent())
+			throw new EntityNotFoundException("Quick flight reservation not found.");
+		QuickFlightReservation qfr = repoQuickFlightReservation.get();
+		
+		qfr.setPassengerFirstName(currentUser.getFirstName());
+		qfr.setPassengerLastName(currentUser.getLastName());
+
+		Reservation reservation = new Reservation();
+		reservation.setFlightReservation(qfr);
+		
+		reservation.setIsHost(true);
+		reservation.setInvitationCode(null);
+		reservation.setStatus(RequestStatus.ACCEPTED);
+		reservation.setRegisteredUser(currentUser);
+		currentUser.getReservations().add(reservation);
+		currentUser.setBonusPoints(currentUser.getBonusPoints() + qfr.getSeat().getFlight().getDistance());
+		
+		reservation.setDistance(qfr.getSeat().getFlight().getDistance());
+		reservation.setDiscount(5.0); 					// TODO: Discount
+		//reservation.setUsedDiscount(0);				// TODO: Used discount
+		reservation.setHasPassed(false);
+		
+		groupReservation.add(reservation);
+		reservation.setGroupReservation(groupReservation);
+		
+		Optional<Airline> repoAirline = airlineRepository.findById(qfr.getSeat().getFlight().getAirline().getId());
+		if(!repoAirline.isPresent())
+			throw new EntityNotFoundException("Quick flight reservation not found.");
+		
+		repoAirline.get().getQuickFlightReservations().remove(qfr);
+		
+		try {
+			GroupReservation savedGroupReservation = groupReservationRepository.save(groupReservation);
+			return savedGroupReservation.getId();
+		} catch (Exception e) {
+			throw new PersistenceException("Error while saving to DB.");
+		}
+		
+	}
+	
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
+	public boolean cancelFlightReservation(Long groupReservationId) {
+		
+		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		
+		GroupReservation gr = groupReservationRepository.findById(groupReservationId).get();
+		
+		for (Reservation r : gr.getReservations()) {
+			
+			Flight f = r.getFlightReservation().getSeat().getFlight();
+			
+			Date current = new Date();
+			Date threeHoursBefore = new Date(f.getDepartureDate().getTime() - (3 * 60 * 60 * 1000));
+			if(threeHoursBefore.before(current))
+				throw new PersistenceException("It is no longer possible to cancel the reservation.");
+			
+			r.getFlightReservation().getSeat().setIsReserved(false);
+			r.setStatus(RequestStatus.DENIED);
+			r.setFlightReservation(null);
+			
+			currentUser.setBonusPoints(currentUser.getBonusPoints() - f.getDistance());
+		}
+		
+		groupReservationRepository.save(gr);
+
+		return true;
+		
+		// TODO: Otkazati i rezervaciju hotela i rentacar-a ukoliko postoji
+	}
+
 
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
 	public boolean acceptInvitation(String invitationCode) {

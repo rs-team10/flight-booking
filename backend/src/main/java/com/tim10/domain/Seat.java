@@ -41,7 +41,7 @@ public class Seat {
 	
 	@Version
 	@Column(name="version")
-	private Long version;
+	private Long version = 1L;
 
 	public Seat() {
 		super();

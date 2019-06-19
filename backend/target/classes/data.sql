@@ -291,13 +291,3 @@ INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_li
 INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (2,9);
 INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (2,10);
 
-
-
-
-
-
-
-
-
-
-
