@@ -138,6 +138,7 @@ export default {
             });
         },
         editItem:function(item){
+            /*
             this.quickVehicleSelected = item;
             this.component='pehicleReservationPre';
 
@@ -157,10 +158,13 @@ export default {
                 this.overview.vehicle = item
                 this.overview.edit = true;
             this.dialog= true;
+            */
 
         },
         deleteItem:function(item){
+            /*
             this.quickVehicleSelected = item
+            */
 
         },
         addItem:function(){

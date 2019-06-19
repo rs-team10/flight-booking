@@ -125,7 +125,7 @@ export default{
 
                 //delete this.user.passwordConfirmation;
                 this.$axios.put('http://localhost:8080/api/users/rentACarAdmin', this.user, yourConfig)
-                .then(response => {
+                .then(() => {
                     this.$swal("Success", "User profile updated successfully", "success");
                 }).catch(error => {
                     this.$swal("Error", error.response.data.message, "error");
@@ -146,7 +146,7 @@ export default{
             this.user = response.data;
             this.user.password = '';
             //this.user.passwordConfirmation = '';
-        }).catch((error) => {
+        }).catch(() => {
             this.$swal("Error", "User not logged in", 'error');
         });
     }

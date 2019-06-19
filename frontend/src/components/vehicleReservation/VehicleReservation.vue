@@ -1,6 +1,82 @@
 <template>
     <v-flex>
 
+        <v-dialog v-model="dateDialog" max-width="600px" persistent>
+            <v-card>
+                <v-card-title>
+                    <span class="ml-3 headline font-weight-light black--text">Please put in information about your reservation</span>
+                </v-card-title>
+                
+                <v-card-text>
+                    <!-- datum od -->
+                    <v-layout row>
+                    <v-menu 
+                    v-model="fromMenuDialog"
+                    :close-on-content-click="true"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                    >
+                    <template v-slot:activator="{ on }">
+                    <v-flex xs6 md6>
+                        <v-text-field readonly
+                            v-model="from"
+                            append-icon="event"
+                            label="Check-in*"
+                            class="mx-3"
+                            max-width="30px"
+                            v-on="on">
+                        </v-text-field>
+                    </v-flex>
+                    </template>
+                    <v-date-picker :min="from" disabled v-model="from" @input="fromMenuDialog=false"></v-date-picker>
+                    </v-menu>
+                    
+                    <!-- datum do -->
+                    <v-menu
+                    v-model="toMenuDialog"
+                    :close-on-content-click="true"
+                    :nudge-right="40"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                    >
+                    <template v-slot:activator="{ on }">
+                    <v-flex xs6 md6>
+                        <v-text-field
+                            v-model="to"
+                            append-icon="event"
+                            label="Check-out*"
+                            class="mx-3"
+                            v-on="on">
+                        </v-text-field>
+                    </v-flex>
+                    </template>
+                    <v-date-picker :min="from" v-model="to" @input="toMenuDialog=false"></v-date-picker>
+                    </v-menu>
+                    </v-layout>
+
+                    <v-layout row class="px-3">
+                        <v-text-field
+                            label="Country"
+                            class = "pl-2"
+                            hide-details
+                            single-line
+                            v-model="country"
+                        ></v-text-field>
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat color="black" @click="confirmDialog">Confirm</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         
 
         <v-container>
@@ -85,7 +161,7 @@
 import VehicleParamSearch from "@/components/vehicleReservation/VehicleParamSearch.vue"
 import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 
-
+    var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
     export default {
 
         components: {
@@ -95,6 +171,21 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 
         
         data: () => ({
+
+
+            //start dialog
+
+            dateDialog: false,
+
+            fromMenu: false,
+            fromMenuDialog: false,
+            fromDate: localStorage.getItem('arrivalDate'),
+            toMenu: false,
+            toMenuDialog: false,
+            toDate: localStorage.getItem('arrivalDate'),
+            minDate: new Date().toISOString().substr(0, 10),
+
+
 
             component1:'vehicleParamSearch',
             component2: 'vehicleForRes',
@@ -106,9 +197,10 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             vehicles: [],
             vehiclesQuick: [],
 
-            fromInput: '2019-07-30',  //datum koji stize u komponentu (hc zbog testiranja)
-            toInput: '2019-08-30',
-            country: 'Serbia'          //takodje prop
+            to:'',
+            country: ''
+
+           
     }),
     methods : {
         getImgUrl(file) {
@@ -137,7 +229,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
         fetchVehicles: function(countryDate){
          
             this.$axios
-            .get('http://localhost:8080/api/availableVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country)
+            .get('http://localhost:8080/api/availableVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -160,7 +252,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                 }
           )
           .catch(error => {
-                alert(error.resposne)
+                this.$swal("Error", error.response.data, 'error');
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
@@ -171,7 +263,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
         fetchQuickVehicles: function(countryDate){
          
             this.$axios
-            .get('http://localhost:8080/api/quickResVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country)
+            .get('http://localhost:8080/api/quickResVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
             .then(response => {
                     var vehicleQuick = response.data
                     this.vehiclesQuick=[];
@@ -196,7 +288,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                 }
           )
           .catch(error => {
-                alert(error.resposne)
+                this.$swal("Error", error.response.data, 'error');
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
@@ -212,7 +304,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             vehicleSearchDTO.dateTo = this.to;
 
             this.$axios
-            .post('http://localhost:8080/api/vehicleSearch/'+this.country,vehicleSearchDTO)
+            .post('http://localhost:8080/api/vehicleSearch/'+this.country,vehicleSearchDTO, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -235,7 +327,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                 }
           )
           .catch(error => {
-                alert(error.resposne)
+                this.$swal("Error", error.response.data, 'error');
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
@@ -243,7 +335,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             });
 
             this.$axios
-            .post('http://localhost:8080/api/vehicleSearchQuick/'+this.country,vehicleSearchDTO)
+            .post('http://localhost:8080/api/vehicleSearchQuick/'+this.country,vehicleSearchDTO, yourConfig)
             .then(response => {
                     var vehicleQuick = response.data
                     this.vehiclesQuick=[];
@@ -268,7 +360,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
                 }
           )
           .catch(error => {
-                alert(error.resposne)
+                this.$swal("Error", error.response.data, 'error');
                 this.search = 'error';
                 this.$slots ='no-results';
                //treba proveriti ako stigne jedan auto da samo njega upise (velicina liste)
@@ -278,26 +370,50 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
 
         trim: function(date){
             return date.substring(0, 10);
-        }
+        },
+        //change
+        confirmDialog(){
+            var countryDate = {
+                country : this.country,
+                from : this.from,
+                to : this.to
+            };
+            if(this.country == ''){
+                this.dateDialog = true;
+                return;
+            }
+            if(this.to == ''){
+                this.dateDialog = true;
+                return;
+            }
+
+            this.fetchVehicles(countryDate);
+            this.fetchQuickVehicles(countryDate);
+            
+            this.dateDialog = false;
+        },
 
     },
-
-    created(){
-
+    mounted(){
+        this.dateDialog = true;
+        
         var countryDate = {
             country : this.country,
             from : this.from,
             to : this.to
         };
-        this.fetchVehicles(countryDate);
-        this.fetchQuickVehicles(countryDate);
+        
     },
+
     computed:{
         from(){
-            return this.fromInput.substring(0,10);
-        },
-        to(){
-            return this.toInput.substring(0,10);
+            var from = localStorage.getItem('arrivalDate');
+            if(from != null)
+                return from.substring(0,10);
+            else{
+                this.$router.push("/");
+                return '';    
+            }
         }
     }
   }

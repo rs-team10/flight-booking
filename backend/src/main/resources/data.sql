@@ -1,12 +1,13 @@
-insert into user (dtype, username, password, email) values ('SystemAdmin', 'admin', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'admin@admin.com');
-insert into authorities (role) values ('ROLE_SYSTEM_ADMIN');
-insert into user_authority (user_id, role_id) values (1, 1);
+insert into flight_booking.user (dtype,id, username, password, email) values ('SystemAdmin', 1, 'admin', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'admin@admin.com');
+insert into flight_booking.authorities (id, role) values ('1', 'ROLE_SYSTEM_ADMIN');
+insert into flight_booking.user_authority (user_id, role_id) values (1, 1);
 
-INSERT INTO flight_booking.user(dtype, id, email, first_name, last_name, password, username, is_confirmed) VALUES ('RegisteredUser', 2, 'filipeng97@gmail.com', 'Filip', 'Mladenovic', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'coxisd', true);
+INSERT INTO flight_booking.user(dtype, id, email, first_name, last_name, password, username, bonus_points, is_confirmed) VALUES 
+('RegisteredUser', 2, 'filipeng97@gmail.com', 'Filip', 'Mladenovic', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'coxisd', 0, true);
 insert into flight_booking.authorities (id, role) values ('2', 'ROLE_REGISTERED_USER');
 insert into flight_booking.user_authority (user_id, role_id) values (2, 2);
 
-INSERT INTO flight_booking.user(dtype, id, username, first_name, last_name, password, email) VALUES ('RentACarAdmin', 3, 'rentACarAdmin', 'Filip', 'Mladenovic', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'rentACarAdmin@gmail.com');
+INSERT INTO flight_booking.user(dtype, id, username, first_name, last_name, password, email) VALUES ('RentACarAdmin', 3, 'rcadmin', 'Filip', 'Mladenovic', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'rentACarAdmin@gmail.com');
 insert into flight_booking.authorities (id, role) values ('3', 'ROLE_RENT_A_CAR_ADMIN');
 insert into flight_booking.user_authority (user_id, role_id) values (3, 3);
 
@@ -26,7 +27,6 @@ INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_li
 INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (1,3);
 INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (1,4);
 INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (1,5);
-
 
 INSERT INTO flight_booking.rentacar_administrators (rentacar_id, administrators_id) VALUE (1,3);
 
@@ -296,71 +296,7 @@ INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_li
 
 
 
-/*AIRLINE*/
 
-INSERT INTO flight_booking.price_lists (id) VALUES (3);
-
-INSERT INTO flight_booking.locations (id, city, country, street) VALUES (7, 'Kucevo', 'Serbia','Neka ulica');
-
-INSERT INTO flight_booking.airlines (id, description, name, location_id, luggage_price_list_id) 
-VALUES (1,'Neki opis koji opisuje ovaj airline, a da je dovoljno dugacak. Neki opis koji opisuje ovaj airline, a da je dovoljno dugacak.','KucevoTrans', 7, 3);
-
-
-INSERT INTO flight_booking.price_list_items(id, description, discount, name, price) VALUES (11, "Not needed but you can choose.", 10, "Something elese", 50);
-INSERT INTO flight_booking.price_list_items(id, description, discount, name, price) VALUES (12, "Not needed but you can choose.", 5, "Something elese", 30);
-INSERT INTO flight_booking.price_list_items(id, description, discount, name, price) VALUES (13, "Not needed but you can choose.", 5, "Something elese", 10);
-INSERT INTO flight_booking.price_list_items(id, description, discount, name, price) VALUES (14, "Not needed but you can choose.", 5, "Something elese", 30);
-INSERT INTO flight_booking.price_list_items(id, description, discount, name, price) VALUES (15, "Not needed but you can choose.", 5, "Something elese", 30);
-
-INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (3,11);
-INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (3,12);
-INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (3,13);
-INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (3,14);
-INSERT INTO flight_booking.price_lists_price_list_items (price_list_id, price_list_items_id) VALUES (3,15);
-
-
-/*DESTINATIONS*/
-INSERT INTO flight_booking.locations (id, city, country, street) VALUES (8, 'Belgrade', 'Serbia','Neka ulica');
-INSERT INTO flight_booking.locations (id, city, country, street) VALUES (9, 'London', 'England','Some street');
-INSERT INTO flight_booking.locations (id, city, country, street) VALUES (10, 'Vienna', 'Austria','Some street');
-
-INSERT INTO flight_booking.destinations (id, airport_code, name, location_id) VALUE (1,'BLG', 'Belgrade', 8);
-INSERT INTO flight_booking.destinations (id, airport_code, name, location_id) VALUE (2, 'LDN', 'London', 9);
-INSERT INTO flight_booking.destinations (id, airport_code, name, location_id) VALUE (3, 'VIE', 'Vienna', 10);
-
-/*FLIGHTS*/
-INSERT INTO flight_booking.flights (id, departure_date, arrival_date, flight_number, ticket_price, departure, destination, airline_id)
-VALUE (1, '2019-06-07', '2019-06-07', 123, 350, 2, 1, 1);
-
-INSERT INTO flight_booking.flights (id, departure_date, arrival_date, flight_number, ticket_price, departure, destination, airline_id)
-VALUE (2, '2019-07-07', '2019-07-07', 234, 350, 3, 1, 1);
-
-/*SEATS*/
-/*flight_1*/
-INSERT INTO flight_booking.seats (id, flight_id) VALUE (1, 1);
-
-/*flight_2*/
-INSERT INTO flight_booking.seats (id, flight_id) VALUE (2, 2);
-
-/*FLIGHT RESERVATIONS*/
-/*flight_1*/
-INSERT INTO flight_booking.flight_reservations (id, seat_id) VALUE (1, 1);
-/*flight_2*/
-INSERT INTO flight_booking.flight_reservations (id, seat_id) VALUE (2, 2);
-
-/*RESERVATIONS*/
-INSERT INTO flight_booking.reservations 
-(id, registered_user_id, has_passed, flight_reservation_id, vehicle_reservation_id) 
-VALUE (1, 2, true, 1, 1);
-
-INSERT INTO flight_booking.reservations 
-(id, registered_user_id, has_passed, flight_reservation_id, vehicle_reservation_id) 
-VALUE (2, 2, false, 2, 2);
-/*room_reservation_id*/
-
-/*USER_RESERVATION*/
-INSERT INTO flight_booking.user_reservations (registered_user_id, reservations_id) value (2,1);
-INSERT INTO flight_booking.user_reservations (registered_user_id, reservations_id) value (2,2);
 
 
 

@@ -72,8 +72,7 @@
 </template>
 
 <script>
-var yourConfig = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token") }
 }
 export default {
   data(){

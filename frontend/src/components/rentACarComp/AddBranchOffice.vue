@@ -42,7 +42,7 @@
 <script>
 
 import  required from 'vuelidate/lib/validators'
-
+var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token")}}
 export default {
     props: ['rentACarId'],
     data () {
@@ -75,11 +75,11 @@ export default {
                     }
                 };
                 */
-                this.$axios.post('http://localhost:8080/api/branchOffice/'+this.rentACarId, this.branchOffice) //, yourConfig
+                this.$axios.post('http://localhost:8080/api/branchOffice/'+this.rentACarId, this.branchOffice, yourConfig) 
                 .then(response => {
                     
                     this.$swal("Yoohoo!",response.data, 'success');
-                    this.$router.go(0);
+                    //this.$router.go(0);
                 })
                 .catch((error) => {
                     this.$swal("Error", error.response.data, 'error');
