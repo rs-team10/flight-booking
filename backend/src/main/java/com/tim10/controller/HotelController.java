@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.websocket.server.PathParam;
 
@@ -14,14 +13,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Hotel;
-import com.tim10.domain.QuickRoomReservation;
 import com.tim10.dto.HotelDTO;
 import com.tim10.dto.HotelReportDTO;
 import com.tim10.dto.HotelRoomsDTO;
@@ -40,7 +41,7 @@ public class HotelController {
 	/*
 	 * GET hotela bez paginacije
 	 */
-	@RequestMapping(value="/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/all", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<HotelDTO>> getHotels() {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
 		for(Hotel h: hotelService.findAll())
@@ -51,7 +52,7 @@ public class HotelController {
 	/*
 	 * GET hotela sa paginacijom
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<HotelDTO>> getHotels(Pageable page) {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
 		for(Hotel h: hotelService.findAll(page))
@@ -59,7 +60,18 @@ public class HotelController {
 		return new ResponseEntity<List<HotelDTO>>(dtos, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*
+	 * Pretraga hotela po nazivu i lokaciji. Vraca stranice.
+	 */
+	@GetMapping(value="/searchHotels", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<HotelDTO>> searchHotels(Pageable page,
+														@PathParam("hotelName") String hotelName,
+														@PathParam("hotelLocation") String hotelLocation) {
+		return new ResponseEntity<>(hotelService.searchHotels(page, hotelName, hotelLocation), HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> registerHotel(@RequestBody NewHotelDTO hotelDTO){
 		Hotel registeredHotel = null;
 		Hotel hotel = new Hotel(hotelDTO);
@@ -71,7 +83,8 @@ public class HotelController {
 		return new ResponseEntity<>(registeredHotel, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value="/{id}", method=RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@PutMapping(value="/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateHotel(@RequestBody Hotel hotel) throws Exception {
 		Hotel updatedHotel = null;
 		try {
@@ -83,20 +96,10 @@ public class HotelController {
 	}
 	
 	/*
-	 * Pretraga hotela po nazivu i lokaciji. Vraca stranice.
-	 */
-	@RequestMapping(value="/searchHotels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<HotelDTO>> searchHotels(Pageable page,
-														@PathParam("hotelName") String hotelName,
-														@PathParam("hotelLocation") String hotelLocation) {
-		return new ResponseEntity<>(hotelService.searchHotels(page, hotelName, hotelLocation), HttpStatus.OK);
-	}
-	
-	
-	/*
 	 * Vracanje hotela za edit od prosledjenog Hotel Admina
 	 */
-	@RequestMapping(value="/hotelToEdit/{username}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/hotelToEdit/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getHotelToEdit(@PathVariable("username") String username){
 		HotelRoomsDTO dto = null;
 		try {
@@ -111,7 +114,8 @@ public class HotelController {
 	 * Vracanje svih soba iz hotela koje nisu rezervisane u odredjenom periodu
 	 * (koristi se kod rezervisanja soba)
 	 */
-	@RequestMapping(value="/getHotelRooms/{id}/{checkInDate}/{checkOutDate}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/getHotelRooms/{id}/{checkInDate}/{checkOutDate}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<RoomDTO>> getFreeRooms(@PathVariable("id") Long id,
 														@PathVariable("checkInDate") String checkInDate,
 														@PathVariable("checkOutDate") String checkOutDate) throws ParseException{
@@ -121,7 +125,8 @@ public class HotelController {
 	/*
 	 * Vracanje brzih rezervacija hotela (hotelAdmin)
 	 */
-	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/quickRoomReservations/{hotelId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathVariable("hotelId") Long hotelId){
 		return new ResponseEntity<>(hotelService.getQuickRoomReservations(hotelId), HttpStatus.OK);
 	}
@@ -129,7 +134,8 @@ public class HotelController {
 	/*
 	 * Prikaz brzih rezervacija korisniku za odredjeni period
 	 */
-	@RequestMapping(value="/quickRoomReservations", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@GetMapping(value="/quickRoomReservations", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<QuickRoomResDTO>> getQuickRoomReservations(@PathParam("hotelId") Long hotelId,
 																			@PathParam("checkInDate") String checkInDate,
 																			@PathParam("checkOutDate") String checkOutDate) throws ParseException{
@@ -139,12 +145,8 @@ public class HotelController {
 	/*
 	 * Dodavanje nove/novih brzih rezervacija hotela (hotelAdmin)
 	 */
-//	@RequestMapping(value="/quickRoomReservations/{hotelId}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<List<QuickRoomResDTO>> setQuickRoomReservations(@RequestBody Set<QuickRoomResDTO> quickRoomReservations, @PathVariable("hotelId") Long hotelId){	
-//		return new ResponseEntity<>(hotelService.setQuickRoomReservations(quickRoomReservations, hotelId), HttpStatus.OK);
-//	}
-	
-	@RequestMapping(value="/quickRoomReservations/{hotelId}/{dateFrom}/{dateTo}", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@PostMapping(value="/quickRoomReservations/{hotelId}/{dateFrom}/{dateTo}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createQuickRoomReservation(@RequestBody QuickRoomResDTO dto, 
 														@PathVariable("hotelId") Long hotelId,
 														@PathVariable("dateFrom") String dateFrom,
@@ -161,31 +163,36 @@ public class HotelController {
 	/*
 	 * Dobavljanje svih izvestaja (osim zarade) za hotel ciji je admin prosledjen
 	 */
-	@RequestMapping(value="/getReport/{adminUsername}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/getReport/{adminUsername}", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<HotelReportDTO> getReport(@PathVariable("adminUsername") String username) throws ParseException{
 		return new ResponseEntity<>(hotelService.getReports(username), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/getIncomeReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/getIncomeReport", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<BigDecimal> getIncomeReport(@PathParam("adminUsername") String adminUsername,
 											@PathParam("dateFrom") String dateFrom,
 											@PathParam("dateTo") String dateTo) throws ParseException {
 		return new ResponseEntity<>(hotelService.getIncomeReport(adminUsername,  dateFrom,  dateTo), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/dailyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/dailyReport", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<Long, Integer>> getDailyReport(@PathParam("adminUsername") String adminUsername,
 															@PathParam("dateFrom") String dateFrom) throws ParseException{
 		return new ResponseEntity<>(hotelService.getDailyReport(adminUsername, dateFrom), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/weeklyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/weeklyReport", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<Long, Integer>> gteWeeklyReport(@PathParam("adminUsername") String adminUsername,
 															@PathParam("dateFrom") String dateFrom) throws ParseException{
 		return new ResponseEntity<>(hotelService.getWeeklyReport(adminUsername, dateFrom), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/monthlyReport", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@GetMapping(value="/monthlyReport", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<Long, Integer>> getYearlyReport(@PathParam("adminUsername") String adminUsername,
 															@PathParam("numberOfYears") int numberOfYears) throws ParseException{
 		return new ResponseEntity<>(hotelService.getYearlyReport(adminUsername, numberOfYears), HttpStatus.OK);
