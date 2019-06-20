@@ -7,12 +7,16 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Airline;
 import com.tim10.domain.AirlineAdmin;
@@ -52,14 +56,21 @@ public class FlightService {
 		return airline.get();
 	}
 	
+	@Transactional(readOnly = true)
 	public Set<Flight> getFlights() {
 
 		Airline airline = getCurrentAdminAirline();
 		return airline.getFlights();
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Flight addFlight(FlightDTO flightDTO) throws ParseException {
 		Airline airline = getCurrentAdminAirline();
+		
+		Optional<Flight> repoFlight = flightRepository.findOneByFlightNumber(flightDTO.getFlightNumber());
+		if(repoFlight.isPresent())
+			throw new EntityExistsException("Flight with given number already exists.");
+		
 		Flight newFlight = new Flight();
 		
 		newFlight.setAirline(airline);
@@ -136,6 +147,7 @@ public class FlightService {
 		return savedFlight.get();
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void deleteFlight(FlightDTO flightDTO) {
 
 		Airline airline = getCurrentAdminAirline();
@@ -156,6 +168,7 @@ public class FlightService {
 		// flightRepository.delete(flight.get());
 	}
 
+	@Transactional(readOnly = true)
 	public Set<Seat> getFlightSeats(FlightDTO flightDTO) {
 
 		Optional<Flight> flight = flightRepository.findById(flightDTO.getId());
@@ -165,6 +178,7 @@ public class FlightService {
 		return flight.get().getSeats();
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED)
 	public Flight updateFlightSeats(SeatsUpdateDTO seatsUpdateDTO) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -182,7 +196,6 @@ public class FlightService {
 		int seatsCount = existingFlight.getSeats().size();
 		int counter = 0;
 		
-		// TODO: Optimize
 		for(SeatDTO seatDTO : seatsUpdateDTO.getUpdatedSeatsList()) {
 			for (Seat seat : existingFlight.getSeats()) {
 				if(seat.getRed().equals(seatDTO.getRed()) && seat.getKolona().equals(seatDTO.getKolona())) {

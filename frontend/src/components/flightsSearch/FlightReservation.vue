@@ -29,14 +29,14 @@
                                 <br>
                                 <hr>
                                 <br>
-                                <h2>Luggage details [PLACEHOLDER]</h2>
+                                <h2>Luggage details</h2>
                                 <br>
                                 <p>Hand luggage: 1 (max 8kg)</p>
                                 <p>Checked bags: 1 (max 25kg)</p>
                                 <br>
                                 <hr>
                                 <br>
-                                <h2>Additional services [PLACEHOLDER]</h2>
+                                <h2>Additional services</h2>
                                 <br>
                                 <p>Food: Available</p>
                                 <p>Soft drinks: Available</p>
@@ -558,7 +558,7 @@ export default {
                         seatRow: reservedSeats[i].red,
                         seatColumnLetter: String.fromCharCode(64 + reservedSeats[i].kolona),
                         seatClass: "Economy class",
-                        ticketPrice: "PLACEHOLDER"
+                        ticketPrice: this.flight.ticketPrice 
                     }
 
                     if(reservedSeats[i].segmentClass == "ECONOMIC_CLASS")
