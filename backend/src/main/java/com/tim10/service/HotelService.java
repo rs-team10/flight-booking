@@ -92,6 +92,7 @@ public class HotelService {
 		return save(hotel);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Hotel updateHotel(Hotel hotel) throws Exception {
 		Optional<Hotel> h = findOne(hotel.getId());
 		if(h.isPresent()) {
