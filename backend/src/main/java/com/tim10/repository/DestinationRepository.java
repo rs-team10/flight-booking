@@ -12,8 +12,8 @@ public interface DestinationRepository extends JpaRepository<Destination, Long>{
 	
 	Optional<Destination> findOneByName(String name);
 
-	@Query(value="SELECT d from Destinations d WHERE lower(concat(d.name) LIKE concat('%', lower(:airportName), '%') "
-			+ "AND lower(concat(d.airport_code) LIKE concat('%', lower(:airportCode), '%')", nativeQuery=true)
+	@Query(value="SELECT d from Destinations d WHERE lower(d.name) LIKE concat('%', lower(:airportName), '%') "
+			+ "AND lower(d.airport_code) LIKE concat('%', lower(:airportCode), '%')", nativeQuery=true)
 	Optional<Destination> findOneByNameAndCode(@Param("airportName") String airportName, @Param("airportCode") String airportCode);
 	
 	@Query(value="SELECT COUNT(*) FROM Flights f WHERE f.departure = :id OR f.destination = :id", nativeQuery=true)
