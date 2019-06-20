@@ -9,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tim10.dto.NewHotelDTO;
@@ -37,9 +36,6 @@ public class Hotel extends Company {
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public Set<HotelAdmin> administrators;
-	
-	@Version
-	private Long version;
 	
 	public Hotel() {
 		rooms = new HashSet<Room>();

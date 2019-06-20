@@ -1,5 +1,14 @@
-# [isamrs10] flight-booking
+﻿# [isamrs10] flight-booking
 ✈️ A web-based Flight Booking System developed during the Internet Software Architectures and Software Development Methodologies courses.
+
+## Requirements
+* [Maven](https://maven.apache.org/index.html)
+
+
+
+
+
+
 ## About the Team
 
 | [<img src="https://avatars1.githubusercontent.com/u/17569172?s=88&v=4" width="100px;"/>](https://github.com/fivkovic)<br/> [<sub>Filip Ivković</sub>](https://github.com/fivkovic) |

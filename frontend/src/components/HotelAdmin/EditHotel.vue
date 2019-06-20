@@ -442,7 +442,7 @@ export default {
                 this.$swal("Hotel edited successfully", "", "success")
                     .then(() => this.$router.push('/hotels'))
             }).catch(error => {
-                this.$swal("Error", "", "error")
+                this.$swal("Error", error.message.data, "error")
             });
         },
         getLocationData(place) {

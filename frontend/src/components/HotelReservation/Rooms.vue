@@ -307,6 +307,7 @@ export default {
             this.confirmResDialog = true
         },
         confirmReservation(){
+            console.log(this.selectedRooms)
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
             this.$axios
