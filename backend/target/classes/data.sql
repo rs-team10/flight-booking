@@ -2,11 +2,3 @@ insert into flight_booking.user (dtype,id, username, password, email) values ('S
 insert into flight_booking.authorities (id, role) values ('1', 'ROLE_SYSTEM_ADMIN');
 insert into flight_booking.user_authority (user_id, role_id) values (1, 1);
 
-
-
-
-
-
-
-
-

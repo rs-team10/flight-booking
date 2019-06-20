@@ -17,7 +17,9 @@ public class FlightDTO implements Serializable {
 	private String airline;
 	private String flightNumber;
 	private String departure;
+	private String departureCode;
 	private String destination;
+	private String destinationCode;
 	private List<String> transitDestinations;
 	private String departureDate;
 	private String arrivalDate;
@@ -39,7 +41,9 @@ public class FlightDTO implements Serializable {
 		this.airline = flight.getAirline().getName();
 		this.flightNumber = flight.getFlightNumber();
 		this.departure = flight.getDeparture().getName();
+		this.departureCode = flight.getDeparture().getAirportCode();
 		this.destination = flight.getDestination().getName();
+		this.destinationCode = flight.getDestination().getAirportCode();
 		
 		this.transitDestinations = new ArrayList<String>();
 		
@@ -194,4 +198,22 @@ public class FlightDTO implements Serializable {
 	public void setAverageFeedback(Double averageFeedback) {
 		this.averageFeedback = averageFeedback;
 	}
+
+	public String getDepartureCode() {
+		return departureCode;
+	}
+
+	public String getDestinationCode() {
+		return destinationCode;
+	}
+
+	public void setDepartureCode(String departureCode) {
+		this.departureCode = departureCode;
+	}
+
+	public void setDestinationCode(String destinationCode) {
+		this.destinationCode = destinationCode;
+	}
+	
+	
 }

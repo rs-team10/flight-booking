@@ -58,6 +58,7 @@ export default {
         }
     },
     created(){
+        var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
         this.$axios.get('http://localhost:8080/api/currentReservations/', yourConfig).then((response) => {
             this.reservations = response.data;
         }).catch((error) => {
@@ -66,6 +67,7 @@ export default {
     },
     methods: {
         showDialog(reservation){
+            var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
             this.$axios.post('http://localhost:8080/api/getReview/', reservation, yourConfig).then((response) => {
                 this.overview = response.data;
             }).catch((error) => {
