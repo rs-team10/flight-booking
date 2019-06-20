@@ -9,7 +9,7 @@
             <span>Airline report</span>
         </v-btn>
 
-        <v-btn flat>
+        <v-btn flat router to="/airlineAdminProfile">
             <v-icon left>account_circle</v-icon>
             <span>My profile</span>
         </v-btn>

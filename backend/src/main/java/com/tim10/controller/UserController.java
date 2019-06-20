@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.RentACarAdmin;
 import com.tim10.domain.User;
@@ -47,6 +49,28 @@ public class UserController {
 		System.out.println(users.getUsername());
 		return new ResponseEntity<User>(users, HttpStatus.CREATED);
 	}
+	
+	
+	@GetMapping(value="/api/users/currentAirlineAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<AdminDTO> getCurrentAirlineAdmin(){
+		AirlineAdmin currentAirlineAdmin = (AirlineAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentAirlineAdmin != null) {
+			AdminDTO adminDTO = new AdminDTO(currentAirlineAdmin);
+			return new ResponseEntity<AdminDTO>(adminDTO, HttpStatus.OK);
+		}
+		return new ResponseEntity<AdminDTO>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(value="/api/users/updateAirlineAdmin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> updateAirlineAdmin(@RequestBody AdminDTO adminDTO){
+		try {
+			userService.updateAirlineAdmin(adminDTO);
+			return new ResponseEntity<>("Airline admin updated successfully", HttpStatus.OK);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
+	}
+	
 	
 	//ZA HOTEL ADMINA
 	//=================================================================================
