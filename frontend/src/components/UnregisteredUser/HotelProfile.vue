@@ -28,8 +28,7 @@
                 </v-card-text>
 
                 <v-card-actions class="indigo--text font-weight-light title ml-2 pt-0">
-                    <!--{{ selectedHotel.description }}-->
-                    {{ lorem }}
+                    {{ selectedHotel.description }}
                 </v-card-actions>
             </v-card>
             </v-flex>
@@ -101,8 +100,6 @@ export default {
 
     data(){
         return{
-                        lorem: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-,
             roomsHeaders: [
                 { text: 'Type', align: 'left', sortable: false, value: 'name'},
                 { text: 'Price per night (€)', value:'price', sortable: false},
@@ -113,8 +110,7 @@ export default {
                 { text: 'Has Balcony', value: 'hasBalcony', sortable: false },
                 { text: 'Square ft.', value: 'squareFootage', sortable: false },
                 { text: 'Average Feedback', value: 'avgFdbk', sortable: false}
-            ],
-            lorem: "nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            ]
         }
     }
 }

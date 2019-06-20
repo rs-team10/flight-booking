@@ -1,6 +1,6 @@
 <template>
     <div id="additionalServices">
-        <v-layout row align-center justify-space-around fill-height>
+        <!-- <v-layout row align-center justify-space-around fill-height>
         <v-flex xs4 sm4 md4>    
             <v-card>
                 <v-toolbar color="indigo" class="elevation-10">
@@ -84,58 +84,60 @@
                     </v-btn>
                 </v-layout>
             </v-flex>
-            </v-layout>
+            </v-layout> -->
     </div>
 </template>
 
 <script>
-export default {
-    props: ['days', 'reservation', 'priceListItems'],
+// export default {
+//     props: ['days', 'reservation', 'priceListItems'],
 
-    data(){
-        return{
-            temp: [
-                { name: "WiFi",  pricePerNight: 5, description: "OPIS" },
-                { name: "Parking",  pricePerNight: 10, description: "OPIS"},
-                { name: "Underground parking",  pricePerNight: 10, description: "OPIS"},
-                { name: "City tour arrangements",  pricePerNight: 10, description: "OPIS"},
-                { name: "Smoking area club",  pricePerNight: 10, description: "OPIS"},
-                { name: "Phone service",  pricePerNight: 10, description: "OPIS"},
-                { name: "Spa",  pricePerNight: 10, description: "OPIS"},
-                { name: "Gym",  pricePerNight: 10, description: "OPIS"},
-                { name: "Dry cleaning",  pricePerNight: 10, description: "OPIS"},
-                { name: "Laundry service",  pricePerNight: 10, description: "OPIS"}
-            ],
-            selected: [],
-            headersLength: 3
-        }
-    },
-    computed: {
-        additionalServicesPrice(){
-            var total = 0;
-            for(var i = 0; i < this.selected.length; i++){  
-                total += this.selected[i].price * this.days;
-            }
-            return total;
-        },
-        totalPrice(){
-            return this.additionalServicesPrice + this.reservation.totalPrice;
-        }
+//     data(){
+//         return{
+//             temp: [
+//                 { name: "WiFi",  pricePerNight: 5, description: "OPIS" },
+//                 { name: "Parking",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Underground parking",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "City tour arrangements",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Smoking area club",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Phone service",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Spa",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Gym",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Dry cleaning",  pricePerNight: 10, description: "OPIS"},
+//                 { name: "Laundry service",  pricePerNight: 10, description: "OPIS"}
+//             ],
+//             selected: [],
+//             headersLength: 3
+//         }
+//     },
+//     computed: {
+//         additionalServicesPrice(){
+//             var total = 0;
+//             for(var i = 0; i < this.selected.length; i++){  
+//                 total += this.selected[i].price * this.days;
+//             }
+//             return total;
+//         },
+//         totalPrice(){
+//             return this.additionalServicesPrice + this.reservation.totalPrice;
+//         }
         
-    },
-    methods: {
-        reserveRooms(){
-            this.reservation.additionalServices = this.selected
-            this.$axios
-            .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation)
-            .then(response => {
-                this.$swal("Reservation successful", "", "success");
-            }).catch(error => {
-                console.log(error.response.data)
-            });
-        }
-    }
-}
+//     },
+//     methods: {
+//         reserveRooms(){
+//             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
+//             this.reservation.additionalServices = this.selected
+//             this.$axios
+//             .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation, yourConfig)
+//             .then(response => {
+//                 this.$swal("Reservation successful", "", "success");
+//             }).catch(error => {
+//                 console.log(error.response.data)
+//             });
+//         }
+//     }
+// }
 </script>
 
 

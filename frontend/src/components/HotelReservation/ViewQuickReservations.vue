@@ -61,14 +61,14 @@
                                                         </div>
                                                     </v-card-title>
 
-                                                    <v-card-actions>
+                                                    <v-card-text>
                                                         
-                                                            <v-btn outline color="indigo" flat block>
+                                                            <v-btn outline color="indigo" flat block @click="reserveQuickReservation(reservation.id)">
                                                                 Reserve 
                                                                 <v-icon right>done_outline</v-icon>
                                                             </v-btn>
                                                         
-                                                    </v-card-actions>
+                                                    </v-card-text>
                                                     
                                                 </v-card>    
                                             </v-layout>
@@ -116,15 +116,40 @@ export default {
           this.$emit('goBackToRegularReservation')  
         },
         calculateDiscountedPrice(reservation){
-            return reservation.totalPrice - (reservation.totalPrice * (reservation.discount / 100))
+            return Math.floor(reservation.totalPrice - (reservation.totalPrice * (reservation.discount / 100)))
         },
-        reserveQuickReservation(){
+        reserveQuickReservation(resId){
+            //potrebno prikazati i dodatne usluge
 
+            this.$axios 
+            .post('http://localhost:8080/api/reservations/quickReserveRoom', {}, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                },
+                params: {
+                    quickReservationId: parseInt(resId),
+                    groupReservationId: parseInt(localStorage.getItem('groupResId'))
+                }
+            }).then(response => {
+                //ako je rezervacija uspesna
+                localStorage.removeItem('groupResId')
+                localStorage.removeItem('arrivalDate')
+                localStorage.removeItem('guests')
+                //idi na pocetnu stranicu
+                this.$swal("Reservation successful", "Pack your bags, you're ready to go!", "success")
+                    .then(() => this.$router.push('/'))
+                
+            }).catch(error => {
+                this.$swal("Reservation error", "Sorry, room has already been reserved", "error")
+            })
         }
     },
     created(){
         this.$axios
             .get('http://localhost:8080/api/hotels/quickRoomReservations', {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                },
                 params: {
                     hotelId: this.hotelId, 
                     checkInDate: this.checkInDate,
@@ -133,11 +158,9 @@ export default {
             }).then(response => {
                 if(response.data.length > 0){
                     this.quickRoomReservations = response.data;
-                    console.log(this.quickRoomReservations)
-
                 }else{
-                    //obavesti da nema qrr dok je on tamo
-                    console.log(this.quickRoomReservations)
+                    this.$swal("No discounts", "There are no discounted rooms while you are on vacation :(", "warning")
+                        .then(() => this.$router.push('/hotelReservation'))
                 }
             })
     }

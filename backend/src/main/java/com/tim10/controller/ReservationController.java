@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -139,7 +143,8 @@ public class ReservationController {
 	/*
 	 * Rezervisanje sobe/soba
 	 */
-	@RequestMapping(value = "/reserveRoom/{groupResId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PostMapping(value = "/reserveRoom/{groupResId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> reserveRooms(@RequestBody RoomReservationDTO reservationDTO,
 											@PathVariable Long groupResId) {
 		try{
@@ -150,5 +155,15 @@ public class ReservationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PostMapping(value = "/quickReserveRoom", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> quickReserveRoom(@PathParam("quickReservationId") Long quickReservationId, @PathParam("groupReservationId") Long groupReservationId){
+		try {
+			roomReservationService.quickReserveRoom(quickReservationId, groupReservationId);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 	
 }

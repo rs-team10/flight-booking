@@ -1,11 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 import RentACars from './views/RentACars.vue'
-
 import RentACar from './components/rentACarComp/RentACar.vue'
-
-
 import Signup from './components/login&signup/signup.vue'
 import SignupAdmin from './components/login&signup/signupAdmin.vue'
 import ViewUserProfile from './views/ViewUserProfile.vue'
@@ -17,15 +13,8 @@ import SearchFlights from './views/SearchFlights.vue'
 import SearchUsers from './views/SearchUsers.vue'
 import Login from './components/login&signup/login.vue'
 import Logout from './components/login&signup/logout.vue'
-
 import VehicleReservation from'./components/vehicleReservation/VehicleReservation.vue'//coxi
 import RentACarAdminProfile from './components/rentACarComp/RentACarAdminProfile.vue'
-/*
-import ViewBranchOfficesA from './components/rentACarComp/ViewBranchOfficesA.vue'
-import AddVehicle from './components/rentACarComp/AddVehicle.vue'
-import EditVehicle from './components/rentACarComp/EditVehicle.vue'
-import ViewVehiclesA from './components/rentACarComp/ViewVehiclesA.vue'
-*/
 
 Vue.use(Router)
 
@@ -52,38 +41,11 @@ export default new Router({
       component: SearchUsers
     },
     {
-      path: '/airlineProfile',
-      name: 'airlineProfile',
-      component: ViewAirlineProfile
-    },
-    {
-      path: '/editAirlineProfile',
-      name: 'editAirlineProfile',
-      component: EditAirlineProfile
-    },
-    {
-      path: '/airlineReports',
-      name: 'AirlineReports',
-      component: AirlineReports
-    },
-    {
-      path: '/searchFlights',
-      name: 'searchFlights',
-      component: SearchFlights
-    },
-
-    {
-      path: '/rentACars',
-      name: 'rentACars',
-      component: RentACars
-    },
-    {
       props: true,
       path: '/rentACar/:rentACarId',
       name: 'rentACar',
       component: RentACar
     },
-    
     {
       path: '/signupAdmin',
       name: 'signupAdmin',
@@ -104,14 +66,16 @@ export default new Router({
       name: 'logout',
       component: Logout
     },
-    
-    {
-      path: '/vehicleReservation',
-      name: 'vehicleReservation',
-      component: VehicleReservation
-    },
-
     //===============REGISTERED USER====================
+    {
+      path: '/searchFlights',
+      name: 'searchFlights',
+      component: SearchFlights,
+      meta: {
+        //moze i registrovani i neregistrovani
+        //neregistrovanom zabranjena rezervacija
+      }
+    },
     {
       path: '/hotelReservation',
       name: 'hotelReservation',
@@ -124,13 +88,23 @@ export default new Router({
       }
     },
     {
+      path: '/vehicleReservation',
+      name: 'vehicleReservation',
+      component: VehicleReservation,
+      meta: {
+        requiresAuth : true,
+        is_registered_user: true,
+        is_reservation_active: true
+      }
+    },
+    {
       path: '/hotels',
       name: 'hotels',
       component: () => import('./components/ViewHotels.vue'),
       meta: {
         //TODO 
         //ne zahteva atentifikaciju? svi mogu da vide?
-      },
+      }
     },
     {
       path: '/airlines',
@@ -139,9 +113,9 @@ export default new Router({
       //svi mogu da vide??
     },
     {
-      path: '/rcs',
-      name: 'rcs',
-      component: () => import('./components/UnregisteredUser/RentACarCompanies.vue')
+      path: '/rentACars',
+      name: 'rentACars',
+      component: RentACars
     },
     //==================================================
 
@@ -199,7 +173,34 @@ export default new Router({
     },
     //==================================================
     
-    //==================================================
+    //================AIRLINE ADMIN======================
+    {
+      path: '/airlineProfile',
+      name: 'airlineProfile',
+      component: ViewAirlineProfile,
+      meta: {
+        requiresAuth: true,
+        is_airline_admin: true
+      }
+    },
+    {
+      path: '/editAirlineProfile',
+      name: 'editAirlineProfile',
+      component: EditAirlineProfile,
+      meta: {
+        requiresAuth: true,
+        is_airline_admin: true
+      }
+    },
+    {
+      path: '/airlineReports',
+      name: 'AirlineReports',
+      component: AirlineReports,
+      meta: {
+        requiresAuth: true,
+        is_airline_admin: true
+      }
+    }
 
   ]
 })

@@ -1,7 +1,7 @@
 <template>
     <v-toolbar-items>
 
-        <v-btn flat>
+        <v-btn flat router to="/airlines">
             <v-icon left>flight</v-icon>
             <span>Airlines</span>
         </v-btn>
@@ -15,7 +15,6 @@
             <v-icon left>directions_car</v-icon>
             <span>Rent-a-car</span>
         </v-btn>
-        <!-- <v-divider vertical></v-divider> -->
 
         <v-btn flat @click="$emit('logIn')">
             <u>Login</u>
