@@ -1,13 +1,40 @@
-﻿# [isamrs10] flight-booking
+# [isamrs10] flight-booking
 ✈️ A web-based Flight Booking System developed during the Internet Software Architectures and Software Development Methodologies courses.
 
 ## Requirements
+* Java 1.8
 * [Maven](https://maven.apache.org/index.html)
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [Vue CLI](https://cli.vuejs.org/)
+* [MySql 8.0](https://www.mysql.com)
 
+```bash
+#Database authentification
+username: root
+password: admin
+```
 
+## Running the application
 
+### Backend
+Start it as [Spring Boot application](https://spring.io/projects/spring-boot)
 
+### Frontend
 
+```
+npm install
+```
+
+```
+#Compiles and hot-reloads for development
+npm run serve
+```
+
+Go to <http://localhost:8080> to use the application
+
+## Deployment
+
+<https://isa-flightbooking.herokuapp.com>
 
 ## About the Team
 
