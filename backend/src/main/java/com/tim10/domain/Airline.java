@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -19,7 +20,7 @@ public class Airline extends Company {
 	
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
+	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	private Set<Destination> businessLocations;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

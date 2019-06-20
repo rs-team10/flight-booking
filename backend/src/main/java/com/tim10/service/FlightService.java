@@ -67,12 +67,12 @@ public class FlightService {
 
 		// TODO : Proveriti da li aviokompanija posluje na toj destinaciji
 		
-		Optional<Destination> departure = destinationRepository.findOneByName(flightDTO.getDeparture());
+		Optional<Destination> departure = destinationRepository.findOneByNameAndCode(flightDTO.getDeparture(), flightDTO.getDepartureCode());
 		if (!departure.isPresent())
 			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDeparture()));
 		newFlight.setDeparture(departure.get());
 		
-		Optional<Destination> destination = destinationRepository.findOneByName(flightDTO.getDestination());
+		Optional<Destination> destination = destinationRepository.findOneByNameAndCode(flightDTO.getDestination(), flightDTO.getDestinationCode());
 		if (!destination.isPresent())
 			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDestination()));
 		newFlight.setDestination(destination.get());

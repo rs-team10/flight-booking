@@ -158,7 +158,7 @@ public class AirlineService {
 		
 		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code [PROVERI DA LI RADI KAKO TREBA]
 		
-		Optional<Destination> repoDestination = destinationRepository.findOneByNameAndCode(newDestination.getAirportName(), newDestination.getAirportCode());
+		Optional<Destination> repoDestination = destinationRepository.findOneByNameAndCode(newDestination.getName(), newDestination.getAirportCode());
 		if(!repoDestination.isPresent()) {
 			airline.getBusinessLocations().add(newDestination);
 		} else {
