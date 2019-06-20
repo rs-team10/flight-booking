@@ -1,6 +1,6 @@
-projectKey=projekat
+projectKey=flight_booking
 serverUrl=http://localhost:9000
 serverVersion=7.7.0.23042
-dashboardUrl=http://localhost:9000/dashboard?id=projekat
-ceTaskId=AWtSA7b6_pH3zAe-yeBX
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AWtSA7b6_pH3zAe-yeBX
+dashboardUrl=http://localhost:9000/dashboard?id=flight_booking
+ceTaskId=AWtx-5tnjCcuNCNuHfKP
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWtx-5tnjCcuNCNuHfKP

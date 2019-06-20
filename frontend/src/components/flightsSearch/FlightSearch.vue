@@ -388,7 +388,7 @@
                                                                         <v-spacer></v-spacer>
                                                                         <v-layout row>
                                                                             <v-btn flat @click.stop="doShowDeal(flight)">View Deal</v-btn>
-                                                                            <v-btn flat @click.stop="flightSelected(flight)">
+                                                                            <v-btn flat @click.stop="flightSelected(flight)" v-if="isRegisteredUser">
                                                                                 Reserve
                                                                                 <v-icon right>input</v-icon>
                                                                             </v-btn>
@@ -494,6 +494,11 @@ export default {
             } else {
                 return new Date().toISOString().substr(0, 10);
             }
+        },
+        isRegisteredUser(){
+            if(localStorage.getItem('role') == "ROLE_REGISTERED_USER")
+                return true
+            return false
         }
     },
     data() {
@@ -849,7 +854,7 @@ export default {
                 this.multiCitySearch.filterEnabled = true;
                 this.performMultiCitySearch();
             }
-        },
+        }
     },
     created() {
 

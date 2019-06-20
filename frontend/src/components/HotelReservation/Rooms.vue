@@ -1,7 +1,6 @@
 <template>
     <div id="rooms">
         <v-layout row>
-
         <v-flex xs8 sm8 md8>
             <v-item-group>
                 <v-layout column>
@@ -306,25 +305,25 @@ export default {
             this.reservation.additionalServices = this.selected
 
             this.confirmResDialog = true
-            
         },
         confirmReservation(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
+
             this.$axios
-            .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation)
+            .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation, yourConfig)
             .then(response => {
                 this.confirmResDialog = false;
 
                 this.$swal({
-                title: "Reservation successful",
-                text: 'Do you want to continue to vehicle reservation?',
-                type: 'success',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, continue',
-                cancelButtonText: "No, I don't"
+                    title: "Reservation successful",
+                    text: 'Do you want to continue to vehicle reservation?',
+                    type: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, continue',
+                    cancelButtonText: "No, I don't"
                 }).then(result => {
                     if(result.value){
-                        //zeli da nastavi na car reservation (promeni ovo)
-                        this.$router.push('hotels')
+                        this.$router.push('/vehicleReservation')
                     }
                     else{
                         //ocisti local storage
@@ -375,6 +374,6 @@ export default {
         }, 
 
         
-    },
+    }
 }
 </script>

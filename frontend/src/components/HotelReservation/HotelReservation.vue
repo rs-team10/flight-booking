@@ -1,6 +1,5 @@
 <template>
   <div class="hotelReservation">
-    
     <v-snackbar
         v-model="empty"
         right
@@ -428,21 +427,27 @@ export default {
     methods:{
         fetchHotels(){
             this.$axios
-            .get('http://localhost:8080/api/hotels/searchHotels', {
-                params: {
-                page: this.page,
-                size: this.size,
-                hotelName: this.hotelName, 
-                hotelLocation: this.hotelLocation
-            }})
-            .then(response => {
-                this.hotels = response.data;  
-            })
+                .get('http://localhost:8080/api/hotels/searchHotels', {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    },
+                    params: {
+                        page: this.page,
+                        size: this.size,
+                        hotelName: this.hotelName, 
+                        hotelLocation: this.hotelLocation
+                }})
+                .then(response => {
+                    this.hotels = response.data;  
+                })
         },
         nextPage(){
             this.page += 1;
             this.$axios
             .get('http://localhost:8080/api/hotels/searchHotels', {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                },
                 params: {
                     page: this.page,
                     size: this.size,
@@ -466,12 +471,12 @@ export default {
             this.fetchHotels();
         },
         hotelSelected(hotel){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.selectedHotel = hotel;
 
             this.$axios
-            .get('http://localhost:8080/api/hotels/getHotelRooms/' + this.selectedHotel.id + '/' + this.checkInDate + '/' + this.checkOutDate)
+            .get('http://localhost:8080/api/hotels/getHotelRooms/' + this.selectedHotel.id + '/' + this.checkInDate + '/' + this.checkOutDate, yourConfig)
             .then(response => {
-                console.log(this.selectedHotel)
                 this.rooms = response.data
                 this.canRender = true
                 this.e6 = 2;
@@ -481,14 +486,12 @@ export default {
             if((this.checkOutDate == this.checkInDate) || (this.checkOutDate < this.checkInDate)){
                 this.$swal("Invalid check-in/check-out dates", "", "error");
                 return false;
-                //return false;
             }
             var days = (new Date(this.checkOutDate) - new Date(this.checkInDate)) / (1000*60*60*24);
             this.days = days;
             this.dateDialog = false;
             this.showCard = true;
             return true;
-
         },
         finishReservation(reservation){
             this.reservation = reservation;
@@ -513,8 +516,8 @@ export default {
         },
         viewAddress(location){
             this.selectedHotelLocation = {
-            lat: location.latitude,
-            lng: location.longitude
+                lat: location.latitude,
+                lng: location.longitude
             }
             this.locationDialog = true
         },

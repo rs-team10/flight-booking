@@ -252,7 +252,6 @@ export default {
                 if(!this.adminEmpty()){
                     this.addservice();
                 }else{
-                    //this.error = "At least one administrator must be added!";
                     this.$swal("At least one administrator must be added!", "", "warning");
                 }
             }
@@ -271,22 +270,19 @@ export default {
             
         },
         saveAirline(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/airlines', this.service)
+            .post('http://localhost:8080/api/airlines', this.service, yourConfig)
             .then(response => {
-                // this.success = true;
-                // setTimeout(() => {
-                //     this.success = false;
-                // }, 3000)
                 this.$swal("Registration successfull", "Airline " + response.data.name + " registered successfully", "success");
             }).catch(error => {
-                //this.error = error.response.data;
                 this.$swal(error.response.data, "", "error");
             });
         },
         saveHotel(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/hotels', this.service)
+            .post('http://localhost:8080/api/hotels', this.service, yourConfig)
             .then(response => {
                 this.$swal("Registration successfull", "Hotel " + response.data.name + " registered successfully", "success");
             }).catch(error => {
@@ -294,8 +290,9 @@ export default {
             });
         },
         saveRentACar(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/rentACars', this.service)
+            .post('http://localhost:8080/api/rentACars', this.service, yourConfig)
             .then(response => {
                 this.$swal("Registration successfull", "Rent-a-car service " + response.data.name + " registered successfully", "success");
             }).catch(error => {

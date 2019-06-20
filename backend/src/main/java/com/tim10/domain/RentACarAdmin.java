@@ -10,12 +10,11 @@ import javax.persistence.OneToMany;
 @Entity
 public class RentACarAdmin extends User {
 
-
-	@Column(name="hasCustomPassword")
+	@Column(name = "hasCustomPassword")
 	private Boolean hasCustomPassword;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	private RentACar company;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	private RentACar rentACar;
 
 	public RentACarAdmin() {
 		super();
@@ -29,15 +28,16 @@ public class RentACarAdmin extends User {
 		return hasCustomPassword;
 	}
 
-	public RentACar getCompany() {
-		return company;
+	public RentACar getRentACar() {
+		return rentACar;
+	}
+
+	public void setRentACar(RentACar rentACar) {
+		this.rentACar = rentACar;
 	}
 
 	public void setHasCustomPassword(Boolean hasCustomPassword) {
 		this.hasCustomPassword = hasCustomPassword;
 	}
 
-	public void setCompany(RentACar company) {
-		this.company = company;
-	}
 }

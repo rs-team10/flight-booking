@@ -86,7 +86,7 @@ public class RentACarService {
 			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
 				throw new Exception("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-			admin.setCompany(rentacar);
+			admin.setRentACar(rentacar);
 		}
 		return save(rentacar);
 	}

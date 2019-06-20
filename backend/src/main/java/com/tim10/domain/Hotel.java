@@ -15,6 +15,7 @@ import com.tim10.dto.NewHotelDTO;
 
 @Entity
 @Table(name="Hotels")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Hotel extends Company {
 	
 	private static final long serialVersionUID = 1L;
