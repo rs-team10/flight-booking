@@ -238,8 +238,8 @@ public class ReservationService {
 		
 	}
 	
-	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public void cancelFlightReservation(Long groupReservationId) {
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW, isolation=Isolation.SERIALIZABLE)
+	public void cancelFlightReservation(Long reservationId) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
@@ -247,34 +247,36 @@ public class ReservationService {
 			throw new EntityNotFoundException("User not found.");
 		currentUser = repoUser.get();
 		
-		Optional<GroupReservation> repoGroupReservation = groupReservationRepository.findById(groupReservationId);
-		if(!repoGroupReservation.isPresent())
-			throw new EntityNotFoundException(String.format("Group reservation with id %d not found.", groupReservationId));
-		GroupReservation gr = repoGroupReservation.get();
+		Optional<Reservation> repoReservation = reservationRepository.findById(reservationId);
+		if(!repoReservation.isPresent())
+			throw new EntityNotFoundException(String.format("Reservation with id %d not found.", reservationId));
+		Reservation r = repoReservation.get();
 		
-		for (Reservation r : gr.getReservations()) {
-			
-			Flight f = r.getFlightReservation().getSeat().getFlight();
-			
-			Date current = new Date();
-			Date threeHoursBefore = new Date(f.getDepartureDate().getTime() - (3 * 60 * 60 * 1000));
-			if(threeHoursBefore.before(current))
-				throw new PersistenceException("It is no longer possible to cancel the reservation.");
-			
-			r.getFlightReservation().getSeat().setIsReserved(false);
-			r.setStatus(RequestStatus.DENIED);
-			r.setFlightReservation(null);
-			
-			currentUser.setBonusPoints(currentUser.getBonusPoints() - f.getDistance());
-		}
+		Flight f = r.getFlightReservation().getSeat().getFlight();
 		
-		groupReservationRepository.save(gr);
+		Date current = new Date();
+		Date threeHoursBefore = new Date(f.getDepartureDate().getTime() - (3 * 60 * 60 * 1000));
+		if(threeHoursBefore.before(current))
+			throw new PersistenceException("It is no longer possible to cancel the reservation.");
+		
+		Optional<Seat> repoSeat = seatRepository.findById(r.getFlightReservation().getSeat().getId());
+		if(!repoSeat.isPresent())
+			throw new EntityNotFoundException(String.format("Seat with id %d not found.", r.getFlightReservation().getSeat().getId()));
+		Seat seat = repoSeat.get();
+		
+		seat.setIsReserved(false);
+		r.setStatus(RequestStatus.DENIED);
+		r.setFlightReservation(null);
+		
+		currentUser.setBonusPoints(currentUser.getBonusPoints() - f.getDistance());
+		
+		reservationRepository.save(r);
 		
 		// TODO: Otkazati i rezervaciju hotela i rentacar-a ukoliko postoji
 	}
 
 
-	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ)
 	public void acceptInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -306,7 +308,7 @@ public class ReservationService {
 		reservationRepository.save(r);
 	}
 	
-	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW, isolation=Isolation.REPEATABLE_READ)
 	public void declineInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

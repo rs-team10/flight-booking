@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 @Entity
 public class QuickFlightReservation extends FlightReservation {
 	
+	private static final long serialVersionUID = 1L;
+	
 	@Column(name="discount")
 	private Double discount;
 

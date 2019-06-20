@@ -3,12 +3,12 @@ package com.tim10.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 @Entity
 public class RentACarAdmin extends User {
+
+	private static final long serialVersionUID = 1L;
 
 	@Column(name = "hasCustomPassword")
 	private Boolean hasCustomPassword;

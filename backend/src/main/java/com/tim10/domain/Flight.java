@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,7 +21,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Flights")
-public class Flight {
+public class Flight implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
