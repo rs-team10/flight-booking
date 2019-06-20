@@ -700,7 +700,9 @@ export default {
                 var newFlightToSend = {
                     flightNumber : this.flightNumber,
                     departure : this.departure.name,
+                    departureCode: this.departure.airportCode,
                     destination : this.destination.name,
+                    destinationCode: this.destination.airportCode,
                     transitDestinations : [],
                     ticketPrice : this.ticketPrice,
                     departureDate : this.departureDate + ' ' + this.departureTime,

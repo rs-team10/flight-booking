@@ -752,7 +752,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    return this.$axios.post("http://localhost:8080/api/reservations/sendEmails/" + this.groupReservationId, yourConfig)
+                    return this.$axios.post("http://localhost:8080/api/reservations/sendEmails/" + this.groupReservationId, {}, yourConfig)
                         .then(response => {
                             if(!response) {
                                 throw new Error(response.statusText)
