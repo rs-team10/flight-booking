@@ -48,13 +48,13 @@ public class HotelService {
 	private RoomRepository roomRepository;
 	
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
 	private HotelAdminRepository hotelAdminRepository;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 	
 	public List<Hotel> findAll(){
 		return hotelRepository.findAll();
@@ -342,4 +342,11 @@ public class HotelService {
 		Hotel hotel = hotelAdmin.getHotel();
 		return hotelRepository.getIncomeReport(hotel.getId(), stringFrom, stringTo);
 	}
+
+	
+	
+	
+	
+	
 }
+
