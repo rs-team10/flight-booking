@@ -189,7 +189,7 @@ public class FlightService {
 		// TODO: Optimize
 		for(SeatDTO seatDTO : seatsUpdateDTO.getUpdatedSeatsList()) {
 			for (Seat seat : existingFlight.getSeats()) {
-				if(seat.getRed() == seatDTO.getRed() && seat.getKolona() == seatDTO.getKolona()) {
+				if(seat.getRed().equals(seatDTO.getRed()) && seat.getKolona().equals(seatDTO.getKolona())) {
 					seat.setIsActive(seatDTO.getIsActive());
 					seat.setSegmentClass(seatDTO.getSegmentClass());
 					counter++;

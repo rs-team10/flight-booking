@@ -1,19 +1,26 @@
 package com.tim10.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tim10.domain.RegisteredUser;
+import com.tim10.domain.GroupReservation;
+import com.tim10.domain.Reservation;
 import com.tim10.dto.FlightReservationDTO;
 import com.tim10.dto.InvitationDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
@@ -28,124 +35,101 @@ public class ReservationController {
 	@Autowired
 	ReservationService reservationService;
 	
-	/**
-	 * @author fivkovic
-	 */
-	@RequestMapping(
-			value = "/reserveFlight",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> reserveFlight(@RequestBody FlightReservationDTO flightReservationDTO) {
-
-		Long reservationId;
-		
-		try {
-			reservationId = reservationService.reserveFlight(flightReservationDTO);
-			return new ResponseEntity<>(reservationId, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}	
-	}
-	
-	/**
-	 * @author fivkovic
-	 */
-	@RequestMapping(
-			value = "/reserveQuickFlight",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> reserveQuickFlight(@RequestBody QuickFlightReservationDTO dto) {
-
-		Long reservationId;
-		
-		try {
-			reservationId = reservationService.reserveQuickFlight(dto);
-			return new ResponseEntity<>(reservationId, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}	
-	}
-	
-	/**
-	 * @author fivkovic
-	 */
-	@RequestMapping(
-			value = "/sendEmails/{id}",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PostMapping(value = "/sendEmails/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> sendEmails(@PathVariable("id") Long groupReservationId) {
-		
-		boolean success = reservationService.sendEmails(groupReservationId);
-		
-		if(success)
+		try {
+			reservationService.sendEmails(groupReservationId);
 			return new ResponseEntity<>(HttpStatus.OK);
-		else
+		} catch (MessagingException e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	
-	@RequestMapping(
-			value = "/cancelFlightReservation/{id}",
-			method = RequestMethod.PUT,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long groupReservationId) {
-		
-		boolean success = reservationService.cancelFlightReservation(groupReservationId);
-		
-		if(success)
-			return new ResponseEntity<>(HttpStatus.OK);
-		else
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	
-	@RequestMapping(
-			value = "/acceptInvitation/{code}",
-			method = RequestMethod.PUT,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> acceptInvitation(@PathVariable("code") String invitationCode) {
-		
-		boolean success = reservationService.acceptInvitation(invitationCode);
-		
-		if(success)
-			return new ResponseEntity<>(HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	
-	@RequestMapping(
-			value = "/declineInvitation/{code}",
-			method = RequestMethod.PUT,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> declineInvitation(@PathVariable("code") String invitationCode) {
-		
-		boolean success = reservationService.declineInvitation(invitationCode);
-		
-		if(success)
-			return new ResponseEntity<>(HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	
-	
-	
-	@RequestMapping(
-			value = "/getAllInvitations",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<InvitationDTO>> getAllInvitations() {
-		
-		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		if(currentUser != null) {
-			List<InvitationDTO> invitations = this.reservationService.getAllInvitations();
-			return new ResponseEntity<List<InvitationDTO>>(invitations, HttpStatus.OK);
 		}
-		 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PostMapping(value = "/reserveFlight", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Long> reserveFlight(@RequestBody FlightReservationDTO flightReservationDTO) {
+		try {
+			Long reservationId = reservationService.reserveFlight(flightReservationDTO);
+			return new ResponseEntity<Long>(reservationId, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PostMapping(value = "/reserveQuickFlight", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Long> reserveQuickFlight(@RequestBody QuickFlightReservationDTO dto) {
+		try {
+			Long reservationId = reservationService.reserveQuickFlight(dto);
+			return new ResponseEntity<Long>(reservationId, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PutMapping(value = "/cancelFlightReservation/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long groupReservationId) {
+		try {
+			reservationService.cancelFlightReservation(groupReservationId);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PutMapping(value = "/acceptInvitation/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> acceptInvitation(@PathVariable("code") String invitationCode) {
+		try {
+			reservationService.acceptInvitation(invitationCode);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@PutMapping( value = "/declineInvitation/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> declineInvitation(@PathVariable("code") String invitationCode) {
+		try {
+			reservationService.declineInvitation(invitationCode);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
+	@GetMapping(value = "/getAllInvitations", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<InvitationDTO>> getAllInvitations() {
+		try {
+			List<InvitationDTO> invitations = new ArrayList<InvitationDTO>();
+			for (Reservation reservation : reservationService.getAllInvitations()) {
+				
+				InvitationDTO dto = new InvitationDTO();
+				dto.setId(reservation.getInvitationCode());
+				dto.setDeparture(reservation.getFlightReservation().getSeat().getFlight().getDeparture().getName());
+				dto.setDestination(reservation.getFlightReservation().getSeat().getFlight().getDestination().getName());
+				dto.setDate(reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString());
+				
+				GroupReservation gr = reservation.getGroupReservation();
+				for (Reservation r : gr.getReservations()) {
+					if (r.getIsHost()) {
+						dto.setBy(r.getRegisteredUser().getFirstName() + " " + r.getRegisteredUser().getLastName());
+					}
+				}			
+	
+				dto.setStatus(reservation.getStatus());
+				invitations.add(dto);
+			}
+			return new ResponseEntity<List<InvitationDTO>>(invitations, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 

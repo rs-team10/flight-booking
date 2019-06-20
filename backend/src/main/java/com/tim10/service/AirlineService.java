@@ -58,15 +58,19 @@ public class AirlineService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	
-	
-	
 	public List<Airline> findAll() {
 		return airlineRepository.findAll();
 	}
 	
 	public Page<Airline> findAll(Pageable page){
 		return airlineRepository.findAll(page);
+	}
+	
+	public Airline findOne(Long id) {
+		Optional<Airline> airline = airlineRepository.findById(id);
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline with id %d not found.", id));
+		return airline.get();
 	}
 	
 	public Airline registerAirline(Airline airline) throws Exception {
@@ -86,13 +90,12 @@ public class AirlineService {
 	}
 	
 	public Airline findOneByName(String name) {
-		return airlineRepository.findOneByName(name).get();
+		Optional<Airline> airline = airlineRepository.findOneByName(name);
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline with name %s not found.", name));
+		return airline.get();
 	}
 	
-	public Optional<Airline> findOne(Long id) {
-		return airlineRepository.findById(id);
-	}
-
 	// ===========================================================================
 	// AIRLINE CRUD
 	// ===========================================================================

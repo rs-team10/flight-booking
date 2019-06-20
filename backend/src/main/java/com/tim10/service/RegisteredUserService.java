@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +26,6 @@ import com.tim10.domain.Vehicle;
 import com.tim10.domain.VehicleReservation;
 import com.tim10.dto.RegisteredUserSearchDTO;
 import com.tim10.dto.ReservationHistoryDTO;
-import com.tim10.dto.ReviewDTO;
 import com.tim10.dto.UserFriendsDTO;
 import com.tim10.repository.FriendshipRepository;
 import com.tim10.repository.RegisteredUserRepository;
@@ -142,14 +143,14 @@ public class RegisteredUserService {
 	// UPDATE USER
 	// =====================================================================
 	
-	public boolean updateUserProfile(RegisteredUser registeredUser) {
-		
-		registeredUser.setAuthorities(registeredUserRepository.findById(registeredUser.getId()).get().getAuthorities());
-		
+	public void updateUserProfile(RegisteredUser registeredUser) {
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(registeredUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		registeredUser.setAuthorities(repoUser.get().getAuthorities());
 		registeredUser.setPassword(passwordEncoder.encode(registeredUser.getPassword()));
 		registeredUser.setIsConfirmed(true);
 		registeredUserRepository.save(registeredUser);
-		return true;
 	}
 	
 	// =====================================================================

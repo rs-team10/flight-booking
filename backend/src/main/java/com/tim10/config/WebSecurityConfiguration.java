@@ -101,11 +101,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 			
 			.antMatchers("/").permitAll()
-			.antMatchers("/auth/**").permitAll()
 			.antMatchers("/auth/login").permitAll()
+			.antMatchers("/auth/**").permitAll()
 			.antMatchers("/api/*").permitAll()
-			.antMatchers("/**/**").permitAll()
 			.antMatchers("/**/**/**").permitAll()
+			.antMatchers("/**/**").permitAll()
+
 			/*
 			.antMatchers("/api/hotels").hasAnyRole("USER")
 			.antMatchers("/api/users").hasAnyRole("USER", "SYSTEM_ADMIN")
