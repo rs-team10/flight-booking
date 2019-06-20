@@ -19,6 +19,11 @@
             <span>Rent-a-car</span>
         </v-btn>
 
+        <v-btn flat router to="/userProfile">
+            <v-icon left>account_circle</v-icon>
+            <span>My profile</span>
+        </v-btn>
+
         <v-btn flat @click="$emit('logOut')">
             <u>Log out</u>
         </v-btn>

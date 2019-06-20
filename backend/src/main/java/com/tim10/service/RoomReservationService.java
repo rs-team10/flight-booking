@@ -53,21 +53,13 @@ public class RoomReservationService {
 			for(RoomDTO roomDTO : reservationDTO.getListOfRooms()) {
 				
 				Optional<Room> optionalRoom = roomRepository.findOneById(roomDTO.getId());
-//				try {
-//					Thread.sleep(5000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				
-				
+								
 				if(!optionalRoom.isPresent())
 					throw new EntityNotFoundException("Room not found");
 				Room room = optionalRoom.get();
 				if(room.isReserved(reservationDTO.getDateFrom(), reservationDTO.getDateTo())) {
-					throw new PersistenceException("vec rezervisano u tom periodu");
+					throw new PersistenceException("Room is already reserved in that period");
 				}
-					
 				
 				for(int i = 0; i < room.getRoomType().getCapacity(); i++) {
 					RoomReservation roomReservation = new RoomReservation(reservationDTO.getDateFrom(),
@@ -80,14 +72,12 @@ public class RoomReservationService {
 						if(reservation.getRoomReservation() == null) {
 							reservation.setRoomReservation(roomReservation);
 							
-							//da li ce raditi??
 							roomReservation.setReservation(reservation);
 							roomReservationRepository.save(roomReservation);
 							break;
 						}
 					}
 				}
-				//cuvanje sobe sa rezervacijom nazad u bazu
 				//roomRepository.save(room);
 			}
 			

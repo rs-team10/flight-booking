@@ -38,9 +38,9 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>{
 			+ "RIGHT JOIN Room_Reservations rr ON r.id = rr.room_id "
 			+ "RIGHT JOIN Reservations res ON res.room_reservation_id = rr.id "
 			+ "WHERE h.id = :hotelId "
-			+ "AND (rr.date_from BETWEEN CAST(:start AS DATE) AND CAST(:end AS DATE))",
+			+ "AND (rr.date_from BETWEEN CAST(:start AS DATE) AND CAST(:end AS DATE)) "
 			//TODO: Otkomentarisati kada se implementiraju sve rezervacije (zbog brzih rezervacija); ne zaboravi razmak iznad na kraju
-			//+ "AND rr.reservation_id IS NOT NULL",
+			+ "AND rr.reservation_id IS NOT NULL",
 			nativeQuery = true)
 	List<Date> getRoomReservations(@Param("hotelId") Long hotelId, @Param("start") String start, @Param("end") String end);
 	

@@ -36,7 +36,7 @@ public class Hotel extends Company {
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	public Set<HotelAdmin> administrators;
-
+	
 	public Hotel() {
 		rooms = new HashSet<Room>();
 		roomTypes = new HashSet<RoomType>();
@@ -53,10 +53,6 @@ public class Hotel extends Company {
 		this.setName(dto.getName());
 		this.setLocation(dto.getLocation());
 		administrators = dto.getAdministrators();
-//		for(HotelAdmin admin : dto.getAdministrators()) {
-//			admin.setHotel(this);
-//			administrators.add(admin);
-//		}
 	}
 
 	public Set<Room> getRooms() {

@@ -114,7 +114,7 @@ public class HotelController {
 	 * Vracanje svih soba iz hotela koje nisu rezervisane u odredjenom periodu
 	 * (koristi se kod rezervisanja soba)
 	 */
-	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
 	@GetMapping(value="/getHotelRooms/{id}/{checkInDate}/{checkOutDate}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<RoomDTO>> getFreeRooms(@PathVariable("id") Long id,
 														@PathVariable("checkInDate") String checkInDate,

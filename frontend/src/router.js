@@ -26,21 +26,6 @@ export default new Router({
       component: () => import('./components/UnregisteredUser/HomePage.vue')
     },
     {
-      path: '/userProfile',
-      name: 'userProfile',
-      component: ViewUserProfile
-    },
-    {
-      path: '/editUserProfile',
-      name: 'editUserProfile',
-      component: EditUserProfile
-    },
-    {
-      path: '/searchUsers',
-      name: 'searchUsers',
-      component: SearchUsers
-    },
-    {
       props: true,
       path: '/rentACar/:rentACarId',
       name: 'rentACar',
@@ -116,6 +101,33 @@ export default new Router({
       path: '/rentACars',
       name: 'rentACars',
       component: RentACars
+    },
+    {
+      path: '/userProfile',
+      name: 'userProfile',
+      component: ViewUserProfile,
+      meta: {
+        requiresAuth : true,
+        is_registered_user: true
+      }
+    },
+    {
+      path: '/editUserProfile',
+      name: 'editUserProfile',
+      component: EditUserProfile,
+      meta: {
+        requiresAuth : true,
+        is_registered_user: true
+      }
+    },
+    {
+      path: '/searchUsers',
+      name: 'searchUsers',
+      component: SearchUsers,
+      meta: {
+        requiresAuth : true,
+        is_registered_user: true
+      }
     },
     //==================================================
 

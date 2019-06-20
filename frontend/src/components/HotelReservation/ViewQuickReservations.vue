@@ -141,6 +141,7 @@ export default {
                 
             }).catch(error => {
                 this.$swal("Reservation error", "Sorry, room has already been reserved", "error")
+                    .then(() => this.$router.push('/hotelReservation'))
             })
         }
     },

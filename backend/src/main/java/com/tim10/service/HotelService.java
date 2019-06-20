@@ -80,6 +80,7 @@ public class HotelService {
 		return hotelRepository.findByParameter(pageable, hotelName, hotelLocation);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Hotel registerHotel(Hotel hotel) throws Exception {
 		for(HotelAdmin admin : hotel.getAdministrators()) {
 			if(userRepository.findOneByUsername(admin.getUsername()).isPresent()) 
@@ -92,6 +93,7 @@ public class HotelService {
 		return save(hotel);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Hotel updateHotel(Hotel hotel) throws Exception {
 		Optional<Hotel> h = findOne(hotel.getId());
 		if(h.isPresent()) {
@@ -103,6 +105,7 @@ public class HotelService {
 		throw new EntityNotFoundException("Hotel doesn't exist");
 	}
 	
+	@Transactional(readOnly = true)
 	public HotelRoomsDTO getHotelToEdit(String username) {
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(username);
 		if(!hotelAdminOptional.isPresent())
@@ -111,6 +114,7 @@ public class HotelService {
 		return new HotelRoomsDTO(hotelAdmin.getHotel());
 	}
 	
+	@Transactional(readOnly = true)
 	public List<HotelDTO> searchHotels(Pageable page, String hotelName, String hotelLocation) {
 		List<HotelDTO> dtos = new ArrayList<HotelDTO>();
 		for(Hotel h : findByParameter(page, hotelName, hotelLocation)) {
@@ -121,6 +125,7 @@ public class HotelService {
 		return dtos;
 	}
 	
+	@Transactional(readOnly = true)
 	public List<RoomDTO> getFreeRooms(Long id, String checkInDate, String checkOutDate) throws ParseException {
 		Optional<Hotel> hotelOptional = findOne(id);
 		if(!hotelOptional.isPresent())
@@ -138,7 +143,8 @@ public class HotelService {
 		return responseRooms;
 		
 	}
-
+	
+	@Transactional(readOnly = true)
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId) {
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
 		Optional<Hotel> hotelOptional = findOne(hotelId);
@@ -152,6 +158,7 @@ public class HotelService {
 		return responseList;
 	}
 	
+	@Transactional(readOnly = true)
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId, String checkInDate, String checkOutDate) throws ParseException{
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
 		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(checkInDate);
@@ -163,7 +170,7 @@ public class HotelService {
 		Hotel hotel = hotelOptional.get();
 		for(QuickRoomReservation quickRoomReservation: hotel.getQuickRoomReservations()) {
 			if(quickRoomReservation.getDateFrom().equals(dateFrom) && quickRoomReservation.getDateTo().equals(dateTo)) {
-				if(quickRoomReservation.getReservation() != null)
+				if(quickRoomReservation.getReservation() == null)
 					responseList.add(new QuickRoomResDTO(quickRoomReservation));
 			}
 		}
@@ -201,6 +208,7 @@ public class HotelService {
 		
 	}
 	
+	@Transactional(readOnly = true)
 	public HotelReportDTO getReports(String adminUsername) throws ParseException {
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
 		if(!hotelAdminOptional.isPresent())
@@ -219,6 +227,7 @@ public class HotelService {
 		return hotelReportDTO;
 	}
 	
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getDailyReport(String adminUsername, String fromDate) throws ParseException{
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
 		if(!hotelAdminOptional.isPresent())
@@ -255,6 +264,7 @@ public class HotelService {
 		return dailyReport;
 	}
 	
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getWeeklyReport(String adminUsername, String fromDate) throws ParseException {
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
 		if(!hotelAdminOptional.isPresent())
@@ -293,6 +303,7 @@ public class HotelService {
 		return weeklyReport;
 	}
 	
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getYearlyReport(String adminUsername, int numberOfYears){
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
 		if(!hotelAdminOptional.isPresent())
@@ -322,6 +333,7 @@ public class HotelService {
 		return yearlyReport;
 	}
 
+	@Transactional(readOnly = true)
 	public BigDecimal getIncomeReport(String adminUsername, String stringFrom, String stringTo) throws ParseException {
 		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
 		if(!hotelAdminOptional.isPresent())
