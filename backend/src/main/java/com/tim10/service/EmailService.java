@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.RegisteredUser;
 import com.tim10.domain.Reservation;
@@ -36,6 +38,7 @@ public class EmailService {
     }
     
     @Async
+	@Transactional(readOnly = true, propagation=Propagation.MANDATORY)
     public void sendFlightReservationEmail(Reservation reservation, String emailAddress,String departure, String destination, String departureDate, Seat reservedSeat) throws MessagingException {
     	
     	MimeMessage mailMessage = mailSender.createMimeMessage();
@@ -55,6 +58,7 @@ public class EmailService {
     }
     
     @Async
+	@Transactional(readOnly = true, propagation=Propagation.MANDATORY)
     public void sendInvitationEmail(Reservation reservation, String emailAddress, String invitationCode, String departure, String destination, String departureDate, Seat reservedSeat) throws MessagingException {
     	
     	MimeMessage mailMessage = mailSender.createMimeMessage();

@@ -1,5 +1,6 @@
 package com.tim10.dto;
 
+import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.RentACarAdmin;
 
@@ -15,6 +16,16 @@ public class AdminDTO {
 
 	public AdminDTO() {
 		
+	}
+	
+	public AdminDTO(AirlineAdmin airlineAdmin) {
+		this.id = airlineAdmin.getId();
+		this.firstName = airlineAdmin.getFirstName();
+		this.lastName = airlineAdmin.getLastName();
+		this.username = airlineAdmin.getUsername();
+		this.email = airlineAdmin.getEmail();
+		this.hasCustomPassword = airlineAdmin.getHasCustomPassword();
+		this.setPassword("");
 	}
 	
 	public AdminDTO(HotelAdmin hotelAdmin) {

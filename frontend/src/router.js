@@ -187,6 +187,15 @@ export default new Router({
     
     //================AIRLINE ADMIN======================
     {
+      path: '/airlineAdminProfile',
+      name: 'airlineAdminProfile',
+      component: () => import('./components/airline/AirlineAdminProfile.vue'),
+      meta: {
+        requiresAuth : true,
+        is_airline_admin : true
+      }
+    },
+    {
       path: '/airlineProfile',
       name: 'airlineProfile',
       component: ViewAirlineProfile,

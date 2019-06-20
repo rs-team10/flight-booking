@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +78,7 @@ public class AirlineService {
 		return airline.get();
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED)
 	public Airline registerAirline(Airline airline) throws Exception {
 		for(AirlineAdmin admin : airline.getAdministrators()) {
 			if(userRepository.findOneByUsername(admin.getUsername()).isPresent())
@@ -104,6 +106,7 @@ public class AirlineService {
 	// AIRLINE CRUD
 	// ===========================================================================
 	
+	@Transactional(readOnly = true)
 	public Airline getCurrentAdminAirline() throws EntityNotFoundException {
 		
 		AirlineAdmin airlineAdmin = (AirlineAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -117,6 +120,7 @@ public class AirlineService {
 		return airline.get();
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.REPEATABLE_READ)
 	public Airline updateAirline(Airline editedAirline) throws EntityExistsException {
 
 		Airline airline = getCurrentAdminAirline();
@@ -145,6 +149,7 @@ public class AirlineService {
 		return airlineRepository.save(airline);
 	}
 	
+	@Transactional(readOnly = true)
 	public Set<Destination> getBusinessLocations() {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -152,6 +157,7 @@ public class AirlineService {
 		
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.REPEATABLE_READ)
 	public Airline addBusinessLocation(Destination newDestination) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -167,6 +173,7 @@ public class AirlineService {
 		return airlineRepository.save(airline);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.REPEATABLE_READ)
 	public Airline removeBusinessLocation(DestinationDTO destinationDTO) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -188,6 +195,7 @@ public class AirlineService {
 		return airlineRepository.save(airline);
 	}
 	
+	@Transactional(readOnly = true)
 	public Set<PriceListItem> getPriceListItems() {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -195,6 +203,7 @@ public class AirlineService {
 		
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED)
 	public Airline addPriceListItem(PriceListItem item) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -203,6 +212,7 @@ public class AirlineService {
 		return airlineRepository.save(airline);
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED)
 	public Airline removePriceListItem(PriceListItemDTO itemDTO) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -221,6 +231,7 @@ public class AirlineService {
 		return airlineRepository.save(airline);
 	}
 
+	@Transactional(readOnly = true)
 	public Set<QuickFlightReservation> getQuickFlightReservations() {
 
 		Airline airline = getCurrentAdminAirline();
@@ -228,10 +239,8 @@ public class AirlineService {
 		
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.REPEATABLE_READ)
 	public QuickFlightReservation createQuickFlightReservation(QuickFlightReservationDTO dto) {
-		
-		// TODO: Dovrsiti transakcije
 		
 		Optional<Seat> repoSeat = seatRespository.findById(dto.getSeatId());
 		if(!repoSeat.isPresent())
@@ -262,6 +271,7 @@ public class AirlineService {
 		return quickFlightReservation;
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation=Isolation.REPEATABLE_READ)
 	public Airline deleteQuickFlightReservation(QuickFlightReservationDTO dto) {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -288,6 +298,7 @@ public class AirlineService {
 	// REPORTS
 	// ==============================================================================
 
+	@Transactional(readOnly = true)
 	public AirlineReportDTO getReports() throws ParseException {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -304,16 +315,19 @@ public class AirlineService {
 		return reportDTO;
 	}
 	
+	@Transactional(readOnly = true)
 	public Double getAverageFeedback() {
 		Airline airline = getCurrentAdminAirline();
 		return airlineRepository.getAverageFeedback(airline.getId());
 	}
 
+	@Transactional(readOnly = true)
 	public BigDecimal getIncomeReport(String dateFrom, String dateTo) {
 		Airline airline = getCurrentAdminAirline();
 		return airlineRepository.getIncomeReport(airline.getId(), dateFrom, dateTo);
 	}
-
+	
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getDailyReport(String dateFrom) throws ParseException {
 		
 		Airline airline = getCurrentAdminAirline();
@@ -352,7 +366,8 @@ public class AirlineService {
 		
 		return dailyReport;
 	}
-
+	
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getWeeklyReport(String dateFrom) throws ParseException {
 		Airline airline = getCurrentAdminAirline();
 			
@@ -388,6 +403,7 @@ public class AirlineService {
 		return weeklyReport;
 	}
 
+	@Transactional(readOnly = true)
 	public Map<Long, Integer> getYearlyReport(int numberOfYears) {
 		
 		Airline airline = getCurrentAdminAirline();

@@ -13,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.tim10.domain.AirlineAdmin;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.RentACarAdmin;
 import com.tim10.domain.User;
@@ -62,6 +64,35 @@ public class UserService implements UserDetailsService {
 		
 		
 		return user.get();
+	}
+	
+	@Transactional(readOnly = false)
+	public boolean updateAirlineAdmin(AdminDTO adminDTO) throws Exception {
+		AirlineAdmin currentAirlineAdmin = (AirlineAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(currentAirlineAdmin != null && currentAirlineAdmin.getId().equals(adminDTO.getId())) {
+			if(!currentAirlineAdmin.getEmail().equalsIgnoreCase(adminDTO.getEmail()) && 
+					findOneByEmail(adminDTO.getEmail()).isPresent()){
+				throw new Exception("Email taken.");
+			}
+			if(!currentAirlineAdmin.getUsername().equalsIgnoreCase(adminDTO.getUsername()) &&
+					findOneByUsername(adminDTO.getUsername()).isPresent()) {
+				throw new Exception("Username taken.");
+			}
+			Optional<User> userOptional = findById(adminDTO.getId());
+			if(!userOptional.isPresent())
+				throw new EntityNotFoundException("Airline admin not found");
+			
+			AirlineAdmin updatedAirlineAdmin = (AirlineAdmin)userOptional.get();
+			updatedAirlineAdmin.setFirstName(adminDTO.getFirstName());
+			updatedAirlineAdmin.setLastName(adminDTO.getLastName());
+			updatedAirlineAdmin.setUsername(adminDTO.getUsername());
+			updatedAirlineAdmin.setEmail(adminDTO.getEmail());
+			if(!adminDTO.getPassword().isEmpty())
+				updatedAirlineAdmin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
+			userRepository.save(updatedAirlineAdmin);
+			return true;
+		}
+		throw new NoPermissionException("You are unauthorized to do this.");
 	}
 	
 	//ZA HOTEL ADMINA

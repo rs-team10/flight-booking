@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Destination;
 import com.tim10.dto.DestinationDTO;
@@ -16,6 +17,7 @@ public class DestinationService {
 	@Autowired
 	DestinationRepository destinationRepository;
 	
+	@Transactional(readOnly = true)
 	public List<DestinationDTO> getAllDestinations() {
 		
 		List<DestinationDTO> destinationsList = new ArrayList<DestinationDTO>();

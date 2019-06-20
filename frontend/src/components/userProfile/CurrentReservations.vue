@@ -28,7 +28,7 @@
                     <v-list-tile-sub-title>{{reservation.departureDate.substring(0,10)}}</v-list-tile-sub-title>
                 </v-list-tile-content>
 
-
+                <v-btn @click.stop="cancelReservation(reservation)">CANCER</v-btn>
             </v-list-tile> 
         </template>
         </v-list>
@@ -75,6 +75,16 @@ export default {
             });
             this.reservation = reservation;
             this.dialog = true;
+        },
+        cancelReservation(reservation) {
+            console.log(reservation.reservationId);
+            var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
+            
+            this.$axios.put('http://localhost:8080/api/reservations/cancelFlightReservation/' + reservation.reservationId, {}, yourConfig).then((response) => {
+                this.overview = response.data;
+            }).catch((error) => {
+                this.$swal("Error", error.response, 'error');
+            });
         }
     }
     

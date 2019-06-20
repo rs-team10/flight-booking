@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name="RoomReservations")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class RoomReservation implements Serializable{
+public class RoomReservation implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 

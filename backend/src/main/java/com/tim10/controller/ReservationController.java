@@ -15,12 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.GroupReservation;
@@ -76,9 +72,9 @@ public class ReservationController {
 	
 	@PreAuthorize("hasRole('ROLE_REGISTERED_USER')")
 	@PutMapping(value = "/cancelFlightReservation/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long groupReservationId) {
+	public ResponseEntity<?> cancelReservation(@PathVariable("id") Long reservationId) {
 		try {
-			reservationService.cancelFlightReservation(groupReservationId);
+			reservationService.cancelFlightReservation(reservationId);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

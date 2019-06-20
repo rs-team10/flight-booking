@@ -1,5 +1,7 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,8 +20,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="Reservations")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Reservation {
+public class Reservation implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;

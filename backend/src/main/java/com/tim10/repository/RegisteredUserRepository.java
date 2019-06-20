@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tim10.domain.RegisteredUser;
-import com.tim10.domain.Reservation;
 import com.tim10.dto.RegisteredUserSearchDTO;
 
 public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, Long>{

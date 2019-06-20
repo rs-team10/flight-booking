@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Flight;
 import com.tim10.domain.SegmentClass;
@@ -25,9 +26,9 @@ public class FlightSearchService {
 	@Autowired
 	AirlineRepository airlineRepository;
 
+	@Transactional(readOnly = true)
 	public Page<Flight> performOneWaySearch(Pageable page, Long departureId, Long destinationId, String departureDateString, Integer passengerCount, String flightClassString) throws ParseException {
 		
-		// TODO: Proveriti datum !!!
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date departureDate = null;
 
@@ -46,9 +47,9 @@ public class FlightSearchService {
 		return flightRepository.performOneWaySearch(page, departureId, destinationId, departureDate, passengerCount, flightClass.toString());
 	}
 	
+	@Transactional(readOnly = true)
 	public Page<Flight> performOneWayFilterSearch(Pageable page, FilterDTO filter) throws ParseException {
 		
-		// TODO: Proveriti datum !!!
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date departureDate = null;
 		
@@ -73,8 +74,7 @@ public class FlightSearchService {
 				flightClass.toString(), airlines, filter.getStopsCount(), filter.getMinPrice(), filter.getMaxPrice());
 	}
 	
-	
-
+	@Transactional(readOnly = true)
 	public List<String> getAirlineNames() {
 		return airlineRepository.findAllNames();
 	}
