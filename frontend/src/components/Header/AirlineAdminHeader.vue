@@ -1,10 +1,10 @@
 <template>
     <v-toolbar-items>
-        <v-btn flat blur>
+        <v-btn flat blur router to="/airlineProfile">
             <span>Edit airline</span>
         </v-btn>
 
-        <v-btn flat blur>
+        <v-btn flat blur router to="/airlineReports">
             <v-icon left>assessment</v-icon>
             <span>Airline report</span>
         </v-btn>

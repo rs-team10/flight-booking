@@ -1,6 +1,6 @@
 <template>
     <v-toolbar-items>
-        <v-btn flat blur color="green">
+        <v-btn flat blur router to="/searchFlights" color="green">
             <span>Reserve</span>
         </v-btn>
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.naming.NoPermissionException;
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,11 +29,6 @@ public class UserService implements UserDetailsService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-	public User findUserByEmail(String email) {
-	
-		return userRepository.findOneByEmail(email).get();
-	}
 	
 	public void save(User user) {
 		userRepository.save(user);
@@ -72,16 +68,20 @@ public class UserService implements UserDetailsService {
 	//====================================================================
 	public boolean updateHotelAdmin(AdminDTO adminDTO) throws Exception {
 		HotelAdmin currentHotelAdmin = (HotelAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(currentHotelAdmin != null && currentHotelAdmin.getId() == adminDTO.getId()) {
+		if(currentHotelAdmin != null && currentHotelAdmin.getId().equals(adminDTO.getId())) {
 			if(!currentHotelAdmin.getEmail().equalsIgnoreCase(adminDTO.getEmail()) && 
-					findOneByEmail(adminDTO.getEmail()) != null){
+					findOneByEmail(adminDTO.getEmail()).isPresent()){
 				throw new Exception("Email taken!");
 			}
 			if(!currentHotelAdmin.getUsername().equalsIgnoreCase(adminDTO.getUsername()) &&
-					findOneByUsername(adminDTO.getUsername()) != null) {
+					findOneByUsername(adminDTO.getUsername()).isPresent()) {
 				throw new Exception("Username taken!");
 			}
-			HotelAdmin updatedHotelAdmin = (HotelAdmin)findById(adminDTO.getId()).get();
+			Optional<User> userOptional = findById(adminDTO.getId());
+			if(!userOptional.isPresent())
+				throw new EntityNotFoundException("Hotel admin not found");
+			
+			HotelAdmin updatedHotelAdmin = (HotelAdmin)userOptional.get();
 			updatedHotelAdmin.setFirstName(adminDTO.getFirstName());
 			updatedHotelAdmin.setLastName(adminDTO.getLastName());
 			updatedHotelAdmin.setUsername(adminDTO.getUsername());

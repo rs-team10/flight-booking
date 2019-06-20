@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.RollbackException;
 
@@ -82,9 +83,9 @@ public class HotelService {
 	public Hotel registerHotel(Hotel hotel) throws Exception {
 		for(HotelAdmin admin : hotel.getAdministrators()) {
 			if(userRepository.findOneByUsername(admin.getUsername()).isPresent()) 
-				throw new Exception("User with username: " + admin.getUsername() + " already exists");
+				throw new EntityExistsException("User with username: " + admin.getUsername() + " already exists");
 			else if(userRepository.findOneByEmail(admin.getEmail()).isPresent())
-				throw new Exception("User with email: " + admin.getEmail() + " already exists");
+				throw new EntityExistsException("User with email: " + admin.getEmail() + " already exists");
 			admin.setPassword(passwordEncoder.encode(admin.getPassword()));
 			admin.setHotel(hotel);
 		}
@@ -99,11 +100,14 @@ public class HotelService {
 				
 			return save(hotel);
 		}
-		throw new Exception("Hotel doesn't exist");
+		throw new EntityNotFoundException("Hotel doesn't exist");
 	}
 	
 	public HotelRoomsDTO getHotelToEdit(String username) {
-		HotelAdmin hotelAdmin = hotelAdminRepository.findOneByUsername(username).get();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(username);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin doesn't exist");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
 		return new HotelRoomsDTO(hotelAdmin.getHotel());
 	}
 	
@@ -118,10 +122,13 @@ public class HotelService {
 	}
 	
 	public List<RoomDTO> getFreeRooms(Long id, String checkInDate, String checkOutDate) throws ParseException {
-		Set<Room> rooms = findOne(id).get().getRooms();
+		Optional<Hotel> hotelOptional = findOne(id);
+		if(!hotelOptional.isPresent())
+			throw new EntityNotFoundException("Hotel doesn't exist");
+		Hotel hotel = hotelOptional.get();
+		Set<Room> rooms = hotel.getRooms();
 		List<RoomDTO> responseRooms = new ArrayList<>();
 		
-		//Bilo bi brze preko upita, neka ga za sad ovako
 		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(checkInDate);
 		Date dateTo = new SimpleDateFormat("yyyy-MM-dd").parse(checkOutDate);
 		for(Room r : rooms) {
@@ -134,7 +141,11 @@ public class HotelService {
 
 	public List<QuickRoomResDTO> getQuickRoomReservations(Long hotelId) {
 		List<QuickRoomResDTO> responseList = new ArrayList<>();
-		Set<QuickRoomReservation> quickRoomReservations = findOne(hotelId).get().getQuickRoomReservations();
+		Optional<Hotel> hotelOptional = findOne(hotelId);
+		if(!hotelOptional.isPresent())
+			throw new EntityNotFoundException("Hotel doesn't exist");
+		Hotel hotel = hotelOptional.get();
+		Set<QuickRoomReservation> quickRoomReservations = hotel.getQuickRoomReservations();
 		for(QuickRoomReservation res : quickRoomReservations) {
 			responseList.add(new QuickRoomResDTO(res));
 		}
@@ -146,9 +157,11 @@ public class HotelService {
 		Date dateFrom = new SimpleDateFormat("yyyy-MM-dd").parse(checkInDate);
 		Date dateTo = new SimpleDateFormat("yyyy-MM-dd").parse(checkOutDate);
 		
-		//TODO: Napisati query da proverava da li quick room res id se nalazi u rezervacijama
-		//ako se nalazi, ne dodavati je
-		for(QuickRoomReservation quickRoomReservation: findOne(hotelId).get().getQuickRoomReservations()) {
+		Optional<Hotel> hotelOptional = findOne(hotelId);
+		if(!hotelOptional.isPresent())
+			throw new EntityNotFoundException("Hotel doesn't exist");
+		Hotel hotel = hotelOptional.get();
+		for(QuickRoomReservation quickRoomReservation: hotel.getQuickRoomReservations()) {
 			if(quickRoomReservation.getDateFrom().equals(dateFrom) && quickRoomReservation.getDateTo().equals(dateTo)) {
 				if(quickRoomReservation.getReservation() != null)
 					responseList.add(new QuickRoomResDTO(quickRoomReservation));
@@ -188,28 +201,12 @@ public class HotelService {
 		
 	}
 	
-//	public List<QuickRoomResDTO> setQuickRoomReservations(Set<QuickRoomResDTO> quickRoomReservations, Long hotelId) {
-//		Hotel hotel = findOne(hotelId).get();
-//		for(QuickRoomResDTO dto : quickRoomReservations) {
-//			QuickRoomReservation qrr = new QuickRoomReservation();
-//			qrr.setId(dto.getId());
-//			qrr.setDateFrom(dto.getDateFrom());
-//			qrr.setDateTo(dto.getDateTo());
-//			qrr.setTotalPrice(dto.getTotalPrice());
-//			qrr.setAdditionalServices(dto.getAdditionalServices());
-//			qrr.setRoom(dto.getRoom());
-//		}
-//		hotel.setQuickRoomReservations(quickRoomReservations);
-//		save(hotel);
-//		List<QuickRoomResDTO> responseList = new ArrayList<>();
-//		for(QuickRoomReservation qrr : quickRoomReservations) 
-//			responseList.add(new QuickRoomResDTO(qrr));
-//		
-//		return responseList;
-//	}
-	
 	public HotelReportDTO getReports(String adminUsername) throws ParseException {
-		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin not found in database");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
+		Hotel hotel = hotelAdmin.getHotel();
 
 		//Hotel hotel = findOne(hotelId).get();
 		HotelReportDTO hotelReportDTO = new HotelReportDTO(hotel);
@@ -223,9 +220,12 @@ public class HotelService {
 	}
 	
 	public Map<Long, Integer> getDailyReport(String adminUsername, String fromDate) throws ParseException{
-		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin not found in database");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
+		Hotel hotel = hotelAdmin.getHotel();
 		
-		//8 prethodnih dana
 		Map<Long, Integer> dailyReport = new TreeMap<Long, Integer>();
 		Calendar cal = Calendar.getInstance();
 		
@@ -234,7 +234,6 @@ public class HotelService {
 		
 		cal.add(Calendar.DATE, -12);
 		String previousString = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
-		
 		
 		Calendar newCal = Calendar.getInstance();
 		newCal.setTime(dateFrom);
@@ -257,7 +256,11 @@ public class HotelService {
 	}
 	
 	public Map<Long, Integer> getWeeklyReport(String adminUsername, String fromDate) throws ParseException {
-		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin not found in database");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
+		Hotel hotel = hotelAdmin.getHotel();
 		
 		Map<Long, Integer> weeklyReport = new TreeMap<Long, Integer>();
 	    Calendar c = Calendar.getInstance();
@@ -291,7 +294,11 @@ public class HotelService {
 	}
 	
 	public Map<Long, Integer> getYearlyReport(String adminUsername, int numberOfYears){
-		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin not found in database");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
+		Hotel hotel = hotelAdmin.getHotel();
 		
 		Map<Long, Integer> yearlyReport = new TreeMap<Long, Integer>();
 		
@@ -312,12 +319,15 @@ public class HotelService {
 			
 			cal.set(Calendar.DATE, cal.getActualMinimum(Calendar.DATE));
 		}
-		
 		return yearlyReport;
 	}
 
 	public BigDecimal getIncomeReport(String adminUsername, String stringFrom, String stringTo) throws ParseException {
-		Hotel hotel = hotelAdminRepository.findOneByUsername(adminUsername).get().getHotel();
+		Optional<HotelAdmin> hotelAdminOptional = hotelAdminRepository.findOneByUsername(adminUsername);
+		if(!hotelAdminOptional.isPresent())
+			throw new EntityNotFoundException("Hotel admin not found in database");
+		HotelAdmin hotelAdmin = hotelAdminOptional.get();
+		Hotel hotel = hotelAdmin.getHotel();
 		return hotelRepository.getIncomeReport(hotel.getId(), stringFrom, stringTo);
 	}
 }
