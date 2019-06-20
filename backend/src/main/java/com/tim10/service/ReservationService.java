@@ -1,6 +1,5 @@
 package com.tim10.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,6 @@ import com.tim10.domain.RequestStatus;
 import com.tim10.domain.Reservation;
 import com.tim10.domain.Seat;
 import com.tim10.dto.FlightReservationDTO;
-import com.tim10.dto.InvitationDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.dto.SeatReservationDTO;
 import com.tim10.repository.AirlineRepository;
@@ -42,9 +40,6 @@ import com.tim10.repository.SeatRepository;
 
 @Service
 public class ReservationService {
-	
-	//@Autowired
-	//FlightReservationRepository flightReservationRepository;
 	
 	@Autowired
 	AirlineRepository airlineRepository;
@@ -71,13 +66,13 @@ public class ReservationService {
 	EmailService mailSender;
     
     @Transactional(readOnly = true)
-    public boolean sendEmails(Long groupReservationId) {
+    public void sendEmails(Long groupReservationId) throws MessagingException {
     	
-    	GroupReservation groupReservation = groupReservationRepository.getOne(groupReservationId);
-    	if(groupReservation == null)
-    		return false;
+    	Optional<GroupReservation> groupReservation = groupReservationRepository.findById(groupReservationId);
+    	if(!groupReservation.isPresent())
+    		throw new EntityNotFoundException(String.format("Group reservation with id %d not found.", groupReservationId));
     	
-    	for(Reservation reservation : groupReservation.getReservations()) {
+    	for(Reservation reservation : groupReservation.get().getReservations()) {
     		if(reservation.getIsHost()) {
     			
     			String emailAddress = reservation.getRegisteredUser().getEmail();
@@ -86,11 +81,8 @@ public class ReservationService {
     	    	String departureDate = reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString();
     	    	Seat reservedSeat = reservation.getFlightReservation().getSeat();
 
-    			try {
-					mailSender.sendFlightReservationEmail(reservation, emailAddress, departure, destination, departureDate, reservedSeat);
-				} catch (MessagingException e) {
-					e.printStackTrace();
-				}
+				mailSender.sendFlightReservationEmail(reservation, emailAddress, departure, destination, departureDate, reservedSeat);
+
     		} else {
     			
     			String emailAddress = reservation.getRegisteredUser().getEmail();
@@ -100,16 +92,9 @@ public class ReservationService {
     	    	String departureDate = reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString();
     	    	Seat reservedSeat = reservation.getFlightReservation().getSeat();
     			
-    			try {
-					mailSender.sendInvitationEmail(reservation, emailAddress, invitationCode, departure, destination, departureDate, reservedSeat);
-				} catch (MessagingException e) {
-					e.printStackTrace();
-				}
+				mailSender.sendInvitationEmail(reservation, emailAddress, invitationCode, departure, destination, departureDate, reservedSeat);
     		}
     	}
-	
-    	return true;
-    	
     }
 	
 	@Transactional(readOnly = false,
@@ -135,8 +120,10 @@ public class ReservationService {
 			
 			FlightReservation flightReservation = new FlightReservation(dto.getFirstName(), dto.getLastName(), dto.getPassportNumber());
 
-			Seat seat = seatRepository.findById(dto.getSeatId()).get();
-
+			Optional<Seat> repoSeat = seatRepository.findById(dto.getSeatId());
+			if(!repoSeat.isPresent())
+				throw new EntityNotFoundException(String.format("Seat with id %d not found.", dto.getSeatId()));
+			Seat seat = repoSeat.get();
 			if(seat.getIsReserved() || !seat.getIsActive())
 				throw new EntityNotFoundException("Seat is unavailable.");
 			
@@ -252,12 +239,18 @@ public class ReservationService {
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public boolean cancelFlightReservation(Long groupReservationId) {
+	public void cancelFlightReservation(Long groupReservationId) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
 		
-		GroupReservation gr = groupReservationRepository.findById(groupReservationId).get();
+		Optional<GroupReservation> repoGroupReservation = groupReservationRepository.findById(groupReservationId);
+		if(!repoGroupReservation.isPresent())
+			throw new EntityNotFoundException(String.format("Group reservation with id %d not found.", groupReservationId));
+		GroupReservation gr = repoGroupReservation.get();
 		
 		for (Reservation r : gr.getReservations()) {
 			
@@ -276,18 +269,19 @@ public class ReservationService {
 		}
 		
 		groupReservationRepository.save(gr);
-
-		return true;
 		
 		// TODO: Otkazati i rezervaciju hotela i rentacar-a ukoliko postoji
 	}
 
 
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public boolean acceptInvitation(String invitationCode) {
+	public void acceptInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
 
 		Reservation r = reservationRepository.findByInvitationCode(invitationCode);
 		
@@ -310,15 +304,16 @@ public class ReservationService {
 		
 		r.setStatus(RequestStatus.ACCEPTED);
 		reservationRepository.save(r);
-		
-		return true;
 	}
 	
 	@Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW)
-	public boolean declineInvitation(String invitationCode) {
+	public void declineInvitation(String invitationCode) {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		currentUser = registeredUserRepository.findById(currentUser.getId()).get();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
 
 		Reservation r = reservationRepository.findByInvitationCode(invitationCode);
 		
@@ -338,42 +333,17 @@ public class ReservationService {
 		r.setStatus(RequestStatus.DENIED);
 		r.getFlightReservation().getSeat().setIsReserved(false);
 		reservationRepository.save(r);
-		
-		return true;
 	}
 	
 	@Transactional(readOnly = true)
-	public List<InvitationDTO> getAllInvitations() {
+	public List<Reservation> getAllInvitations() {
 		
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(currentUser.getId());
+		if(!repoUser.isPresent())
+			throw new EntityNotFoundException("User not found.");
+		currentUser = repoUser.get();
 		
-		List<Reservation> userInvitations = reservationRepository.getAllInvitations(currentUser.getId());
-		
-		List<InvitationDTO> invitations = new ArrayList<InvitationDTO>();
-		
-		for (Reservation reservation : userInvitations) {
-			
-			InvitationDTO dto = new InvitationDTO();
-			dto.setId(reservation.getInvitationCode());
-			dto.setDeparture(reservation.getFlightReservation().getSeat().getFlight().getDeparture().getName());
-			dto.setDestination(reservation.getFlightReservation().getSeat().getFlight().getDestination().getName());
-			dto.setDate(reservation.getFlightReservation().getSeat().getFlight().getDepartureDate().toString());
-			
-			GroupReservation gr = reservation.getGroupReservation();
-			for (Reservation r : gr.getReservations()) {
-				if (r.getIsHost()) {
-					dto.setBy(r.getRegisteredUser().getFirstName() + " " + r.getRegisteredUser().getLastName());
-				}
-			}			
-
-			dto.setStatus(reservation.getStatus());
-			invitations.add(dto);
-		}
-			
-		return invitations;
+		return reservationRepository.getAllInvitations(currentUser.getId());
 	}
-
-	
-	
-
 }

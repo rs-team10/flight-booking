@@ -25,18 +25,14 @@ public class FlightSearchService {
 	@Autowired
 	AirlineRepository airlineRepository;
 
-	public Page<Flight> performOneWaySearch(Pageable page, Long departureId, Long destinationId, String departureDateString, Integer passengerCount, String flightClassString) {
+	public Page<Flight> performOneWaySearch(Pageable page, Long departureId, Long destinationId, String departureDateString, Integer passengerCount, String flightClassString) throws ParseException {
 		
 		// TODO: Proveriti datum !!!
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date departureDate = null;
-		
-		try {
-			departureDate = format.parse(departureDateString);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
+
+		departureDate = format.parse(departureDateString);
+
 		SegmentClass flightClass = null;
 		
 		
@@ -50,7 +46,7 @@ public class FlightSearchService {
 		return flightRepository.performOneWaySearch(page, departureId, destinationId, departureDate, passengerCount, flightClass.toString());
 	}
 	
-	public Page<Flight> performOneWayFilterSearch(Pageable page, FilterDTO filter) {
+	public Page<Flight> performOneWayFilterSearch(Pageable page, FilterDTO filter) throws ParseException {
 		
 		// TODO: Proveriti datum !!!
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -58,11 +54,8 @@ public class FlightSearchService {
 		
 		System.out.println(filter.getDepartureDate());
 		
-		try {
-			departureDate = format.parse(filter.getDepartureDate());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		departureDate = format.parse(filter.getDepartureDate());
+
 		
 		SegmentClass flightClass = null;
 		

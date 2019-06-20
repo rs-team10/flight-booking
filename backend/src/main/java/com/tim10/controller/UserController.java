@@ -48,44 +48,6 @@ public class UserController {
 		return new ResponseEntity<User>(users, HttpStatus.CREATED);
 	}
 	
-	
-/*	@RequestMapping(
-			value = "/api/users/{id}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getUser(
-			@PathVariable("id") Long id) {
-		
-		Optional<User> userPres= userService.findById(id);
-		
-		if (!userPres.isPresent()) {
-			return new ResponseEntity<>("User with that id doesn't exist!",HttpStatus.NOT_FOUND);
-		}
-		
-		return new ResponseEntity<User>(userPres.get(), HttpStatus.OK);
-		
-	}
-	
-	
-	@RequestMapping(
-			value = "/api/users/{email}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getUser(
-			@PathVariable("email") String email) {
-		
-		Optional<User> userPres= userService.findOneByEmail(email);
-		
-		if (!userPres.isPresent()) {
-			return new ResponseEntity<>("User with that email doesn't exist!",HttpStatus.NOT_FOUND);
-		}
-		
-		return new ResponseEntity<User>(userPres.get(), HttpStatus.OK);
-		
-	}
-	
-	*/
-	
 	//ZA HOTEL ADMINA
 	//=================================================================================
 	@RequestMapping(value="/api/users/currentHotelAdmin", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

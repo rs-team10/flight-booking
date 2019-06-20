@@ -36,6 +36,7 @@ import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.repository.AirlineRepository;
+import com.tim10.repository.DestinationRepository;
 import com.tim10.repository.QuickFlightReservationRepository;
 import com.tim10.repository.SeatRepository;
 import com.tim10.repository.UserRepository;
@@ -45,6 +46,9 @@ public class AirlineService {
 	
 	@Autowired
 	private AirlineRepository airlineRepository;
+	
+	@Autowired
+	private DestinationRepository destinationRepository;
 	
 	@Autowired
 	private SeatRepository seatRespository;
@@ -58,15 +62,19 @@ public class AirlineService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	
-	
-	
 	public List<Airline> findAll() {
 		return airlineRepository.findAll();
 	}
 	
 	public Page<Airline> findAll(Pageable page){
 		return airlineRepository.findAll(page);
+	}
+	
+	public Airline findOne(Long id) {
+		Optional<Airline> airline = airlineRepository.findById(id);
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline with id %d not found.", id));
+		return airline.get();
 	}
 	
 	public Airline registerAirline(Airline airline) throws Exception {
@@ -86,13 +94,12 @@ public class AirlineService {
 	}
 	
 	public Airline findOneByName(String name) {
-		return airlineRepository.findOneByName(name).get();
+		Optional<Airline> airline = airlineRepository.findOneByName(name);
+		if(!airline.isPresent())
+			throw new EntityNotFoundException(String.format("Airline with name %s not found.", name));
+		return airline.get();
 	}
 	
-	public Optional<Airline> findOne(Long id) {
-		return airlineRepository.findById(id);
-	}
-
 	// ===========================================================================
 	// AIRLINE CRUD
 	// ===========================================================================
@@ -149,9 +156,14 @@ public class AirlineService {
 		
 		Airline airline = getCurrentAdminAirline();
 		
-		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code
+		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code [PROVERI DA LI RADI KAKO TREBA]
 		
-		airline.getBusinessLocations().add(newDestination);
+		Optional<Destination> repoDestination = destinationRepository.findOneByNameAndCode(newDestination.getAirportName(), newDestination.getAirportCode());
+		if(!repoDestination.isPresent()) {
+			airline.getBusinessLocations().add(newDestination);
+		} else {
+			airline.getBusinessLocations().add(repoDestination.get());
+		}
 		return airlineRepository.save(airline);
 	}
 	
@@ -168,6 +180,9 @@ public class AirlineService {
 			throw new EntityNotFoundException(String.format("Destination with name %s does not exist.", destinationDTO.getName()));
 		
 		// TODO: Proveriti da li postoji let za datu lokaciju i zabraniti brisanje
+		Integer count = destinationRepository.getNumberOfFlights(destinationDTO.getId());
+		if(!count.equals(0))
+			throw new EntityExistsException("Cannot delete business location as it has associated flights.");
 		
 		airline.getBusinessLocations().remove(destinationToRemove);
 		return airlineRepository.save(airline);
