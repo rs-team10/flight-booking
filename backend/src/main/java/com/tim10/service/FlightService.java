@@ -53,6 +53,7 @@ public class FlightService {
 	}
 	
 	public Set<Flight> getFlights() {
+
 		Airline airline = getCurrentAdminAirline();
 		return airline.getFlights();
 	}
@@ -66,12 +67,12 @@ public class FlightService {
 
 		// TODO : Proveriti da li aviokompanija posluje na toj destinaciji
 		
-		Optional<Destination> departure = destinationRepository.findOneByName(flightDTO.getDeparture());
+		Optional<Destination> departure = destinationRepository.findOneByNameAndCode(flightDTO.getDeparture(), flightDTO.getDepartureCode());
 		if (!departure.isPresent())
 			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDeparture()));
 		newFlight.setDeparture(departure.get());
 		
-		Optional<Destination> destination = destinationRepository.findOneByName(flightDTO.getDestination());
+		Optional<Destination> destination = destinationRepository.findOneByNameAndCode(flightDTO.getDestination(), flightDTO.getDestinationCode());
 		if (!destination.isPresent())
 			throw new EntityNotFoundException(String.format("Destination %s not found.", flightDTO.getDestination()));
 		newFlight.setDestination(destination.get());
@@ -156,14 +157,9 @@ public class FlightService {
 	}
 
 	public Set<Seat> getFlightSeats(FlightDTO flightDTO) {
-		
-		Airline airline = getCurrentAdminAirline();
 
 		Optional<Flight> flight = flightRepository.findById(flightDTO.getId());
 		if(!flight.isPresent())
-			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
-		
-		if(!flight.get().getAirline().getId().equals(airline.getId()))
 			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
 		
 		return flight.get().getSeats();
@@ -189,7 +185,7 @@ public class FlightService {
 		// TODO: Optimize
 		for(SeatDTO seatDTO : seatsUpdateDTO.getUpdatedSeatsList()) {
 			for (Seat seat : existingFlight.getSeats()) {
-				if(seat.getRed() == seatDTO.getRed() && seat.getKolona() == seatDTO.getKolona()) {
+				if(seat.getRed().equals(seatDTO.getRed()) && seat.getKolona().equals(seatDTO.getKolona())) {
 					seat.setIsActive(seatDTO.getIsActive());
 					seat.setSegmentClass(seatDTO.getSegmentClass());
 					counter++;

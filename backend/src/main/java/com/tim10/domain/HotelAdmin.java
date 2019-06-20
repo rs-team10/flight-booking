@@ -16,16 +16,11 @@ public class HotelAdmin extends User {
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	//@JoinColumn(name = "hotel_id")
-	public Hotel hotel;
+	private Hotel hotel;
 
 	public HotelAdmin() {
 		super();
 		hasCustomPassword = false;
-		
-		//Ne znam sta se desava sa tabelom autoriteta u bazi - bukvalno veze blage nemam
-		//ako se sa onim joinom tabela i ova druga tabela updatuje ovo je okej
-		//u drugom slucaju bi moralo i tamo da se cuvaju role pre nog se dodele
-		//odredjenom useru...
 		Authority aut = new Authority();
 		aut.setRole(Role.ROLE_HOTEL_ADMIN);
 		this.getAuthorities().add(aut);

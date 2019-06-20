@@ -98,6 +98,7 @@ export default{
             this.dialog = false;
         },
         saveDiscounts(){
+            var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             var listToSave = [];
             for(var i = 0; i < this.lista.length; i++){
                 listToSave.push(
@@ -107,12 +108,13 @@ export default{
                     })
             }
             this.$axios
-            .post("http://localhost:8080/api/discounts", listToSave)
+            .post("http://localhost:8080/api/discounts", listToSave, yourConfig)
         }
     },
     mounted(){
+        var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
         this.$axios
-        .get("http://localhost:8080/api/discounts")
+        .get("http://localhost:8080/api/discounts", yourConfig)
         .then(response => {
             this.lista = response.data;
             for(var i = 0; i < this.lista.length; i++){

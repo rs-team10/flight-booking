@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-snackbar
+        <!-- <v-snackbar
             v-model="empty"
             right
             top
@@ -117,87 +117,87 @@
             <v-card>
             <rent-a-car-profile :selectedRentACar="selectedRentacar" @closeProfileDialog="profileDialog = false"></rent-a-car-profile>
             </v-card>
-        </v-dialog>
+        </v-dialog> -->
     </div>
 </template>
 
 <script>
-import LocationMap from "@/components/LocationMap.vue"
-import RentACarProfile from "@/components/UnregisteredUser/RentACarProfile.vue"
+// import LocationMap from "@/components/LocationMap.vue"
+// import RentACarProfile from "@/components/UnregisteredUser/RentACarProfile.vue"
 
-export default {
-    components: {
-        'location-map' : LocationMap,
-        'rent-a-car-profile' : RentACarProfile
-    },
+// export default {
+//     components: {
+//         'location-map' : LocationMap,
+//         'rent-a-car-profile' : RentACarProfile
+//     },
 
-    data(){
-        return{
-            page: 0,
-            size: 10,
-            rentacars: [],
-            empty: false,
-            dialog: false,
-            selectedRentacarLocation: {},
-            selectedRentacar: {},
-            profileDialog: false,
-        }
-    },
-    methods: {
-        fetchRentACars(){
-            var yourConfig = {
-                headers: { Authorization: "Bearer " + localStorage.getItem("token") }
-            }
-            this.$axios
-                .get('http://localhost:8080/api/rentACars/rentACarPage', {
-                    params: {
-                        page: this.page,
-                        size: this.size
-                    }, yourConfig
-                }).then(response => {
-                    this.rentacars = response.data
-                    console.log(this.rentacars)
-                })
-        },
-        nextPage(){
-        this.page += 1;
-        this.$axios
-        .get('http://localhost:8080/api/rentACars/rentACarPage', {
-            params: {
-                page: this.page,
-                size: this.size
-        }})
-        .then(response => {
-            if(response.data.length > 0){
-                this.rentacars = response.data;  
-            }else{
-                this.page -= 1;
-                this.empty = true; 
-                setTimeout(() => {
-                    this.empty = false;
-                }, 3000)      
-            }
-        })
-      },
-      previousPage(){
-            this.page -= 1;
-            this.fetchRentACars();
-      },
-      viewAddress(location){
-        this.selectedRentacarLocation = {
-          lat: location.latitude,
-          lng: location.longitude
-        }
-        this.dialog = true
-      },
-      showRentacarProfile(rcs){
-        this.selectedRentacars = rcs;
-        this.profileDialog = true;
+//     data(){
+//         return{
+//             page: 0,
+//             size: 10,
+//             rentacars: [],
+//             empty: false,
+//             dialog: false,
+//             selectedRentacarLocation: {},
+//             selectedRentacar: {},
+//             profileDialog: false,
+//         }
+//     },
+//     methods: {
+//         fetchRentACars(){
+//             var yourConfig = {
+//                 headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+//             }
+//             this.$axios
+//                 .get('http://localhost:8080/api/rentACars/rentACarPage', {
+//                     params: {
+//                         page: this.page,
+//                         size: this.size
+//                     }, yourConfig
+//                 }).then(response => {
+//                     this.rentacars = response.data
+//                     console.log(this.rentacars)
+//                 })
+//         },
+//         nextPage(){
+//         this.page += 1;
+//         this.$axios
+//         .get('http://localhost:8080/api/rentACars/rentACarPage', {
+//             params: {
+//                 page: this.page,
+//                 size: this.size
+//         }})
+//         .then(response => {
+//             if(response.data.length > 0){
+//                 this.rentacars = response.data;  
+//             }else{
+//                 this.page -= 1;
+//                 this.empty = true; 
+//                 setTimeout(() => {
+//                     this.empty = false;
+//                 }, 3000)      
+//             }
+//         })
+//       },
+//       previousPage(){
+//             this.page -= 1;
+//             this.fetchRentACars();
+//       },
+//       viewAddress(location){
+//         this.selectedRentacarLocation = {
+//           lat: location.latitude,
+//           lng: location.longitude
+//         }
+//         this.dialog = true
+//       },
+//       showRentacarProfile(rcs){
+//         this.selectedRentacars = rcs;
+//         this.profileDialog = true;
         
-      },
-    },
-    mounted(){
-        this.fetchRentACars()
-    }
-}
+//       },
+//     },
+//     mounted(){
+//         this.fetchRentACars()
+//     }
+// }
 </script>

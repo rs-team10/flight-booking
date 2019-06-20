@@ -32,7 +32,7 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
 													@Param("passengerCount") Integer passengerCount, @Param("flightClass") String flightClass);
 	
 	@Query(value = "SELECT * " +
-			   "FROM Flights f JOIN Airlines a ON f.airline_company_id = a.company_id " +
+			   "FROM Flights f JOIN Airlines a ON f.airline_id = a.id " +
 			   "WHERE (f.departure = :departureId " + 
 			   	  "AND f.destination = :destinationId " + 
 			   	  "AND f.departure_date >= :departureDate " + 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.naming.NoPermissionException;
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.tim10.domain.HotelAdmin;
 import com.tim10.domain.RentACarAdmin;
 import com.tim10.domain.User;
+import com.tim10.dto.AdminDTO;
 import com.tim10.repository.UserRepository;
 
 @Service("userService")
@@ -27,11 +29,6 @@ public class UserService implements UserDetailsService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-	public User findUserByEmail(String email) {
-	
-		return userRepository.findOneByEmail(email).get();
-	}
 	
 	public void save(User user) {
 		userRepository.save(user);
@@ -69,25 +66,30 @@ public class UserService implements UserDetailsService {
 	
 	//ZA HOTEL ADMINA
 	//====================================================================
-	public HotelAdmin updateHotelAdmin(HotelAdmin hotelAdmin) throws Exception {
+	public boolean updateHotelAdmin(AdminDTO adminDTO) throws Exception {
 		HotelAdmin currentHotelAdmin = (HotelAdmin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(currentHotelAdmin != null && currentHotelAdmin.getId() == hotelAdmin.getId()) {
-			if(!currentHotelAdmin.getEmail().equalsIgnoreCase(hotelAdmin.getEmail()) && 
-					findOneByEmail(hotelAdmin.getEmail()) != null){
+		if(currentHotelAdmin != null && currentHotelAdmin.getId().equals(adminDTO.getId())) {
+			if(!currentHotelAdmin.getEmail().equalsIgnoreCase(adminDTO.getEmail()) && 
+					findOneByEmail(adminDTO.getEmail()).isPresent()){
 				throw new Exception("Email taken!");
 			}
-			if(!currentHotelAdmin.getUsername().equalsIgnoreCase(hotelAdmin.getUsername()) &&
-					findOneByUsername(hotelAdmin.getUsername()) != null) {
+			if(!currentHotelAdmin.getUsername().equalsIgnoreCase(adminDTO.getUsername()) &&
+					findOneByUsername(adminDTO.getUsername()).isPresent()) {
 				throw new Exception("Username taken!");
 			}
-			HotelAdmin updatedHotelAdmin = (HotelAdmin)findById(hotelAdmin.getId()).get();
-			updatedHotelAdmin.setFirstName(hotelAdmin.getFirstName());
-			updatedHotelAdmin.setLastName(hotelAdmin.getLastName());
-			updatedHotelAdmin.setUsername(hotelAdmin.getUsername());
-			updatedHotelAdmin.setEmail(hotelAdmin.getEmail());
-			if(!hotelAdmin.getPassword().isEmpty())
-				updatedHotelAdmin.setPassword(passwordEncoder.encode(hotelAdmin.getPassword()));
-			return userRepository.save(updatedHotelAdmin);
+			Optional<User> userOptional = findById(adminDTO.getId());
+			if(!userOptional.isPresent())
+				throw new EntityNotFoundException("Hotel admin not found");
+			
+			HotelAdmin updatedHotelAdmin = (HotelAdmin)userOptional.get();
+			updatedHotelAdmin.setFirstName(adminDTO.getFirstName());
+			updatedHotelAdmin.setLastName(adminDTO.getLastName());
+			updatedHotelAdmin.setUsername(adminDTO.getUsername());
+			updatedHotelAdmin.setEmail(adminDTO.getEmail());
+			if(!adminDTO.getPassword().isEmpty())
+				updatedHotelAdmin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
+			userRepository.save(updatedHotelAdmin);
+			return true;
 		}
 		throw new NoPermissionException("You are unauthorized to do this.");
 	}

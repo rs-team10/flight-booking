@@ -11,7 +11,12 @@ public class AdminDTO {
 	private String username;
 	private String email;
 	private Boolean hasCustomPassword;
+	private String password;
 
+	public AdminDTO() {
+		
+	}
+	
 	public AdminDTO(HotelAdmin hotelAdmin) {
 		this.id = hotelAdmin.getId();
 		this.firstName = hotelAdmin.getFirstName();
@@ -19,6 +24,7 @@ public class AdminDTO {
 		this.username = hotelAdmin.getUsername();
 		this.email = hotelAdmin.getEmail();
 		this.hasCustomPassword = hotelAdmin.getHasCustomPassword();
+		this.setPassword("");
 	}
 	
 	public AdminDTO(RentACarAdmin rentACarAdmin) {
@@ -76,6 +82,14 @@ public class AdminDTO {
 
 	public void setHasCustomPassword(Boolean hasCustomPassword) {
 		this.hasCustomPassword = hasCustomPassword;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

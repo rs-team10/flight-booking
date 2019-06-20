@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tim10.domain.Airline;
@@ -46,52 +45,44 @@ public class AirlineController {
 	@Autowired
 	private AirlineService airlineService;
 	
-	@RequestMapping(
-			value = "/airlines",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/airlines", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Airline>> getAirlines() {
 		List<Airline> airlines = airlineService.findAll();
 		return new ResponseEntity<List<Airline>>(airlines, HttpStatus.OK);
 	}
 	
-	@RequestMapping(
-			value = "/airlines/airlinePage",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<AirlineDTO>> getAirlines(Pageable page){
-		List<AirlineDTO> dtos = new ArrayList<AirlineDTO>();
-		for(Airline airline : airlineService.findAll()) {
-			dtos.add(new AirlineDTO(airline));
-		}
-		return new ResponseEntity<List<AirlineDTO>>(dtos, HttpStatus.OK);
-	}
-	
-	@RequestMapping(
-			value = "/airlines/{id}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Airline> getAirline(@PathVariable("id") Long id) {
-		Airline airline = airlineService.findOne(id).get();
-		if(airline == null)
-			return new ResponseEntity<Airline>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<Airline>(airline, HttpStatus.OK);
-	}
-	
-	@RequestMapping(
-			value="/airlines",
-			method=RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createAirline(@RequestBody NewAirlineDTO airlineDTO) {
-		Airline registeredAirline = null;
-		Airline airline = new Airline(airlineDTO);
+	@GetMapping(value = "/airlines/airlinePage", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AirlineDTO>> getAirlines(Pageable page) {
 		try {
-			registeredAirline = airlineService.registerAirline(airline);
+			List<AirlineDTO> dtos = new ArrayList<AirlineDTO>();
+			for(Airline airline : airlineService.findAll()) 
+				dtos.add(new AirlineDTO(airline));
+			return new ResponseEntity<List<AirlineDTO>>(dtos, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(value = "/airlines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Airline> getAirline(@PathVariable("id") Long id) {
+		try {
+			final Airline airline = airlineService.findOne(id);
+			return new ResponseEntity<Airline>(airline, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@PostMapping(value="/airlines", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> createAirline(@RequestBody NewAirlineDTO airlineDTO) {
+		try {
+			Airline airline = new Airline(airlineDTO);
+			Airline registeredAirline = airlineService.registerAirline(airline);
+			return new ResponseEntity<>(registeredAirline, HttpStatus.CREATED);
 		}catch(Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
 		}
-		return new ResponseEntity<>(registeredAirline, HttpStatus.CREATED);
 	}
 	
 	

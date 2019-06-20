@@ -113,7 +113,6 @@ export default {
         closeAddDialog(){
             this.addDialog = false;
             this.newRoom = {}
-            console.log(this.selectedHotel.rooms)
         },
         saveRoom(){
             this.newRoom.roomType = Object.assign({}, this.selectedRoomType);

@@ -8,7 +8,6 @@ import axios from 'axios'
 import Vuelidate from 'vuelidate'
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueCharts from 'vue-chartjs'
-//import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete';
 import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.prototype.$axios = axios
@@ -29,12 +28,6 @@ Vue.use(VueGoogleMaps, {
   },
 })
 
-/*
-Vue.use(VuetifyGoogleAutocomplete, {
-  apiKey: 'AIzaSyCoYMbcCf9ot8Dyoy5oxEFDaT5cVitKME4',
-});
-*/
-
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
     if(localStorage.getItem('token') == null){
@@ -49,7 +42,6 @@ router.beforeEach((to, from, next) => {
       if(to.matched.some(record => record.meta.is_registered_user)){
         //proveriti da li je registrovani korisnik
 
-
           //zeli da rezervise hotel ili auto
           if(to.matched.some(record => record.meta.is_reservation_active)){
             //mora se proveriti da li je rezervacija aktivna (da li je rezervisao let pre toga)
@@ -60,11 +52,13 @@ router.beforeEach((to, from, next) => {
           }else{
             next()
           }
-        
       }
       //zeli da pristupi stranici za airline admina
       else if(to.matched.some(record => record.meta.is_airline_admin)){
-        next()
+        if(localStorage.getItem("role") == "ROLE_AIRLINE_ADMIN")
+          next()
+        else
+          next(false)
       }
       //zeli da pristupi stranici za hotel admina
       else if(to.matched.some(record => record.meta.is_hotel_admin)){
@@ -75,7 +69,10 @@ router.beforeEach((to, from, next) => {
       } 
       //zeli da pristupi stranici za rentacar admina
       else if(to.matched.some(record => record.meta.is_rentacar_admin)){
-        next()
+        if(localStorage.getItem("role") == "ROLE_RENT_A_CAR_ADMIN")
+          next()
+        else
+          next(false)
       }
       //zeli da pristupi stranici za sys admina
       else if(to.matched.some(record => record.meta.is_sys_admin)){
@@ -85,15 +82,6 @@ router.beforeEach((to, from, next) => {
           next(false)    
       }
     }
-  } else if(to.matched.some(record => record.meta.guest)){
-      if(localStorage.getItem('token') == null){
-        next()    //ako korisnika nije ulogovan moze da nastavi dalje
-      }else{
-        //ulogovan je, hoce da gleda za neulogovanog
-        //baciti mu gresku neku?
-        //ostati na istoj stranici <---
-        next(false)
-      }
   } else{
     next()
   }
