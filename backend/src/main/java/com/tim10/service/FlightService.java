@@ -53,6 +53,7 @@ public class FlightService {
 	}
 	
 	public Set<Flight> getFlights() {
+
 		Airline airline = getCurrentAdminAirline();
 		return airline.getFlights();
 	}
@@ -156,14 +157,9 @@ public class FlightService {
 	}
 
 	public Set<Seat> getFlightSeats(FlightDTO flightDTO) {
-		
-		Airline airline = getCurrentAdminAirline();
 
 		Optional<Flight> flight = flightRepository.findById(flightDTO.getId());
 		if(!flight.isPresent())
-			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
-		
-		if(!flight.get().getAirline().getId().equals(airline.getId()))
 			throw new EntityNotFoundException(String.format("Flight %s not found.", flightDTO.getFlightNumber()));
 		
 		return flight.get().getSeats();

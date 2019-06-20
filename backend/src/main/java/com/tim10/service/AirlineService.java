@@ -36,6 +36,7 @@ import com.tim10.dto.DestinationDTO;
 import com.tim10.dto.PriceListItemDTO;
 import com.tim10.dto.QuickFlightReservationDTO;
 import com.tim10.repository.AirlineRepository;
+import com.tim10.repository.DestinationRepository;
 import com.tim10.repository.QuickFlightReservationRepository;
 import com.tim10.repository.SeatRepository;
 import com.tim10.repository.UserRepository;
@@ -45,6 +46,9 @@ public class AirlineService {
 	
 	@Autowired
 	private AirlineRepository airlineRepository;
+	
+	@Autowired
+	private DestinationRepository destinationRepository;
 	
 	@Autowired
 	private SeatRepository seatRespository;
@@ -152,9 +156,14 @@ public class AirlineService {
 		
 		Airline airline = getCurrentAdminAirline();
 		
-		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code
+		// TODO: Proveriti da li vec postoji lokacija sa istim nazivom i airport Code [PROVERI DA LI RADI KAKO TREBA]
 		
-		airline.getBusinessLocations().add(newDestination);
+		Optional<Destination> repoDestination = destinationRepository.findOneByNameAndCode(newDestination.getAirportName(), newDestination.getAirportCode());
+		if(!repoDestination.isPresent()) {
+			airline.getBusinessLocations().add(newDestination);
+		} else {
+			airline.getBusinessLocations().add(repoDestination.get());
+		}
 		return airlineRepository.save(airline);
 	}
 	
@@ -171,6 +180,9 @@ public class AirlineService {
 			throw new EntityNotFoundException(String.format("Destination with name %s does not exist.", destinationDTO.getName()));
 		
 		// TODO: Proveriti da li postoji let za datu lokaciju i zabraniti brisanje
+		Integer count = destinationRepository.getNumberOfFlights(destinationDTO.getId());
+		if(!count.equals(0))
+			throw new EntityExistsException("Cannot delete business location as it has associated flights.");
 		
 		airline.getBusinessLocations().remove(destinationToRemove);
 		return airlineRepository.save(airline);
