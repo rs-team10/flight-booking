@@ -13,6 +13,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tim10.domain.Flight;
 import com.tim10.domain.FlightReservation;
@@ -82,22 +83,27 @@ public class RegisteredUserService {
 	// FRIENDSHIPS
 	// =====================================================================
 	
+	@Transactional(readOnly = true)
 	public List<RegisteredUserSearchDTO> findByParameter(String parameter, Long currentUserId) {
 		return registeredUserRepository.findByParameter(parameter, currentUserId);
 	}
 	
+	@Transactional(readOnly = true)
 	public List<UserFriendsDTO> getAllFriends(Long id) {
 		return friendshipRepository.getAllFriends(id);
 	}
 	
+	@Transactional(readOnly = true)
 	public List<UserFriendsDTO> getAllFriendsAccepted(Long id) {
 		return friendshipRepository.getAllFriendsAccepted(id);
 	}
 	
+	@Transactional(readOnly = true)
 	public List<UserFriendsDTO> getAllFriendshipRequests(Long id) {
 		return friendshipRepository.getAllFriendshipRequests(id);
 	}
 
+	@Transactional(readOnly = false)
 	public boolean addFriend(RegisteredUser currentUser, RegisteredUser friend) {
 		if(friendRequestSent(currentUser, friend))
 			return false;
@@ -112,6 +118,7 @@ public class RegisteredUserService {
 		return (friendship == null) ? false : true;
     }
 	
+	@Transactional(readOnly = false)
 	public boolean removeFriend(RegisteredUser currentUser, RegisteredUser friend) {
 		Friendship friendship = friendshipRepository.findOneByUserAndFriend(currentUser.getId(), friend.getId());
 		friendshipRepository.delete(friendship);
@@ -119,6 +126,7 @@ public class RegisteredUserService {
 		return true;
 	}
 
+	@Transactional(readOnly = false)
 	public boolean acceptFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
 		Friendship friendship = friendshipRepository.findOneByUserAndFriend(currentUser.getId(), friend.getId());
 		if(friendRequestSent(currentUser, friend) && friendship.getStatus() != RequestStatus.WAITING)
@@ -128,7 +136,8 @@ public class RegisteredUserService {
 		
 		return true;
 	}
-    
+
+	@Transactional(readOnly = false)
 	public boolean declineFriendRequest(RegisteredUser currentUser, RegisteredUser friend) {
 		Friendship friendship = friendshipRepository.findOneByUserAndFriend(currentUser.getId(), friend.getId());
 		if(!friendRequestSent(currentUser, friend) || friendship.getStatus() != RequestStatus.WAITING)
@@ -142,7 +151,8 @@ public class RegisteredUserService {
 	// =====================================================================
 	// UPDATE USER
 	// =====================================================================
-	
+
+	@Transactional(readOnly = false)
 	public void updateUserProfile(RegisteredUser registeredUser) {
 		Optional<RegisteredUser> repoUser = registeredUserRepository.findById(registeredUser.getId());
 		if(!repoUser.isPresent())
@@ -157,6 +167,7 @@ public class RegisteredUserService {
 	// RESERVATIONS HISTORY
 	// =====================================================================
 	
+
 	public Collection<ReservationHistoryDTO> getReservationsHistory() throws ResourceNotFoundException{
 		RegisteredUser currentUser = (RegisteredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		

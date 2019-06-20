@@ -1,6 +1,8 @@
 
 package com.tim10.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,16 +10,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) zasto ovo?
 @Table(name="FlightReservations")
-public class FlightReservation {
+public class FlightReservation implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -37,9 +38,6 @@ public class FlightReservation {
 	
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Review review;
-	
-	//NEMA POTREBE??????
-	//private Reservation reservation;
 	
 	@Version
 	@Column(name="version")

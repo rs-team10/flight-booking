@@ -1,5 +1,6 @@
 package com.tim10.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="GroupReservations")
-public class GroupReservation {
+public class GroupReservation implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

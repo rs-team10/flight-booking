@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 @Entity
 public class AirlineAdmin extends User {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Column(name="hasCustomPassword")
 	private Boolean hasCustomPassword;
 

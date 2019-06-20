@@ -17,6 +17,8 @@ import com.tim10.dto.NewRentACarDTO;
 @Table(name="RentACar")
 public class RentACar extends Company {
 	
+	private static final long serialVersionUID = 1L;
+
 	@OneToMany(mappedBy="mainOffice", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Set<BranchOffice> branchOffices;
 	
