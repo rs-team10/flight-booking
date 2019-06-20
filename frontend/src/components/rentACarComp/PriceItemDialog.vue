@@ -107,7 +107,7 @@ export default {
         submit:function(){
             if(this.priceListItem.id == 0){
                 this.$axios
-                .post('http://localhost:8080/api/createPriceListItem/'+ this.rentACarId, this.priceListItem, yourConfig)
+                .post('/api/createPriceListItem/'+ this.rentACarId, this.priceListItem, yourConfig)
                 .then(response => {
                     this.$swal("Yoohoo!", response.data, 'success');
                 }).catch(() => {
@@ -115,7 +115,7 @@ export default {
                 });
             }else{
                 this.$axios
-                .put('http://localhost:8080/api/updatePriceListItem', this.priceListItem, yourConfig)
+                .put('/api/updatePriceListItem', this.priceListItem, yourConfig)
                 .then(response => {
                     this.$swal("Yoohoo!", response.data, 'success');
                 }).catch(() => {

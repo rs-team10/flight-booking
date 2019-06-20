@@ -113,7 +113,7 @@ var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("to
             showPrev:function(vehicle){
                 if(!this.quickReser){
                     this.$axios
-                    .get('http://localhost:8080/api/vehicleReservationPrew/'+vehicle.id, yourConfig)
+                    .get('/api/vehicleReservationPrew/'+vehicle.id, yourConfig)
                     .then(respone =>{
                         var datas = respone.data
                         this.overview.rentACarId = datas.rentACarId;
@@ -131,7 +131,7 @@ var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("to
                 }else{
                     
                      this.$axios
-                    .get('http://localhost:8080/api/getQuickResFromVehicle/'+this.from+'/'+this.to  +'/'+vehicle.id, yourConfig)
+                    .get('/api/getQuickResFromVehicle/'+this.from+'/'+this.to  +'/'+vehicle.id, yourConfig)
                     .then(respone =>{
                         var datas = respone.data
                         this.overview.rentACarId = datas.rentACarId;

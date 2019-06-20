@@ -262,7 +262,7 @@ export default {
         },
         editVehicle: function(){
             this.$axios
-            .post('http://localhost:8080/api/vehicles', this.selectedVehicle, yourConfig)
+            .post('/api/vehicles', this.selectedVehicle, yourConfig)
             .then(response => {
                 this.$swal("Yoohoo!", response.data, 'success');
             }).catch(function(error) {

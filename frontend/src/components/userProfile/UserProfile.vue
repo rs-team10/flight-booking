@@ -50,7 +50,7 @@ export default {
             }
         };
 
-        this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig).then((response) => {
+        this.$axios.get('/api/currentUser/', yourConfig).then((response) => {
             this.user = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');

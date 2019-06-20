@@ -111,7 +111,7 @@ export default{
             if(!this.$v.$invalid){
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                this.$axios.put('http://localhost:8080/api/users/hotelAdmin', this.user, yourConfig)
+                this.$axios.put('/api/users/hotelAdmin', this.user, yourConfig)
                 .then(response => {
                     this.$swal("Success", "User profile updated successfully", "success");
                 }).catch(error => {
@@ -124,7 +124,7 @@ export default{
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios
-        .get('http://localhost:8080/api/users/currentHotelAdmin', yourConfig)
+        .get('/api/users/currentHotelAdmin', yourConfig)
         .then((response) => {
             this.user = response.data;
             

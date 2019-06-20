@@ -427,7 +427,7 @@ export default {
     methods:{
         fetchHotels(){
             this.$axios
-                .get('http://localhost:8080/api/hotels/searchHotels', {
+                .get('/api/hotels/searchHotels', {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     },
@@ -444,7 +444,7 @@ export default {
         nextPage(){
             this.page += 1;
             this.$axios
-            .get('http://localhost:8080/api/hotels/searchHotels', {
+            .get('/api/hotels/searchHotels', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 },
@@ -475,7 +475,7 @@ export default {
             this.selectedHotel = hotel;
 
             this.$axios
-            .get('http://localhost:8080/api/hotels/getHotelRooms/' + this.selectedHotel.id + '/' + this.checkInDate + '/' + this.checkOutDate, yourConfig)
+            .get('/api/hotels/getHotelRooms/' + this.selectedHotel.id + '/' + this.checkInDate + '/' + this.checkOutDate, yourConfig)
             .then(response => {
                 this.rooms = response.data
                 this.canRender = true

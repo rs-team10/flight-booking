@@ -90,7 +90,7 @@ export default {
 
         addBranchOffice: function() {
                 this.branchOffice.id = this.branchOfficeInc.id;
-                this.$axios.put('http://localhost:8080/api/branchOffice/', this.branchOffice, yourConfig)
+                this.$axios.put('/api/branchOffice/', this.branchOffice, yourConfig)
                 .then(response => {
                     
                     this.$swal("Yoohoo!",response.data, 'success');

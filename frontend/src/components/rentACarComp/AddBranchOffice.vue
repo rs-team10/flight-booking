@@ -75,7 +75,7 @@ export default {
                     }
                 };
                 */
-                this.$axios.post('http://localhost:8080/api/branchOffice/'+this.rentACarId, this.branchOffice, yourConfig) 
+                this.$axios.post('/api/branchOffice/'+this.rentACarId, this.branchOffice, yourConfig) 
                 .then(response => {
                     
                     this.$swal("Yoohoo!",response.data, 'success');

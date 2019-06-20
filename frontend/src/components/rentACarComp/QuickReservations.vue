@@ -109,7 +109,7 @@ export default {
         fetchVehicles: function(){
 
             this.$axios
-            .get('http://localhost:8080/api/vehiclesRentACar/'+this.rentACarId, yourConfig)
+            .get('/api/vehiclesRentACar/'+this.rentACarId, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -143,7 +143,7 @@ export default {
             this.component='pehicleReservationPre';
 
             this.$axios
-                .get('http://localhost:8080/api/vehicleReservationPrew/'+item.id, yourConfig)
+                .get('/api/vehicleReservationPrew/'+item.id, yourConfig)
                 .then(respone =>{
                     var datas = respone.data
                     this.overview.rentACarId = datas.rentACarId;

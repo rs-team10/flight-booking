@@ -59,7 +59,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.put('http://localhost:8080/api/airlines/deleteQuickFlightReservation/', quickFlightReservation, yourConfig)
+                    this.$axios.put('/api/airlines/deleteQuickFlightReservation/', quickFlightReservation, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Quick flight reservation deleted successfuly', 'success');
                         }).catch((error) => {
@@ -73,7 +73,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getQuickFlightReservations', yourConfig)
+        this.$axios.get('/api/airlines/getQuickFlightReservations', yourConfig)
             .then((response) => {
                 this.quickFlightReservations = response.data;
             }).catch((error) => {

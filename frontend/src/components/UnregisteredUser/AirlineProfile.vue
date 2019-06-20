@@ -140,7 +140,7 @@ export default {
             // TODO: Slanje zahteva za quick reservation na backend
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") } }
-            this.$axios.post('http://localhost:8080/api/reservations/reserveQuickFlight', quickReservation, yourConfig)
+            this.$axios.post('/api/reservations/reserveQuickFlight', quickReservation, yourConfig)
                 .then(response => {
                                         
                     this.$swal({

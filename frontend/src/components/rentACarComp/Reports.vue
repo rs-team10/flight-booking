@@ -250,7 +250,7 @@ export default {
 
         getIncomeReport(){
             this.$axios
-                .get('http://localhost:8080/api/rentACarIncomeReport/', {
+                .get('/api/rentACarIncomeReport/', {
                     params: {
                         rentACarId : this.rentACarId,
                         dateFrom : this.dateFrom,
@@ -265,7 +265,7 @@ export default {
         },
         getMonthlyReport(){
             this.$axios
-                .get('http://localhost:8080/api/rentACarMonthlyReport/', {
+                .get('/api/rentACarMonthlyReport/', {
                     params: {
                         rentACarId : this.rentACarId,
                         numberOfYears : new Date().getFullYear() - this.year
@@ -288,7 +288,7 @@ export default {
         },
         getWeeklyReport(){
             this.$axios
-                .get('http://localhost:8080/api/rentACarWeeklyReport/', {
+                .get('/api/rentACarWeeklyReport/', {
                     params: {
                         rentACarId : this.rentACarId,
                         dateFrom : this.weeklyDate
@@ -310,7 +310,7 @@ export default {
         },
         getDailyReport(){
             this.$axios
-                .get('http://localhost:8080/api/rentACarDailyReport/', {
+                .get('/api/rentACarDailyReport/', {
                     params: {
                         rentACarId : this.rentACarId,
                         dateFrom : this.dailyDate
@@ -341,7 +341,7 @@ export default {
     },
     created(){
         this.$axios
-            .get('http://localhost:8080/api/rentACarReport/' + this.rentACarId, yourConfig)
+            .get('/api/rentACarReport/' + this.rentACarId, yourConfig)
             .then(response => {
                 
                 this.report = response.data;

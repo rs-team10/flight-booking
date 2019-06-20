@@ -101,7 +101,7 @@ export default {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             
-            this.$axios.put('http://localhost:8080/api/reservations/acceptInvitation/' + item.id, {}, yourConfig).then((response) => {
+            this.$axios.put('/api/reservations/acceptInvitation/' + item.id, {}, yourConfig).then((response) => {
                 this.$swal('Accepted', 'Invitation accepted.', 'success');
                 item.status = "Accepted";
             })
@@ -113,7 +113,7 @@ export default {
             
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             
-            this.$axios.put('http://localhost:8080/api/reservations/declineInvitation/' + item.id, {}, yourConfig).then((response) => {
+            this.$axios.put('/api/reservations/declineInvitation/' + item.id, {}, yourConfig).then((response) => {
                 this.$swal('Declined', 'Invitation declined.', 'success');
                 item.status = "Denied";
             })
@@ -125,7 +125,7 @@ export default {
     created() {
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/reservations/getAllInvitations/', yourConfig).then((response) => {
+        this.$axios.get('/api/reservations/getAllInvitations/', yourConfig).then((response) => {
             this.invitations = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');

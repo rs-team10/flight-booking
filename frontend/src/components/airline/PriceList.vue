@@ -143,7 +143,7 @@ export default {
 
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                this.$axios.put('http://localhost:8080/api/airlines/addPriceListItem/', this.newPriceListItem, yourConfig)
+                this.$axios.put('/api/airlines/addPriceListItem/', this.newPriceListItem, yourConfig)
                     .then((data) => {
                         this.$swal('Success', 'Item added successfuly', 'success');
                         this.priceListItems.push(this.newPriceListItem);
@@ -173,7 +173,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.put('http://localhost:8080/api/airlines/removePriceListItem/', priceListItem, yourConfig)
+                    this.$axios.put('/api/airlines/removePriceListItem/', priceListItem, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Item removed successfuly', 'success');
                         }).catch((error) => {
@@ -190,7 +190,7 @@ export default {
         
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getPriceListItems', yourConfig)
+        this.$axios.get('/api/airlines/getPriceListItems', yourConfig)
         .then((response) => {
             this.priceListItems = response.data;
         }).catch((error) => {

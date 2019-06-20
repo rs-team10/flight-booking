@@ -63,7 +63,7 @@ export default {
 
         var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
 
-        this.$axios.get('http://localhost:8080/api/reservationHistory/', yourConfig).then((response) => {
+        this.$axios.get('/api/reservationHistory/', yourConfig).then((response) => {
             this.reservations = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');
@@ -77,7 +77,7 @@ export default {
                 }
             };
 
-            this.$axios.post('http://localhost:8080/api/getReview/', reservation, yourConfig).then((response) => {
+            this.$axios.post('/api/getReview/', reservation, yourConfig).then((response) => {
                 this.overview = response.data;
             }).catch((error) => {
                 this.$swal("Error", error.response.data.message, 'error');

@@ -285,7 +285,7 @@ export default {
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 
-            this.$axios.post('http://localhost:8080/api/flights/updateFlightSeats', requestBody, yourConfig)
+            this.$axios.post('/api/flights/updateFlightSeats', requestBody, yourConfig)
                 .then((response) => {
                     this.$swal("Success", "Updated seating layout", 'success');
                 }).catch((error) => {

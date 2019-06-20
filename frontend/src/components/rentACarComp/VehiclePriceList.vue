@@ -133,7 +133,7 @@ export default {
             this.priceListItem = item
 
             this.$axios
-            .delete('http://localhost:8080/api/deletePriceListItem/'+ this.priceListItem.id, yourConfig)
+            .delete('/api/deletePriceListItem/'+ this.priceListItem.id, yourConfig)
             .then(response => {
                 this.$swal("Yoohoo!", response.data, 'success');
             }).catch(() => {

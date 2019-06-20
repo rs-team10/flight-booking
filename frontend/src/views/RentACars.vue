@@ -93,7 +93,7 @@ export default {
   methods:{
       fetchRentACars: function(){
           this.$axios
-          .get('http://localhost:8080/api/rentACars', yourConfig)
+          .get('/api/rentACars', yourConfig)
           .then(response => {
             this.tempHolder = response.data
             this.rentACars = this.tempHolder

@@ -191,14 +191,14 @@ export default {
                     }
                 };
                 
-                this.$axios.put('http://localhost:8080/api/registeredUsers/', this.user, yourConfig).then((response) => {                    
+                this.$axios.put('/api/registeredUsers/', this.user, yourConfig).then((response) => {                    
                     
                     this.$swal('Success', 'User profile edited successfuly', 'success');
 
                     // ToDo: fix this mess below
 
                     this.$axios
-                        .post('http://localhost:8080/auth/login', this.user)
+                        .post('/auth/login', this.user)
                         .then(response => {
                             if(response.data.accessToken == undefined){
                                 this.$swal('Login unsuccessful', "Invalid credentials", 'error');
@@ -231,7 +231,7 @@ export default {
             }
         };
 
-        this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig).then((response) => {
+        this.$axios.get('/api/currentUser/', yourConfig).then((response) => {
             this.user = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');

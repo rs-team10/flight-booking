@@ -229,7 +229,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
         fetchVehicles: function(countryDate){
          
             this.$axios
-            .get('http://localhost:8080/api/availableVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
+            .get('/api/availableVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -263,7 +263,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
         fetchQuickVehicles: function(countryDate){
          
             this.$axios
-            .get('http://localhost:8080/api/quickResVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
+            .get('/api/quickResVehicles/'+countryDate.from+'/'+countryDate.to+'/'+countryDate.country, yourConfig)
             .then(response => {
                     var vehicleQuick = response.data
                     this.vehiclesQuick=[];
@@ -304,7 +304,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             vehicleSearchDTO.dateTo = this.to;
 
             this.$axios
-            .post('http://localhost:8080/api/vehicleSearch/'+this.country,vehicleSearchDTO, yourConfig)
+            .post('/api/vehicleSearch/'+this.country,vehicleSearchDTO, yourConfig)
             .then(response => {
                     var vehicles = response.data
                     this.vehicles=[];
@@ -335,7 +335,7 @@ import VehicleForRes from "@/components/vehicleReservation/VehicleForRes.vue"
             });
 
             this.$axios
-            .post('http://localhost:8080/api/vehicleSearchQuick/'+this.country,vehicleSearchDTO, yourConfig)
+            .post('/api/vehicleSearchQuick/'+this.country,vehicleSearchDTO, yourConfig)
             .then(response => {
                     var vehicleQuick = response.data
                     this.vehiclesQuick=[];

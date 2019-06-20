@@ -121,7 +121,7 @@ var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("to
     methods: {
         fetchRentACar: function(){
             this.$axios
-            .get('http://localhost:8080/api/rentACar/'+ this.rentACarId, yourConfig)
+            .get('/api/rentACar/'+ this.rentACarId, yourConfig)
             .then(response => {
                                 this.rentACar.id = response.data.id;
                                 this.rentACar.name  = response.data.name;
@@ -156,7 +156,7 @@ var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("to
         },
         editOnBackend: function(){
             this.$axios
-            .put('http://localhost:8080/api/rentACars/',this.rentACar, yourConfig)
+            .put('/api/rentACars/',this.rentACar, yourConfig)
             .then(() => {
                 this.beforeChange.name = this.rentACar.name;
                 this.beforeChange.description = this.rentACar.description;

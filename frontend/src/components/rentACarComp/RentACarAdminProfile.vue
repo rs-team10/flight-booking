@@ -124,7 +124,7 @@ export default{
                 };
 
                 //delete this.user.passwordConfirmation;
-                this.$axios.put('http://localhost:8080/api/users/rentACarAdmin', this.user, yourConfig)
+                this.$axios.put('/api/users/rentACarAdmin', this.user, yourConfig)
                 .then(() => {
                     this.$swal("Success", "User profile updated successfully", "success");
                 }).catch(error => {
@@ -141,7 +141,7 @@ export default{
         };
 
         this.$axios
-        .get('http://localhost:8080/api/users/currentRentACarAdmin', yourConfig)
+        .get('/api/users/currentRentACarAdmin', yourConfig)
         .then((response) => {
             this.user = response.data;
             this.user.password = '';

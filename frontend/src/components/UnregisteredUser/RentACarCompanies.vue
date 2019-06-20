@@ -149,7 +149,7 @@
 //                 headers: { Authorization: "Bearer " + localStorage.getItem("token") }
 //             }
 //             this.$axios
-//                 .get('http://localhost:8080/api/rentACars/rentACarPage', {
+//                 .get('/api/rentACars/rentACarPage', {
 //                     params: {
 //                         page: this.page,
 //                         size: this.size
@@ -162,7 +162,7 @@
 //         nextPage(){
 //         this.page += 1;
 //         this.$axios
-//         .get('http://localhost:8080/api/rentACars/rentACarPage', {
+//         .get('/api/rentACars/rentACarPage', {
 //             params: {
 //                 page: this.page,
 //                 size: this.size

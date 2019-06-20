@@ -92,7 +92,7 @@ export default {
                 }
             };
             
-            this.$axios.put('http://localhost:8080/api/acceptFriendRequest/', email, yourConfig).then((response) => {
+            this.$axios.put('/api/acceptFriendRequest/', email, yourConfig).then((response) => {
                 (removeIndex >= 0) && this.users.splice(removeIndex, 1);
                 this.$swal('Accepted', 'Friend request accepted.', 'success');
             })
@@ -110,7 +110,7 @@ export default {
                 }
             };
             
-            this.$axios.put('http://localhost:8080/api/declineFriendRequest/', email, yourConfig).then((response) => {
+            this.$axios.put('/api/declineFriendRequest/', email, yourConfig).then((response) => {
                 (removeIndex >= 0) && this.users.splice(removeIndex, 1);
                 this.$swal('Declined', 'Friend request declined.', 'success');
             })
@@ -127,7 +127,7 @@ export default {
             }
         }
 
-        this.$axios.get('http://localhost:8080/api/getAllFriendshipRequests/', yourConfig).then((response) => {
+        this.$axios.get('/api/getAllFriendshipRequests/', yourConfig).then((response) => {
             this.users = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');

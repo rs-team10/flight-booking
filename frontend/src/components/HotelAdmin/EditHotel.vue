@@ -437,7 +437,7 @@ export default {
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
             this.$axios
-            .put('http://localhost:8080/api/hotels/' + this.selectedHotel.id, this.selectedHotel, yourConfig)
+            .put('/api/hotels/' + this.selectedHotel.id, this.selectedHotel, yourConfig)
             .then(() => {
                 this.$swal("Hotel edited successfully", "", "success")
                     .then(() => this.$router.push('/hotels'))
@@ -552,7 +552,7 @@ export default {
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios
-        .get('http://localhost:8080/api/hotels/hotelToEdit/' + localStorage.getItem('username'), yourConfig)
+        .get('/api/hotels/hotelToEdit/' + localStorage.getItem('username'), yourConfig)
         .then(response => {
             this.selectedHotel = response.data;
         })

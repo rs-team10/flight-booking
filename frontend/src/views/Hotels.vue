@@ -42,7 +42,7 @@
 //         },
 //         fetchHotels: function(){
 //             this.$axios
-//             .get('http://localhost:8080/api/hotels')
+//             .get('/api/hotels')
 //             .then(response => this.hotels = response.data)
 //         }
 //     }

@@ -74,7 +74,7 @@ export default {
                 }
             };
 
-            this.$axios.get('http://localhost:8080/api/searchUsers/' + this.search, yourConfig).then((response) => {
+            this.$axios.get('/api/searchUsers/' + this.search, yourConfig).then((response) => {
                 this.users = response.data.users;
                 if(this.users.length == 0) {
                     this.$swal("No results", "Your search returned 0 results. Please try another query.", 'info');
@@ -107,7 +107,7 @@ export default {
             }
         };
 
-        this.$axios.put('http://localhost:8080/api/addFriend/', email, yourConfig).then((response) => {
+        this.$axios.put('/api/addFriend/', email, yourConfig).then((response) => {
             this.$swal('Success', 'Friend request sent successfuly', 'success');
         }).catch(response => {
               this.$swal('Unable to complete action', 'The user is already in your friends list', 'info');

@@ -122,7 +122,7 @@ export default {
             //potrebno prikazati i dodatne usluge
 
             this.$axios 
-            .post('http://localhost:8080/api/reservations/quickReserveRoom', {}, {
+            .post('/api/reservations/quickReserveRoom', {}, {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 },
@@ -147,7 +147,7 @@ export default {
     },
     created(){
         this.$axios
-            .get('http://localhost:8080/api/hotels/quickRoomReservations', {
+            .get('/api/hotels/quickRoomReservations', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 },

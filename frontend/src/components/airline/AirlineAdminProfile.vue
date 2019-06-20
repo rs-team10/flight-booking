@@ -111,7 +111,7 @@ export default{
             if(!this.$v.$invalid){
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                this.$axios.put('http://localhost:8080/api/users/updateAirlineAdmin', this.user, yourConfig)
+                this.$axios.put('/api/users/updateAirlineAdmin', this.user, yourConfig)
                 .then(response => {
                     this.$swal("Success", "User profile updated successfully", "success");
                 }).catch(error => {
@@ -124,7 +124,7 @@ export default{
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios
-        .get('http://localhost:8080/api/users/currentAirlineAdmin', yourConfig)
+        .get('/api/users/currentAirlineAdmin', yourConfig)
         .then((response) => {
             this.user = response.data;
             

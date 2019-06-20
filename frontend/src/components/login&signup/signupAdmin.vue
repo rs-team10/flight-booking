@@ -231,7 +231,7 @@ export default {
             this.savePassword = this.registeredUser.passwordConfirmation;
             delete this.registeredUser.passwordConfirmation;
             this.$axios
-            .post('http://localhost:8081/api/registeredUsers', this.registeredUser)
+            .post('/api/registeredUsers', this.registeredUser)
             .then(response => {
                 alert(response.data.username)
                 this.success = true;

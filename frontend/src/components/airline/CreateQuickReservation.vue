@@ -236,7 +236,7 @@ export default {
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
 
-            this.$axios.post('http://localhost:8080/api/airlines/createQuickFlightReservation', requestBody, yourConfig)
+            this.$axios.post('/api/airlines/createQuickFlightReservation', requestBody, yourConfig)
                 .then((response) => {
                     this.$swal("Success", "Quick flight reservation created.", 'success');
                 }).catch((error) => {

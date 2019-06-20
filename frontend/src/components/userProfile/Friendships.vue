@@ -113,7 +113,7 @@ export default {
                         }
                     };
 
-                    this.$axios.put('http://localhost:8080/api/removeFriend/', email, yourConfig).then((response) => {
+                    this.$axios.put('/api/removeFriend/', email, yourConfig).then((response) => {
                         this.$swal('Deleted', 'You successfully removed the user from your friends list', 'success');
                     })
                     .catch((error) => {
@@ -131,7 +131,7 @@ export default {
             }
         }
 
-        this.$axios.get('http://localhost:8080/api/getAllFriends/', yourConfig).then((response) => {
+        this.$axios.get('/api/getAllFriends/', yourConfig).then((response) => {
             this.users = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');

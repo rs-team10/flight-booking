@@ -278,7 +278,7 @@ export default {
                 //this.quickRoomReservations.push(quickRoomReservation)
              
                 this.$axios
-                .post('http://localhost:8080/api/hotels/quickRoomReservations/'+ this.selectedHotel.id + '/' + this.dateFrom + '/' + this.dateTo,  quickRoomReservation, yourConfig)
+                .post('/api/hotels/quickRoomReservations/'+ this.selectedHotel.id + '/' + this.dateFrom + '/' + this.dateTo,  quickRoomReservation, yourConfig)
                 .then(response => {
                     this.$swal("Reservations added successfuly", "", "success")
                         .then(() => this.$router.push('hotels'));
@@ -304,7 +304,7 @@ export default {
         // saveData(){
         //     //this.selectedHotel.quickRoomReservations = this.quickRoomReservations;
         //     this.$axios
-        //     .post('http://localhost:8080/api/hotels/quickRoomReservations/'+ this.selectedHotel.id, this.quickRoomReservations)
+        //     .post('/api/hotels/quickRoomReservations/'+ this.selectedHotel.id, this.quickRoomReservations)
         //     .then(response => {
         //         this.$swal("Reservations added successfuly", "", "success");
         //     }).catch(error => {
@@ -332,7 +332,7 @@ export default {
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios
-            .get('http://localhost:8080/api/hotels/quickRoomReservations/' + this.selectedHotel.id, yourConfig)
+            .get('/api/hotels/quickRoomReservations/' + this.selectedHotel.id, yourConfig)
             .then(response => {
                 this.quickRoomReservations = response.data;
             })

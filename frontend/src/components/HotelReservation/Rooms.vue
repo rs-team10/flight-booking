@@ -311,7 +311,7 @@ export default {
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
             this.$axios
-            .post('http://localhost:8080/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation, yourConfig)
+            .post('/api/reservations/reserveRoom/' + localStorage.getItem('groupResId'), this.reservation, yourConfig)
             .then(response => {
                 this.confirmResDialog = false;
 

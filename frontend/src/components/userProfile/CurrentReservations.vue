@@ -59,7 +59,7 @@ export default {
     },
     created(){
         var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
-        this.$axios.get('http://localhost:8080/api/currentReservations/', yourConfig).then((response) => {
+        this.$axios.get('/api/currentReservations/', yourConfig).then((response) => {
             this.reservations = response.data;
         }).catch((error) => {
             this.$swal("Error", error.response.data.message, 'error');
@@ -68,7 +68,7 @@ export default {
     methods: {
         showDialog(reservation){
             var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
-            this.$axios.post('http://localhost:8080/api/getReview/', reservation, yourConfig).then((response) => {
+            this.$axios.post('/api/getReview/', reservation, yourConfig).then((response) => {
                 this.overview = response.data;
             }).catch((error) => {
                 this.$swal("Error", error.response.data.message, 'error');
@@ -80,7 +80,7 @@ export default {
             console.log(reservation.reservationId);
             var yourConfig = {headers: {Authorization: "Bearer " + localStorage.getItem("token")}};
             
-            this.$axios.put('http://localhost:8080/api/reservations/cancelFlightReservation/' + reservation.reservationId, {}, yourConfig).then((response) => {
+            this.$axios.put('/api/reservations/cancelFlightReservation/' + reservation.reservationId, {}, yourConfig).then((response) => {
                 this.overview = response.data;
             }).catch((error) => {
                 this.$swal("Error", error.response, 'error');

@@ -128,7 +128,7 @@ export default {
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
                 yourConfig.params = { previousAirlineName: this.previousAirlineName };
-                this.$axios.put('http://localhost:8080/api/airlines/updateAirline', this.airline, yourConfig)
+                this.$axios.put('/api/airlines/updateAirline', this.airline, yourConfig)
                     .then((response) => {
                         this.$swal({
                             title: 'Success', 
@@ -178,7 +178,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
+        this.$axios.get('/api/airlines/getCurrentAdminAirline', yourConfig)
             .then((response) => {
                 this.airline = response.data;
                 this.currentMapCenter.lat = this.airline.location.latitude;

@@ -251,7 +251,7 @@ export default {
                 };
                 if(this.overview.edit){
                     this.$axios //mora drugi rest da se gadja 
-                    .post('http://localhost:8080/api/vehicleReservation/', vehicleReservationDTO, yourConfig)
+                    .post('/api/vehicleReservation/', vehicleReservationDTO, yourConfig)
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success')
                         
@@ -265,7 +265,7 @@ export default {
                     //imas atribut toatalPrice da stavis additionalDiscount
                     //i dodaj vraper oko boxova za datume i tu gurni neki textbox...
                     this.$axios //mora drugi rest da se gadja 
-                    .post('http://localhost:8080/api/quickVehicleReservation/', vehicleReservationDTO, yourConfig) //create
+                    .post('/api/quickVehicleReservation/', vehicleReservationDTO, yourConfig) //create
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
                         //this.$router.go(0);
@@ -281,7 +281,7 @@ export default {
                 if(this.quickReser){
                     
                     this.$axios
-                    .post('http://localhost:8080/api/confirmQuickVehicle/'+this.groupResId+'/'+this.overview.reservationId, yourConfig)//1 je za main rezervaciju
+                    .post('/api/confirmQuickVehicle/'+this.groupResId+'/'+this.overview.reservationId, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success');
                       
@@ -306,7 +306,7 @@ export default {
                         vehicleId : this.overview.vehicleId
                     };
                     this.$axios
-                    .post('http://localhost:8080/api/vehicleReservation/'+this.groupResId, vehicleReservationDTO1, yourConfig)//1 je za main rezervaciju
+                    .post('/api/vehicleReservation/'+this.groupResId, vehicleReservationDTO1, yourConfig)//1 je za main rezervaciju
                     .then(response =>{
                         this.$swal("Yoohoo!", response.data, 'success')
                         .then(()=>{

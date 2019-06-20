@@ -444,7 +444,7 @@ export default {
                     
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.get('http://localhost:8080/api/getAllFriendsAccepted/', yourConfig).then((response) => {
+                    this.$axios.get('/api/getAllFriendsAccepted/', yourConfig).then((response) => {
                         this.users = response.data;
                         this.currentStep = 2;
                     }).catch((error) => {
@@ -461,7 +461,7 @@ export default {
             
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-            this.$axios.get('http://localhost:8080/api/currentUser/', yourConfig)
+            this.$axios.get('/api/currentUser/', yourConfig)
                 .then((response) => {
                     
                     this.currentUserId = response.data.id;
@@ -670,7 +670,7 @@ export default {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', dto, yourConfig)
+            this.$axios.post('/api/flights/getFlightSeats', dto, yourConfig)
                 .then((response) => {
 
                     this.seats = response.data.sort(this.compare);
@@ -682,7 +682,7 @@ export default {
         confirmReservation() {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
-            this.$axios.post('http://localhost:8080/api/reservations/reserveFlight', this.flightReservation, yourConfig)
+            this.$axios.post('/api/reservations/reserveFlight', this.flightReservation, yourConfig)
                 .then((response) => {
                     this.groupReservationId = response.data;
                     
@@ -752,7 +752,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    return this.$axios.post("http://localhost:8080/api/reservations/sendEmails/" + this.groupReservationId, {}, yourConfig)
+                    return this.$axios.post("/api/reservations/sendEmails/" + this.groupReservationId, {}, yourConfig)
                         .then(response => {
                             if(!response) {
                                 throw new Error(response.statusText)

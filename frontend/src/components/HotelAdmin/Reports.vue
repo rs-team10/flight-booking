@@ -330,7 +330,7 @@ export default {
     methods:{
         getIncomeReport(){
             this.$axios
-                .get('http://localhost:8080/api/hotels/getIncomeReport/', {
+                .get('/api/hotels/getIncomeReport/', {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     },
@@ -348,7 +348,7 @@ export default {
         },
         getMonthlyVisits(){
             this.$axios
-                .get('http://localhost:8080/api/hotels/monthlyReport/', {
+                .get('/api/hotels/monthlyReport/', {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     },
@@ -374,7 +374,7 @@ export default {
         },
         getWeeklyVisits(){
             this.$axios
-                .get('http://localhost:8080/api/hotels/weeklyReport/', {
+                .get('/api/hotels/weeklyReport/', {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     },
@@ -399,7 +399,7 @@ export default {
         },
         getDailyVisits(){
             this.$axios
-                .get('http://localhost:8080/api/hotels/dailyReport/', {
+                .get('/api/hotels/dailyReport/', {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     },
@@ -434,7 +434,7 @@ export default {
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
         this.$axios
-            .get('http://localhost:8080/api/hotels/getReport/' + localStorage.getItem('username'), yourConfig)
+            .get('/api/hotels/getReport/' + localStorage.getItem('username'), yourConfig)
             .then(response => {
                 this.report = response.data;
                 this.dailyReport.labels = Array.from(Object.keys(this.report.dailyReports), x=>new Date(parseInt(x)).toLocaleString(undefined, {month : '2-digit', day: '2-digit'}).substr(0, 5));

@@ -187,7 +187,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.put('http://localhost:8080/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig)
+                    this.$axios.put('/api/airlines/addBusinessLocation/', this.newBusinessLocation, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Business location added successfuly', 'success');
                             this.businessLocations.push(this.newBusinessLocation);
@@ -218,7 +218,7 @@ export default {
 
                     var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                    this.$axios.put('http://localhost:8080/api/airlines/removeBusinessLocation/', businessLocation, yourConfig)
+                    this.$axios.put('/api/airlines/removeBusinessLocation/', businessLocation, yourConfig)
                         .then((data) => {
                             this.$swal('Success', 'Business location removed successfuly', 'success');
                         }).catch((error) => {
@@ -236,7 +236,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)
+        this.$axios.get('/api/airlines/getBusinessLocations', yourConfig)
             .then((response) => {
                 this.businessLocations = response.data;
             }).catch((error) => {

@@ -108,7 +108,7 @@ export default {
             var yourConfig = {headers: { Authorization: "Bearer " + localStorage.getItem("token") }
 }
             this.$axios
-            .get('http://localhost:8080/api/getRentACarFromAdmin', yourConfig)
+            .get('/api/getRentACarFromAdmin', yourConfig)
             .then(response =>
             {
                 
@@ -123,7 +123,7 @@ export default {
         logIn: function(){
            
             this.$axios
-            .post('http://localhost:8080/auth/login', this.user)
+            .post('/auth/login', this.user)
             .then(response => {
                 if(response.data.accessToken == undefined){
                     this.error = "Wrong username or password!";

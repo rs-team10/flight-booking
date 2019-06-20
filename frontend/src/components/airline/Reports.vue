@@ -346,7 +346,7 @@ export default {
     methods: {
         getIncomeReport() {
 
-            this.$axios.get('http://localhost:8080/api/airlines/getIncomeReport/', {
+            this.$axios.get('/api/airlines/getIncomeReport/', {
                     headers: { 
                         Authorization: "Bearer " + localStorage.getItem("token") 
                     },
@@ -363,7 +363,7 @@ export default {
         },
         getMonthlySales() {
 
-            this.$axios.get('http://localhost:8080/api/airlines/monthlyReport/', {
+            this.$axios.get('/api/airlines/monthlyReport/', {
                     headers: { 
                         Authorization: "Bearer " + localStorage.getItem("token") 
                     },
@@ -388,7 +388,7 @@ export default {
         },
         getWeeklySales() {
 
-            this.$axios.get('http://localhost:8080/api/airlines/weeklyReport/', {
+            this.$axios.get('/api/airlines/weeklyReport/', {
                     headers: { 
                         Authorization: "Bearer " + localStorage.getItem("token") 
                     },
@@ -413,7 +413,7 @@ export default {
         getDailySales() {
 
             this.$axios
-                .get('http://localhost:8080/api/airlines/dailyReport/', {
+                .get('/api/airlines/dailyReport/', {
                     headers: { 
                         Authorization: "Bearer " + localStorage.getItem("token") 
                     },
@@ -452,7 +452,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getReport/', yourConfig)
+        this.$axios.get('/api/airlines/getReport/', yourConfig)
             .then((response) => {
                 this.report = response.data;
 

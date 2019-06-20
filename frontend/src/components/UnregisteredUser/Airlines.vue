@@ -148,7 +148,7 @@ export default {
     methods: {
         fetchAirlines(){
             this.$axios
-                .get('http://localhost:8080/api/airlines/airlinePage', {
+                .get('/api/airlines/airlinePage', {
                     params: {
                         page: this.page,
                         size: this.size
@@ -161,7 +161,7 @@ export default {
         nextPage(){
             this.page += 1;
             this.$axios
-            .get('http://localhost:8080/api/airlines/airlinePage', {
+            .get('/api/airlines/airlinePage', {
                 params: {
                     page: this.page,
                     size: this.size

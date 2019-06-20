@@ -722,7 +722,7 @@ export default {
 
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-                this.$axios.post('http://localhost:8080/api/flights/addFlight/', newFlightToSend, yourConfig)
+                this.$axios.post('/api/flights/addFlight/', newFlightToSend, yourConfig)
                     .then((response) => {
                         this.$swal('Successfull', 'New flight created successfully.', 'success');
                         newFlightToSend.id = response.data.id;
@@ -744,7 +744,7 @@ export default {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
+            this.$axios.post('/api/flights/getFlightSeats', flight, yourConfig)
                 .then((response) => {
                     
                     this.seats = response.data;
@@ -759,7 +759,7 @@ export default {
 
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-            this.$axios.post('http://localhost:8080/api/flights/getFlightSeats', flight, yourConfig)
+            this.$axios.post('/api/flights/getFlightSeats', flight, yourConfig)
                 .then((response) => {
                     
                     this.seats = response.data;
@@ -781,7 +781,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/flights/getFlights', yourConfig)
+        this.$axios.get('/api/flights/getFlights', yourConfig)
             .then((response) => {
 
                 this.flights = response.data;
@@ -789,7 +789,7 @@ export default {
                 var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
                 // TODO: PREMESTITI OVO KAD SE OTVORI DIJALOG
-                this.$axios.get('http://localhost:8080/api/airlines/getBusinessLocations', yourConfig)
+                this.$axios.get('/api/airlines/getBusinessLocations', yourConfig)
                     .then((response) => {
                         this.businessLocations = response.data;
                     }).catch((error) => {

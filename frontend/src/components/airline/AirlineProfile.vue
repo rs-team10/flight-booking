@@ -95,7 +95,7 @@ export default {
 
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
 
-        this.$axios.get('http://localhost:8080/api/airlines/getCurrentAdminAirline', yourConfig)
+        this.$axios.get('/api/airlines/getCurrentAdminAirline', yourConfig)
             .then((response) => {
                 this.airline = response.data;
                 this.airline.averageFeedback = 3.5;

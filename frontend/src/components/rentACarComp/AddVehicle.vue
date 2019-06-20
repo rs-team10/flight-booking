@@ -296,7 +296,7 @@ export default {
         },
         addVehicle: function(){
             this.$axios
-            .post('http://localhost:8080/api/vehicles/'+this.myBranch, this.vehicle, yourConfig)
+            .post('/api/vehicles/'+this.myBranch, this.vehicle, yourConfig)
             .then(response => {
                 this.$swal("Yoohoo!", response.data, 'success');
                 this.cancel();

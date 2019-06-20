@@ -114,7 +114,7 @@ export default {
     methods:{
         confirmAct : function()
         {
-            this.$axios.post('http://localhost:8080/api/setReview/', this.overview, yourConfig).then((response) => {
+            this.$axios.post('/api/setReview/', this.overview, yourConfig).then((response) => {
                 this.$swal("Yoohoo!",response.data, 'success');
             }).catch((error) => {
                 this.$swal("Error", error.response.data.message, 'error');
@@ -123,7 +123,7 @@ export default {
         declineRoomReservation : function()
         {
 
-            this.$axios.post('http://localhost:8080/api/declineRoomReservation/', this.overview, yourConfig).then((response) => {
+            this.$axios.post('/api/declineRoomReservation/', this.overview, yourConfig).then((response) => {
                 this.$swal("Yoohoo!",response.data, 'success');
             }).catch((error) => {
                 this.overview.hotelId=null;
@@ -137,7 +137,7 @@ export default {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 }
             };
-            this.$axios.post('http://localhost:8080/api/declineVehicleReservation', this.overview, yourConfig).then((response) => {
+            this.$axios.post('/api/declineVehicleReservation', this.overview, yourConfig).then((response) => {
                 this.overview.rentACarId==null;
                 this.$swal("Yoohoo!",response.data, 'success');
 

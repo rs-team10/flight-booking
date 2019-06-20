@@ -615,7 +615,7 @@ export default {
                     
                     // SEARCH
 
-                    this.$axios.get('http://localhost:8080/api/flightSearch/oneWaySearch', {
+                    this.$axios.get('/api/flightSearch/oneWaySearch', {
                             params: {
                                 page: this.page,
                                 size: this.size,
@@ -681,7 +681,7 @@ export default {
                         size: this.size
                     }
 
-                    this.$axios.post('http://localhost:8080/api/flightSearch/oneWayFilterSearch', objectToSend, yourConfig)
+                    this.$axios.post('/api/flightSearch/oneWayFilterSearch', objectToSend, yourConfig)
                         .then((response) => {
                             if(response.data.length > 0) {
                                 this.searchResults = response.data;
@@ -745,7 +745,7 @@ export default {
 
             if(this.oneWaySearch.departure.id && this.oneWaySearch.destination.id && this.oneWaySearch.date) {
 
-                this.$axios.get('http://localhost:8080/api/flightSearch/oneWaySearch', {
+                this.$axios.get('/api/flightSearch/oneWaySearch', {
                         params: {
                             page: this.page,
                             size: this.size,
@@ -858,7 +858,7 @@ export default {
     },
     created() {
 
-        this.$axios.get('http://localhost:8080/api/flightSearch/getAllDestinations', yourConfig)
+        this.$axios.get('/api/flightSearch/getAllDestinations', yourConfig)
             .then((response) => {
                 this.availableDestinations = response.data;
             }).catch((error) => {
@@ -866,7 +866,7 @@ export default {
             });
 
         // TOOO: OVO IZMESTITI na kad se klikne search da get-uje samo one aviokompanije koje imaju let na datim parametrima
-        this.$axios.get('http://localhost:8080/api/flightSearch/getAirlineNames', yourConfig)
+        this.$axios.get('/api/flightSearch/getAirlineNames', yourConfig)
             .then((response) => {
                 this.searchResultAirlines = response.data;
                 this.filterOptions.airlines = this.searchResultAirlines;

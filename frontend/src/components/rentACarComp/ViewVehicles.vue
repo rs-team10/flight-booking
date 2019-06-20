@@ -166,7 +166,7 @@ export default {
       fetchVehicles: function(){
          
           this.$axios
-          .get('http://localhost:8080/api/vehicles/'+ this.branchOfficeId, yourConfig)
+          .get('/api/vehicles/'+ this.branchOfficeId, yourConfig)
           .then(response => this.vehicles = response.data)
           .catch(error => {
                 this.$swal("Error!", error.response.data, 'error');
@@ -207,7 +207,7 @@ export default {
       deleteItem (item) {
          if(confirm('Are you sure you want to delete this vehicle?')){
             this.$axios
-               .delete('http://localhost:8080/api/vehicle/'+item.id, yourConfig)
+               .delete('/api/vehicle/'+item.id, yourConfig)
                .then(response => {
                      this.vehicles = this.vehicles.filter(i=>i !== item);
                      this.$swal("Yoohoo!", response.data, 'success');

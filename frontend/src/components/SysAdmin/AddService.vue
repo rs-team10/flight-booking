@@ -272,7 +272,7 @@ export default {
         saveAirline(){
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/airlines', this.service, yourConfig)
+            .post('/api/airlines', this.service, yourConfig)
             .then(response => {
                 this.$swal("Registration successfull", "Airline " + response.data.name + " registered successfully", "success");
             }).catch(error => {
@@ -282,7 +282,7 @@ export default {
         saveHotel(){
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/hotels', this.service, yourConfig)
+            .post('/api/hotels', this.service, yourConfig)
             .then(response => {
                 this.$swal("Registration successfull", "Hotel " + response.data.name + " registered successfully", "success");
             }).catch(error => {
@@ -292,7 +292,7 @@ export default {
         saveRentACar(){
             var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
             this.$axios
-            .post('http://localhost:8080/api/rentACars', this.service, yourConfig)
+            .post('/api/rentACars', this.service, yourConfig)
             .then(response => {
                 this.$swal("Registration successfull", "Rent-a-car service " + response.data.name + " registered successfully", "success");
             }).catch(error => {

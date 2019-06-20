@@ -113,7 +113,7 @@ export default {
   methods:{
       fetchBranches: function(){
           this.$axios
-          .get('http://localhost:8080/api/branchOffices/'+this.rentACarId, yourConfig)
+          .get('/api/branchOffices/'+this.rentACarId, yourConfig)
           .then(response => 
             this.branches = response.data)
       },

@@ -108,13 +108,13 @@ export default{
                     })
             }
             this.$axios
-            .post("http://localhost:8080/api/discounts", listToSave, yourConfig)
+            .post("/api/discounts", listToSave, yourConfig)
         }
     },
     mounted(){
         var yourConfig = { headers: { Authorization: "Bearer " + localStorage.getItem("token") }};
         this.$axios
-        .get("http://localhost:8080/api/discounts", yourConfig)
+        .get("/api/discounts", yourConfig)
         .then(response => {
             this.lista = response.data;
             for(var i = 0; i < this.lista.length; i++){

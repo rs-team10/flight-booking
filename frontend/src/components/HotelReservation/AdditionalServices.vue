@@ -129,7 +129,7 @@
 
 //             this.reservation.additionalServices = this.selected
 //             this.$axios
-//             .post('http://localhost:8080/api/reservations/reserveRoom', this.reservation, yourConfig)
+//             .post('/api/reservations/reserveRoom', this.reservation, yourConfig)
 //             .then(response => {
 //                 this.$swal("Reservation successful", "", "success");
 //             }).catch(error => {
